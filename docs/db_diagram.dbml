@@ -1,0 +1,310 @@
+Enum user_gender {
+  male
+  female
+  other
+  prefer_not_to_say
+}
+
+Enum week_day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+Enum unit_system_type {
+  metric
+  imperial
+}
+
+Enum voice_type {
+  natural
+  device_tts
+}
+
+Enum exercise_category {
+  abs_core
+  arms_shoulders
+  back_pull
+  cardio_hiit
+  chest_push
+  general_fitness
+  legs_glutes
+  stretching
+}
+
+Enum exercise_level {
+  beginner
+  intermediate
+  expert
+}
+
+Enum exercise_force {
+  pull
+  push
+  static
+}
+
+Enum muscle_role {
+  primary
+  secondary
+}
+
+Enum workout_category {
+  build_muscle
+  burn_fat
+  keep_fit
+  stretch_and_warm_up
+}
+
+Enum workout_level {
+  beginner
+  intermediate
+  advanced
+}
+
+Enum workout_plan_source {
+  system
+  custom
+}
+
+Enum workout_session_status {
+  in_progress
+  paused
+  completed
+  abandoned
+}
+
+Enum workout_phase {
+  prep
+  exercise
+  rest
+  completed
+}
+
+Enum session_exercise_status {
+  pending
+  active
+  completed
+  skipped
+}
+
+Table users {
+  user_id bigint [pk, increment]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  full_name varchar
+  gender user_gender
+  height_cm decimal(5,2)
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  Note: 'updated_at must be maintained by the application or a database trigger.'
+}
+
+Table user_settings {
+  user_id bigint [pk, ref: - users.user_id]
+  weekly_goal_days int [not null, default: 6]
+  first_day_of_week week_day [not null, default: 'SUNDAY']
+  rest_timer_sec int [not null, default: 30]
+  prep_timer_sec int [not null, default: 15]
+  music_enabled boolean [not null, default: true]
+  sound_enabled boolean [not null, default: true]
+  coach_video_enabled boolean [not null, default: true]
+  unit_system unit_system_type [not null, default: 'metric']
+  tts_voice_type voice_type [not null, default: 'natural']
+  keep_screen_on boolean [not null, default: true]
+  daily_reminder_enabled boolean [not null, default: false]
+  daily_reminder_time time
+  health_connect_enabled boolean [not null, default: false]
+  updated_at timestamp [not null, default: `now()`]
+
+  Note: 'These are global defaults. Each workout session stores its own setting snapshot.'
+}
+
+Table exercises {
+  exercise_id bigint [pk, increment]
+  source varchar [not null, default: 'free-exercise-db']
+  external_exercise_id varchar [not null]
+  title varchar [not null]
+  original_name varchar [not null]
+  gif_url varchar
+  category exercise_category [not null]
+  equipment_id bigint [not null, ref: > equipment_types.equipment_id]
+  level exercise_level [not null]
+  force exercise_force [not null]
+  is_active boolean [not null, default: true]
+  synced_at timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (source, external_exercise_id) [unique]
+  }
+
+  Note: 'Maps data.json fields id, name, originalName, category, equipment, level and force. The source plus external ID pair is the stable import key.'
+}
+
+Table equipment_types {
+  equipment_id bigint [pk, increment]
+  name varchar [unique, not null]
+
+  Note: 'The dataset has one required equipment value per exercise: bands, bodyweight, dumbbell, exercise ball, foam roll, kettlebells or other.'
+}
+
+Table muscles {
+  muscle_id bigint [pk, increment]
+  name varchar [unique, not null]
+}
+
+Table exercise_muscles {
+  exercise_id bigint [not null, ref: > exercises.exercise_id]
+  muscle_id bigint [not null, ref: > muscles.muscle_id]
+  role muscle_role [not null]
+
+  indexes {
+    (exercise_id, muscle_id, role) [pk]
+  }
+
+  Note: 'Maps primaryMuscles and secondaryMuscles. data.json has exactly one primary muscle and zero to ten secondary muscles per exercise.'
+}
+
+Table exercise_instruction_steps {
+  instruction_id bigint [pk, increment]
+  exercise_id bigint [not null, ref: > exercises.exercise_id]
+  step_number int [not null]
+  instruction_text text [not null]
+
+  indexes {
+    (exercise_id, step_number) [unique]
+  }
+
+  Note: 'Maps instructions in array order. Four records in the supplied dataset have no instruction rows.'
+}
+
+Table exercise_images {
+  image_id bigint [pk, increment]
+  exercise_id bigint [not null, ref: > exercises.exercise_id]
+  order_index int [not null]
+  image_url varchar [not null]
+
+  indexes {
+    (exercise_id, order_index) [unique]
+    (exercise_id, image_url) [unique]
+  }
+
+  Note: 'Maps imageUrls in array order. Every supplied exercise currently has exactly two HTTPS images.'
+}
+
+Table workout_plans {
+  plan_id bigint [pk, increment]
+  owner_user_id bigint [ref: >? users.user_id]
+  title varchar [not null]
+  description text
+  category workout_category [not null]
+  level workout_level [not null]
+  source workout_plan_source [not null, default: 'system']
+  cover_image_url varchar
+  requires_premium boolean [not null, default: false]
+  is_active boolean [not null, default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  Note: 'owner_user_id is NULL for a system plan and required for a custom plan. total_days is derived from workout_plan_days.'
+}
+
+Table workout_plan_days {
+  plan_day_id bigint [pk, increment]
+  plan_id bigint [not null, ref: > workout_plans.plan_id]
+  day_number int [not null]
+  title varchar
+
+  indexes {
+    (plan_id, day_number) [unique]
+  }
+}
+
+Table workout_plan_exercises {
+  plan_exercise_id bigint [pk, increment]
+  plan_day_id bigint [not null, ref: > workout_plan_days.plan_day_id]
+  exercise_id bigint [not null, ref: > exercises.exercise_id]
+  order_index int [not null]
+  target_reps int
+  target_duration_sec int
+  rest_after_sec int
+
+  indexes {
+    (plan_day_id, order_index) [unique]
+  }
+
+  Note: 'At least one of target_reps or target_duration_sec must be provided.'
+}
+
+Table workout_sessions {
+  session_id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.user_id]
+  plan_id bigint [not null, ref: > workout_plans.plan_id]
+  plan_day_id bigint [not null, ref: > workout_plan_days.plan_day_id]
+  status workout_session_status [not null, default: 'in_progress']
+  current_phase workout_phase [not null, default: 'prep']
+  current_order_index int [not null, default: 1]
+  phase_remaining_sec int
+  started_at timestamp [not null, default: `now()`]
+  ended_at timestamp
+  duration_seconds int
+  calories_burned decimal(8,2)
+
+  // Snapshot the settings used by this particular session.
+  rest_timer_sec int [not null]
+  prep_timer_sec int [not null]
+  music_enabled boolean [not null]
+  sound_enabled boolean [not null]
+  coach_video_enabled boolean [not null]
+  tts_voice_type voice_type [not null]
+
+  indexes {
+    (user_id, started_at)
+    (user_id, status)
+  }
+
+  Note: 'Supports Resume, Restart, rest screens and completed-workout history.'
+}
+
+Table workout_session_exercises {
+  session_exercise_id bigint [pk, increment]
+  session_id bigint [not null, ref: > workout_sessions.session_id]
+  exercise_id bigint [not null, ref: > exercises.exercise_id]
+  order_index int [not null]
+  exercise_title_snapshot varchar [not null]
+  planned_reps int
+  planned_duration_sec int
+  actual_reps int
+  actual_duration_sec int
+  status session_exercise_status [not null, default: 'pending']
+  started_at timestamp
+  completed_at timestamp
+
+  indexes {
+    (session_id, order_index) [unique]
+  }
+
+  Note: 'Snapshot fields preserve history when a plan or exercise is edited later.'
+}
+
+Table user_weight_logs {
+  log_id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.user_id]
+  weight_kg decimal(5,2) [not null]
+  height_cm_snapshot decimal(5,2) [not null]
+  logged_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (user_id, logged_at) [unique]
+  }
+
+  Note: 'BMI is calculated from weight_kg and height_cm_snapshot instead of being stored redundantly.'
+}
+

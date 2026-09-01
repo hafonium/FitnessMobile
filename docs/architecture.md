@@ -28,14 +28,28 @@
 
 ---
 
+## Database schema
+
+The full relational schema in `docs/db_diagram.dbml` (14 tables, 14 enums) is implemented under
+`data/local/`:
+
+- Enums live in `domain/models/enums/` (pure Kotlin) and are stored by Room as their `name`
+  (`UserGender.MALE`, `WeekDay.SUNDAY`, …) — Kotlin uppercase, not the DBML's lowercase literals.
+- `bigint` -> `Long`, `timestamp` -> `Long` epoch millis, `decimal` -> `Double`, `time` -> `String?`.
+- `AppDatabase` registers every entity + DAO and, on first creation, calls
+  `data/local/seed/AppDatabaseSeeder` on `applicationScope`. The seeder imports
+  `app/src/main/assets/exercises.json` (a copy of `data/data.json`: 876 exercises, equipment,
+  muscles, instruction steps, images) and a handful of system `workout_plans`.
+
 ## Example Reference Files
 
-These files are intentionally left as empty skeletons (`TODO()` bodies / signatures only) so
-you can see the exact shape of each layer before filling in the real logic:
+These files show the exact shape of each layer (originally `TODO()` skeletons, now the real
+implementation for the Training -> Workout Screen -> Exercise Info flow):
 
 - **Room Entity + DAO Pattern:**
-  - `app/src/main/java/com/example/homeworkout/data/local/entities/WorkoutEntity.kt`
-  - `app/src/main/java/com/example/homeworkout/data/local/dao/WorkoutDao.kt`
+  - `app/src/main/java/com/example/homeworkout/data/local/entities/WorkoutPlanEntity.kt`
+  - `app/src/main/java/com/example/homeworkout/data/local/dao/WorkoutPlanDao.kt`
+  - Flat join projections for DAOs live in `data/local/dao/relations/`.
 
 - **Repository Implementation Pattern:**
   - `app/src/main/java/com/example/homeworkout/data/repositories/WorkoutRepositoryImpl.kt`
