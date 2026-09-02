@@ -14,8 +14,8 @@ private val ColorWhite = androidx.compose.ui.graphics.Color.White
 
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
-    onPrimary = DarkTextPrimary,
-    primaryContainer = DarkPrimary,
+    onPrimary = ColorWhite,
+    primaryContainer = DarkPrimary.copy(alpha = 0.22f),
     onPrimaryContainer = DarkTextPrimary,
     secondary = DarkSecondary,
     onSecondary = DarkBackground,
@@ -29,21 +29,21 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = DarkTextPrimary,
     surface = DarkSurface,
     onSurface = DarkTextPrimary,
-    surfaceVariant = DarkSurface,
+    surfaceVariant = DarkSurfaceVariant,
     onSurfaceVariant = DarkTextSecondary,
     outline = DarkTextSecondary.copy(alpha = 0.55f),
     outlineVariant = DarkTextSecondary.copy(alpha = 0.35f),
-    error = DarkSecondary,
-    errorContainer = DarkSecondary.copy(alpha = 0.18f)
+    error = StreakRed,
+    errorContainer = StreakRed.copy(alpha = 0.18f)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
     onPrimary = ColorWhite,
-    primaryContainer = LightPrimary.copy(alpha = 0.12f),
-    onPrimaryContainer = LightTextPrimary,
+    primaryContainer = BrandBlueTint,
+    onPrimaryContainer = BrandBlueDark,
     secondary = LightSecondary,
-    onSecondary = LightTextPrimary,
+    onSecondary = InkBlack,
     secondaryContainer = LightSecondary.copy(alpha = 0.18f),
     onSecondaryContainer = LightTextPrimary,
     tertiary = LightTertiary,
@@ -54,12 +54,12 @@ private val LightColorScheme = lightColorScheme(
     onBackground = LightTextPrimary,
     surface = LightSurface,
     onSurface = LightTextPrimary,
-    surfaceVariant = LightSurface,
+    surfaceVariant = CloudGray,
     onSurfaceVariant = LightTextSecondary,
-    outline = LightTextSecondary.copy(alpha = 0.55f),
-    outlineVariant = LightTextSecondary.copy(alpha = 0.25f),
-    error = LightSecondary,
-    errorContainer = LightSecondary.copy(alpha = 0.12f)
+    outline = HairlineGray,
+    outlineVariant = HairlineGray,
+    error = StreakRed,
+    errorContainer = StreakRed.copy(alpha = 0.12f)
 )
 
 @Composable
@@ -85,6 +85,7 @@ fun HomeWorkoutTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = AppShapes,
         content = content
     )
 }

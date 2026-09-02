@@ -1,10 +1,13 @@
 package com.example.homeworkout.ui.core.planedit
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -13,9 +16,11 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.PlanExerciseSummary
@@ -33,6 +40,7 @@ import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.ExerciseRow
 import com.example.homeworkout.ui.core.details.DetailUiState
 import com.example.homeworkout.ui.core.details.DetailViewModel
+import com.example.homeworkout.ui.theme.CloudGray
 
 /**
  * "Edit plan": lets you add/remove exercises and tweak reps/duration for the exercise list
@@ -53,7 +61,11 @@ fun EditPlanExercisesScreen(
     Scaffold(
         topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddExercises) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
+            FloatingActionButton(
+                onClick = onAddExercises,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            ) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
         }
     ) { padding ->
         when (val state = uiState) {
@@ -70,21 +82,40 @@ fun EditPlanExercisesScreen(
                         val reps = repsOverrides[exercise.planExerciseId] ?: exercise.targetReps
                         ExerciseRow(
                             title = exercise.title,
-                            subtitle = exercise.subtitleText(reps)
+                            subtitle = exercise.subtitleText(reps),
+                            imageUrl = exercise.gifUrl
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 if (exercise.targetReps != null) {
-                                    IconButton(onClick = {
-                                        val current = reps ?: 0
-                                        if (current > 1) repsOverrides[exercise.planExerciseId] = current - 1
-                                    }) { Icon(Icons.Default.Remove, contentDescription = "Decrease") }
-                                    Text("${reps ?: 0}", style = MaterialTheme.typography.bodyLarge)
-                                    IconButton(onClick = {
-                                        repsOverrides[exercise.planExerciseId] = (reps ?: 0) + 1
-                                    }) { Icon(Icons.Default.Add, contentDescription = "Increase") }
+                                    FilledTonalIconButton(
+                                        onClick = {
+                                            val current = reps ?: 0
+                                            if (current > 1) repsOverrides[exercise.planExerciseId] = current - 1
+                                        },
+                                        modifier = Modifier.size(28.dp),
+                                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                            containerColor = CloudGray,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    ) { Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp)) }
+                                    Text(
+                                        "${reps ?: 0}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                    FilledTonalIconButton(
+                                        onClick = { repsOverrides[exercise.planExerciseId] = (reps ?: 0) + 1 },
+                                        modifier = Modifier.size(28.dp),
+                                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                            containerColor = CloudGray,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    ) { Icon(Icons.Default.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp)) }
+                                    Spacer(modifier = Modifier.width(4.dp))
                                 }
                                 IconButton(onClick = onAlterExercise) {
-                                    Icon(Icons.Default.SwapHoriz, contentDescription = "Replace exercise")
+                                    Icon(Icons.Default.SwapHoriz, contentDescription = "Replace exercise", tint = MaterialTheme.colorScheme.primary)
                                 }
                                 Icon(Icons.Default.DragHandle, contentDescription = "Reorder", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             }

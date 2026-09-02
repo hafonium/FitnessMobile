@@ -1,7 +1,10 @@
 package com.example.homeworkout.ui.core.onboarding
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,13 +15,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -30,6 +36,14 @@ import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.label
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
+import com.example.homeworkout.ui.theme.BrandBlue
+import com.example.homeworkout.ui.theme.BrandBlueTint
+import com.example.homeworkout.ui.theme.CardShape
+import com.example.homeworkout.ui.theme.CloudGray
+import com.example.homeworkout.ui.theme.HairlineGray
+import com.example.homeworkout.ui.theme.PillShape
+import com.example.homeworkout.ui.theme.SlateGray
 
 private val EQUIPMENT_OPTIONS =
     listOf("bodyweight", "bands", "dumbbell", "kettlebells", "exercise ball", "foam roll", "other")
@@ -140,7 +154,12 @@ fun OnboardingScreen(
                             onValueChange = viewModel::setLimitations,
                             placeholder = { Text("e.g. sore left knee, avoid overhead") },
                             modifier = Modifier.fillMaxWidth(),
-                            minLines = 2
+                            minLines = 2,
+                            shape = MaterialTheme.shapes.medium,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = HairlineGray
+                            )
                         )
                     }
                 }
@@ -173,7 +192,18 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Choice(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(selected = selected, onClick = onClick, label = { Text(label) })
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label) },
+        shape = PillShape,
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = CloudGray,
+            labelColor = SlateGray,
+            selectedContainerColor = BrandBlueTint,
+            selectedLabelColor = BrandBlue
+        )
+    )
 }
 
 @Composable
@@ -201,15 +231,35 @@ private fun RecommendationList(
             }
         }
         item {
-            AppButton(text = "Adjust my answers", onClick = onAdjust, modifier = Modifier.fillMaxWidth())
+            AppButton(
+                text = "Adjust my answers",
+                onClick = onAdjust,
+                modifier = Modifier.fillMaxWidth(),
+                variant = AppButtonVariant.Outlined
+            )
         }
     }
 }
 
 @Composable
 private fun PlanMatchCard(item: RecommendedPlan, highlighted: Boolean, onClick: () -> Unit) {
-    AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    AppCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .then(if (highlighted) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CardShape) else Modifier)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (highlighted) {
+                Box(modifier = Modifier.clip(PillShape).background(BrandBlueTint).padding(horizontal = 10.dp, vertical = 4.dp)) {
+                    Text(
+                        "BEST MATCH",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
             Text(item.plan.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(
                 "${(item.score * 100).toInt()}% match · ${item.rationale}",

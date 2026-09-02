@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
+import com.example.homeworkout.ui.theme.BrandBlue
+import com.example.homeworkout.ui.theme.BrandBlueTint
+import com.example.homeworkout.ui.theme.CloudGray
+import com.example.homeworkout.ui.theme.PillShape
+import com.example.homeworkout.ui.theme.SlateGray
 
 private val bodyParts = listOf("Back", "Arm", "Leg", "Glutes", "Shoulder", "Chest", "Core")
 private val difficulties = listOf("Easy", "Medium", "Hard")
@@ -68,8 +75,18 @@ fun FilterExerciseScreen(onNavigateBack: () -> Unit) {
             }
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AppButton(text = "Cancel", onClick = onNavigateBack, modifier = Modifier.weight(1f))
-                    AppButton(text = "Save", onClick = onNavigateBack, modifier = Modifier.weight(1f))
+                    AppButton(
+                        text = "Cancel",
+                        onClick = onNavigateBack,
+                        modifier = Modifier.weight(1f),
+                        variant = AppButtonVariant.Outlined
+                    )
+                    AppButton(
+                        text = "Save",
+                        onClick = onNavigateBack,
+                        modifier = Modifier.weight(1f),
+                        variant = AppButtonVariant.Primary
+                    )
                 }
             }
         }
@@ -83,11 +100,22 @@ private fun FilterSection(
     isSelected: (String) -> Boolean,
     onToggle: (String) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             options.forEach { option ->
-                FilterChip(selected = isSelected(option), onClick = { onToggle(option) }, label = { Text(option) })
+                FilterChip(
+                    selected = isSelected(option),
+                    onClick = { onToggle(option) },
+                    label = { Text(option) },
+                    shape = PillShape,
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = CloudGray,
+                        labelColor = SlateGray,
+                        selectedContainerColor = BrandBlueTint,
+                        selectedLabelColor = BrandBlue
+                    )
+                )
             }
         }
     }

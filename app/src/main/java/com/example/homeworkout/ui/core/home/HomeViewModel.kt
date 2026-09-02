@@ -2,6 +2,7 @@ package com.example.homeworkout.ui.core.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.homeworkout.domain.models.RecommendedPlan
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
@@ -25,12 +26,13 @@ sealed class HomeUiState {
     data class Error(val message: String) : HomeUiState()
 }
 
-/** The "Challenge" / "Customized for you" panel — the plan recommended from the saved profile. */
+/** The "Challenge" / "Customized for you" panel — the plan(s) recommended from the saved profile. */
 sealed class ChallengeState {
     object Loading : ChallengeState()
     /** No fitness profile yet (or nothing matched) — prompt the user to run onboarding. */
     object NeedsProfile : ChallengeState()
-    data class Recommended(val plan: WorkoutModel, val rationale: String) : ChallengeState()
+    /** Best match first, followed by up to two alternatives — swipeable in the UI. */
+    data class Recommended(val plans: List<RecommendedPlan>) : ChallengeState()
 }
 
 class HomeViewModel(
@@ -63,7 +65,7 @@ class HomeViewModel(
                     ChallengeState.NeedsProfile
                 } else {
                     recommendPlanUseCase(profile)
-                        ?.let { ChallengeState.Recommended(it.recommended.plan, it.recommended.rationale) }
+                        ?.let { ChallengeState.Recommended(listOf(it.recommended) + it.alternatives) }
                         ?: ChallengeState.NeedsProfile
                 }
             }

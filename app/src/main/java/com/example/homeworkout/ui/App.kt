@@ -1,6 +1,11 @@
 package com.example.homeworkout.ui
 
 import android.app.Application
+import android.os.Build
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
@@ -21,7 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-class App : Application() {
+class App : Application(), ImageLoaderFactory {
 
     // Lives for the whole process — used once to seed the database on first launch.
     val applicationScope: CoroutineScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
@@ -43,4 +48,18 @@ class App : Application() {
     val recommendPlanUseCase by lazy { RecommendPlanUseCase(planCatalogRepository, workoutRepository) }
     val saveFitnessProfileUseCase by lazy { SaveFitnessProfileUseCase(fitnessProfileRepository, planCatalogRepository) }
     val getFitnessProfileUseCase by lazy { GetFitnessProfileUseCase(fitnessProfileRepository) }
+
+    // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
+    // (gif_url) without passing an ImageLoader explicitly at each call site.
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .components {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+    }
 }

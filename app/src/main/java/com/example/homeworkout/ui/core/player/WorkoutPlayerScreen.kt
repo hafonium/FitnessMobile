@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Pause
@@ -34,15 +38,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.ui.components.ExerciseThumbnail
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.core.details.DetailUiState
 import com.example.homeworkout.ui.core.details.DetailViewModel
+import com.example.homeworkout.ui.theme.BrandBlueTint
+import com.example.homeworkout.ui.theme.InkBlack
+import com.example.homeworkout.ui.theme.PillShape
+import com.example.homeworkout.ui.theme.SlateGray
 import com.example.homeworkout.utils.ScreenWrapper
 import kotlinx.coroutines.delay
 
@@ -74,7 +87,9 @@ fun WorkoutPlayerScreen(
                 }
             }
 
-            is DetailUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            is DetailUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            }
             else -> CenteredMessage("This workout could not be found.")
         }
     }
@@ -130,7 +145,7 @@ private fun PlayerContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
     when (phase) {
-        Phase.PREP -> PrepView(nextExerciseTitle = current.title, count = remaining, onSkip = {
+        Phase.PREP -> PrepView(nextExerciseTitle = current.title, gifUrl = current.gifUrl, count = remaining, onSkip = {
             phase = Phase.EXERCISE
             remaining = current.targetDurationSec ?: 30
         })
@@ -213,22 +228,44 @@ private fun PlayerContent(
 }
 
 @Composable
-private fun PrepView(nextExerciseTitle: String, count: Int, onSkip: () -> Unit) {
+private fun PrepView(nextExerciseTitle: String, gifUrl: String?, count: Int, onSkip: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        ExerciseThumbnail(size = 160.dp)
-        Text("READY TO GO!", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Text(nextExerciseTitle.uppercase(), style = MaterialTheme.typography.titleMedium)
-        Box(
-            modifier = Modifier.size(96.dp).border(3.dp, MaterialTheme.colorScheme.primary, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("$count", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
+        ExerciseThumbnail(size = 180.dp, imageUrl = gifUrl)
+        Spacer(Modifier.height(28.dp))
+        Text(
+            "READY TO GO!",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Black,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            nextExerciseTitle.uppercase(),
+            style = MaterialTheme.typography.titleMedium,
+            color = SlateGray,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(32.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Box(
+                modifier = Modifier.size(96.dp).border(4.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("$count", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Black)
+            }
+            IconButton(onClick = onSkip) {
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Skip",
+                    tint = SlateGray,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
-        AppButton(text = "Skip", onClick = onSkip)
     }
 }
 
@@ -249,25 +286,57 @@ private fun ExerciseView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Text("${index + 1} / $total", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        ExerciseThumbnail(size = 180.dp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(exercise.title.uppercase(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            IconButton(onClick = onInfo) { Icon(Icons.Default.Info, contentDescription = "Exercise information") }
+        Text("${index + 1} / $total", style = MaterialTheme.typography.labelLarge, color = SlateGray)
+        ExerciseThumbnail(size = 180.dp, imageUrl = exercise.gifUrl)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                exercise.title.uppercase(),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Black,
+                textAlign = TextAlign.Center,
+                color = InkBlack
+            )
+            IconButton(onClick = onInfo, modifier = Modifier.size(28.dp)) {
+                Icon(Icons.Default.Info, contentDescription = "Exercise information", tint = SlateGray)
+            }
         }
         Text(
             text = if (exercise.targetDurationSec != null) formatTime(remaining) else "x${exercise.targetReps ?: 0}",
-            style = MaterialTheme.typography.displayMedium,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Black,
+            color = InkBlack
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onPrevious) { Icon(Icons.Default.SkipPrevious, contentDescription = "Previous exercise") }
-            IconButton(onClick = onTogglePause) {
-                Icon(if (paused) Icons.Default.PlayArrow else Icons.Default.Pause, contentDescription = if (paused) "Resume" else "Pause")
+        Row(horizontalArrangement = Arrangement.spacedBy(28.dp), verticalAlignment = Alignment.CenterVertically) {
+            TransportButton(icon = Icons.Default.SkipPrevious, contentDescription = "Previous exercise", onClick = onPrevious)
+            Box(
+                modifier = Modifier
+                    .size(68.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable(onClick = onTogglePause),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    if (paused) Icons.Default.PlayArrow else Icons.Default.Pause,
+                    contentDescription = if (paused) "Resume" else "Pause",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
             }
-            IconButton(onClick = onNext) { Icon(Icons.Default.SkipNext, contentDescription = "Next exercise") }
+            TransportButton(icon = Icons.Default.SkipNext, contentDescription = "Next exercise", onClick = onNext)
         }
-        AppButton(text = if (exercise.targetDurationSec != null) "Done" else "Done · next", onClick = onNext)
+        AppButton(
+            text = if (exercise.targetDurationSec != null) "Done" else "Done · next",
+            onClick = onNext,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun TransportButton(icon: ImageVector, contentDescription: String, onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
+        Icon(icon, contentDescription = contentDescription, tint = SlateGray, modifier = Modifier.size(30.dp))
     }
 }
 
@@ -285,22 +354,46 @@ private fun RestView(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("REST", color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Text(formatTime(remaining), color = Color.White, style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.Bold)
             if (next != null) {
+                Text("NEXT $nextNumber/$total", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelLarge)
                 Text(
-                    "NEXT $nextNumber/$total  ${next.title.uppercase()}",
+                    next.title.uppercase(),
                     color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 36.dp)
                 )
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                AppButton(text = "+20s", onClick = onAddTime)
-                AppButton(text = "Skip", onClick = onSkip)
+            Text("REST", color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(formatTime(remaining), color = Color.White, style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.Black)
+            Spacer(Modifier.height(36.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(PillShape)
+                        .background(Color.White.copy(alpha = 0.18f))
+                        .clickable(onClick = onAddTime)
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("+20s", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(PillShape)
+                        .background(Color.White)
+                        .clickable(onClick = onSkip)
+                        .padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Skip", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }
@@ -314,18 +407,48 @@ private fun CompletedView(
     onDoItLater: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().background(BrandBlueTint).padding(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("💪", style = MaterialTheme.typography.displaySmall)
-        Text("$completedCount exercises completed.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Sweat more, shine later!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        AppButton(text = "Keep exercising", onClick = onKeepExercising)
-        AppButton(text = "Restart this workout", onClick = onRestart)
+        Box(
+            modifier = Modifier.size(84.dp).clip(CircleShape).background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("💪", fontSize = 36.sp)
+        }
+        Spacer(Modifier.height(20.dp))
+        Row {
+            Text(
+                "$completedCount exercises",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(" completed.", color = InkBlack, style = MaterialTheme.typography.titleMedium)
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Sweat more, shine later!",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = InkBlack,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(32.dp))
+        AppButton(text = "Keep exercising", onClick = onKeepExercising, modifier = Modifier.fillMaxWidth())
+        Spacer(Modifier.height(12.dp))
+        AppButton(
+            text = "Restart this workout",
+            onClick = onRestart,
+            variant = AppButtonVariant.Tonal,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(16.dp))
         Text(
             "Do it later",
             color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(8.dp).clickable(onClick = onDoItLater)
         )
     }

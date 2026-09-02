@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,8 +49,8 @@ fun WorkoutListScreen(
             items(workouts, key = { it.id }) { plan ->
                 AppCard(modifier = Modifier.fillMaxWidth().clickable { onOpenPlan(plan.id) }) {
                     Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        ExerciseThumbnail(size = 56.dp)
-                        Column(modifier = Modifier.padding(start = 12.dp)) {
+                        ExerciseThumbnail(size = 56.dp, imageUrl = plan.coverImageUrl)
+                        Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
                             Text(plan.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text(
                                 "${plan.level.label()} · ${plan.totalExercises} exercises",
@@ -55,6 +58,11 @@ fun WorkoutListScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

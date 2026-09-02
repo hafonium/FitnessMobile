@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -21,12 +22,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
+import com.example.homeworkout.ui.theme.CloudGray
+import com.example.homeworkout.ui.theme.InkBlack
+import com.example.homeworkout.ui.theme.SlateGray
+import com.example.homeworkout.ui.theme.SuccessGreen
+import com.example.homeworkout.ui.theme.TileShape
 import com.example.homeworkout.utils.ScreenWrapper
 
 /**
@@ -38,14 +46,14 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
     ScreenWrapper {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            item { Text("REPORT", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
+            item { Text("REPORT", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold) }
 
             item {
                 AppCard(modifier = Modifier.fillMaxWidth()) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         StatTile(Icons.Default.FitnessCenter, "3", "Workouts")
@@ -60,16 +68,21 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(day, style = MaterialTheme.typography.bodySmall)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(day, style = MaterialTheme.typography.bodySmall, color = SlateGray)
                             Box(
                                 modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .clip(RoundedCornerShape(50))
-                                    .background(if (index == 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(if (index == 3) MaterialTheme.colorScheme.primary else Color.Transparent),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Text("${30 + index}", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    "${30 + index}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (index == 3) Color.White else InkBlack
+                                )
                             }
                         }
                     }
@@ -92,18 +105,22 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("Weight", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Log", onClick = {})
+                            AppButton(text = "Log", onClick = {}, variant = AppButtonVariant.Tonal)
                         }
-                        Text("142.2 kg", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text("Heaviest 142.2 · Lightest 142.2", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("142.2 kg", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Heaviest 142.2 · Lightest 142.2",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SlateGray
+                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(80.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                                .clip(TileShape)
+                                .background(CloudGray),
                             contentAlignment = Alignment.Center
-                        ) { Text("weight trend", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                        ) { Text("weight trend", style = MaterialTheme.typography.bodySmall, color = SlateGray) }
                     }
                 }
             }
@@ -117,11 +134,11 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("BMI", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Edit", onClick = {})
+                            AppButton(text = "Edit", onClick = {}, variant = AppButtonVariant.Tonal)
                         }
-                        Text("22.8", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                        Text("Healthy weight", color = MaterialTheme.colorScheme.primary)
-                        Text("Height 250 cm", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("22.8", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                        Text("Healthy weight", color = SuccessGreen, fontWeight = FontWeight.SemiBold)
+                        Text("Height 250 cm", style = MaterialTheme.typography.bodySmall, color = SlateGray)
                     }
                 }
             }
@@ -132,7 +149,7 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
 @Composable
 private fun LabeledValue(label: String, value: String) {
     Column {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(label, style = MaterialTheme.typography.bodySmall, color = SlateGray)
         Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
 }
