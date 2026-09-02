@@ -36,6 +36,8 @@ import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.home.HomeScreen
 import com.example.homeworkout.ui.core.home.HomeViewModel
+import com.example.homeworkout.ui.core.onboarding.OnboardingScreen
+import com.example.homeworkout.ui.core.onboarding.OnboardingViewModel
 import com.example.homeworkout.ui.core.planedit.AddExercisesScreen
 import com.example.homeworkout.ui.core.planedit.AlterExerciseScreen
 import com.example.homeworkout.ui.core.planedit.EditPlanExercisesScreen
@@ -97,14 +99,21 @@ fun ScreenNavigator() {
             // --- Bottom bar tabs ---
             composable(Screen.Home.route) {
                 val vm: HomeViewModel = viewModel(factory = viewModelFactory {
-                    initializer { HomeViewModel(appInstance.getWorkoutsUseCase) }
+                    initializer {
+                        HomeViewModel(
+                            appInstance.getWorkoutsUseCase,
+                            appInstance.getFitnessProfileUseCase,
+                            appInstance.recommendPlanUseCase
+                        )
+                    }
                 })
                 HomeScreen(
                     viewModel = vm,
                     onOpenPlan = { planId -> navController.navigate(Screen.Details.createRoute(planId)) },
                     onOpenCustomWorkout = { navController.navigate(Screen.CustomWorkoutList.route) },
                     onOpenEditGoal = { navController.navigate(Screen.EditGoal.route) },
-                    onOpenWorkoutList = { category -> navController.navigate(Screen.WorkoutList.createRoute(category.name)) }
+                    onOpenWorkoutList = { category -> navController.navigate(Screen.WorkoutList.createRoute(category.name)) },
+                    onOpenOnboarding = { navController.navigate(Screen.Onboarding.route) }
                 )
             }
 
@@ -114,9 +123,31 @@ fun ScreenNavigator() {
 
             composable(Screen.SettingsHome.route) {
                 SettingsScreen(
+                    onOpenPlanSetup = { navController.navigate(Screen.Onboarding.route) },
                     onOpenWorkoutSettings = { navController.navigate(Screen.SettingsWorkout.route) },
                     onOpenGeneralSettings = { navController.navigate(Screen.SettingsGeneral.route) },
                     onOpenVoiceOptions = { navController.navigate(Screen.SettingsVoice.route) }
+                )
+            }
+
+            composable(Screen.Onboarding.route) {
+                val vm: OnboardingViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        OnboardingViewModel(
+                            appInstance.recommendPlanUseCase,
+                            appInstance.saveFitnessProfileUseCase,
+                            appInstance.getFitnessProfileUseCase
+                        )
+                    }
+                })
+                OnboardingScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenPlan = { planId ->
+                        navController.navigate(Screen.Details.createRoute(planId)) {
+                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    }
                 )
             }
 

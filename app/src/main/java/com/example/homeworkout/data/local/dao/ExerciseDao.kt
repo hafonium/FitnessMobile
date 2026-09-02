@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.homeworkout.data.local.dao.relations.ExerciseListRow
+import com.example.homeworkout.data.local.dao.relations.ExerciseRefRow
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
 import com.example.homeworkout.data.local.entities.ExerciseEntity
 import com.example.homeworkout.data.local.entities.ExerciseImageEntity
@@ -48,6 +49,21 @@ interface ExerciseDao {
 
     @Query("SELECT COUNT(*) FROM exercises")
     suspend fun countExercises(): Int
+
+    /** Compact projection of the whole active library for the plan seeder. */
+    @Query(
+        """
+        SELECT e.exerciseId, e.category, e.level, e.force, eq.name AS equipmentName,
+               COALESCE(GROUP_CONCAT(m.name, ','), '') AS primaryMusclesCsv
+        FROM exercises e
+        INNER JOIN equipment_types eq ON eq.equipmentId = e.equipmentId
+        LEFT JOIN exercise_muscles em ON em.exerciseId = e.exerciseId AND em.role = 'PRIMARY'
+        LEFT JOIN muscles m ON m.muscleId = em.muscleId
+        WHERE e.isActive = 1
+        GROUP BY e.exerciseId
+        """
+    )
+    suspend fun getAllExerciseRefs(): List<ExerciseRefRow>
 
     @Query("SELECT * FROM exercises WHERE title = :title LIMIT 1")
     suspend fun getExerciseByTitle(title: String): ExerciseEntity?

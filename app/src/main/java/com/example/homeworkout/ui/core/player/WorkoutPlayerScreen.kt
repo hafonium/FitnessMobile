@@ -2,6 +2,7 @@ package com.example.homeworkout.ui.core.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +12,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -87,6 +91,7 @@ private fun PlayerContent(
     var remaining by remember { mutableIntStateOf(PREP_SECONDS) }
     var paused by remember { mutableStateOf(false) }
     var completedCount by remember { mutableIntStateOf(0) }
+    var showQuitDialog by remember { mutableStateOf(false) }
 
     val current = exercises.getOrNull(index) ?: exercises.first()
     val isTimed = current.targetDurationSec != null
@@ -101,8 +106,8 @@ private fun PlayerContent(
         }
     }
 
-    LaunchedEffect(phase, index, paused) {
-        if (paused || phase == Phase.COMPLETED) return@LaunchedEffect
+    LaunchedEffect(phase, index, paused, showQuitDialog) {
+        if (paused || showQuitDialog || phase == Phase.COMPLETED) return@LaunchedEffect
         if (phase == Phase.EXERCISE && !isTimed) return@LaunchedEffect
         while (remaining > 0) {
             delay(1_000)
@@ -123,6 +128,7 @@ private fun PlayerContent(
         }
     }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     when (phase) {
         Phase.PREP -> PrepView(nextExerciseTitle = current.title, count = remaining, onSkip = {
             phase = Phase.EXERCISE
@@ -174,6 +180,34 @@ private fun PlayerContent(
                 phase = Phase.PREP
             },
             onDoItLater = onClose
+        )
+    }
+
+        if (phase != Phase.COMPLETED) {
+            IconButton(
+                onClick = { showQuitDialog = true },
+                modifier = Modifier.align(Alignment.TopStart).padding(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "Quit workout",
+                    tint = if (phase == Phase.REST) Color.White else MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+
+    if (showQuitDialog) {
+        AlertDialog(
+            onDismissRequest = { showQuitDialog = false },
+            title = { Text("Quit workout?") },
+            text = { Text("You'll leave this session and go back to the plan. Progress isn't saved.") },
+            confirmButton = {
+                TextButton(onClick = { showQuitDialog = false; onClose() }) { Text("Quit") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showQuitDialog = false }) { Text("Keep going") }
+            }
         )
     }
 }
@@ -289,7 +323,11 @@ private fun CompletedView(
         Text("Sweat more, shine later!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         AppButton(text = "Keep exercising", onClick = onKeepExercising)
         AppButton(text = "Restart this workout", onClick = onRestart)
-        Text("Do it later", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(8.dp))
+        Text(
+            "Do it later",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(8.dp).clickable(onClick = onDoItLater)
+        )
     }
 }
 

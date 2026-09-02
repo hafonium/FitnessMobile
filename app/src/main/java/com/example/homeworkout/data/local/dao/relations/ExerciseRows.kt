@@ -18,3 +18,16 @@ data class ExerciseListRow(
     val force: ExerciseForce,
     val equipmentName: String
 )
+
+/**
+ * Everything the plan seeder needs about one exercise, with primary muscles flattened to a
+ * comma-separated string. Returned by [com.example.homeworkout.data.local.dao.ExerciseDao.getAllExerciseRefs].
+ */
+data class ExerciseRefRow(
+    val exerciseId: Long,
+    val category: ExerciseCategory,
+    val level: ExerciseLevel,
+    val force: ExerciseForce,
+    val equipmentName: String,
+    val primaryMusclesCsv: String
+)

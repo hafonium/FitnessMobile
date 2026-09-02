@@ -23,6 +23,7 @@ import com.example.homeworkout.utils.ScreenWrapper
 /** Settings tab landing screen. */
 @Composable
 fun SettingsScreen(
+    onOpenPlanSetup: () -> Unit,
     onOpenWorkoutSettings: () -> Unit,
     onOpenGeneralSettings: () -> Unit,
     onOpenVoiceOptions: () -> Unit
@@ -36,6 +37,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             item { Text("SETTINGS", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
+            item { SettingsNavRow(label = "Set up my plan", onClick = onOpenPlanSetup) }
             item { SettingsNavRow(label = "Workout Settings", onClick = onOpenWorkoutSettings) }
             item { SettingsNavRow(label = "General Settings", onClick = onOpenGeneralSettings) }
             item { SettingsNavRow(label = "Voice Options (TTS)", onClick = onOpenVoiceOptions) }

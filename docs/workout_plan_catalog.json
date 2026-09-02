@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "datasetContract": {
+    "observedRecordCount": 515,
+    "fields": [
+      "id",
+      "name",
+      "originalName",
+      "category",
+      "equipment",
+      "level",
+      "force",
+      "primaryMuscles",
+      "secondaryMuscles",
+      "instructions",
+      "imageUrls"
+    ],
+    "categories": [
+      "abs_core",
+      "arms_shoulders",
+      "back_pull",
+      "cardio_hiit",
+      "chest_push",
+      "general_fitness",
+      "legs_glutes",
+      "stretching"
+    ],
+    "equipment": [
+      "bands",
+      "bodyweight",
+      "dumbbell",
+      "exercise ball",
+      "foam roll",
+      "kettlebells",
+      "other"
+    ],
+    "levels": ["beginner", "intermediate", "expert"],
+    "forces": ["pull", "push", "static"],
+    "muscles": [
+      "abdominals",
+      "abductors",
+      "adductors",
+      "biceps",
+      "calves",
+      "chest",
+      "forearms",
+      "glutes",
+      "hamstrings",
+      "lats",
+      "lower back",
+      "middle back",
+      "neck",
+      "quadriceps",
+      "shoulders",
+      "traps",
+      "triceps"
+    ]
+  },
+  "profileQuestions": [
+    {
+      "key": "primaryGoal",
+      "required": true,
+      "options": ["general_fitness", "build_muscle", "fat_loss", "mobility", "focus_area"]
+    },
+    {
+      "key": "experienceLevel",
+      "required": true,
+      "options": ["beginner", "intermediate", "expert"]
+    },
+    {
+      "key": "daysPerWeek",
+      "required": true,
+      "min": 2,
+      "max": 6
+    },
+    {
+      "key": "sessionMinutes",
+      "required": true,
+      "options": [15, 20, 30, 45, 60]
+    },
+    {
+      "key": "availableEquipment",
+      "required": true,
+      "multiSelect": true,
+      "optionsFrom": "datasetContract.equipment"
+    },
+    {
+      "key": "focusCategories",
+      "required": false,
+      "multiSelect": true,
+      "optionsFrom": "datasetContract.categories"
+    },
+    {
+      "key": "focusMuscles",
+      "required": false,
+      "multiSelect": true,
+      "optionsFrom": "datasetContract.muscles"
+    },
+    {
+      "key": "injuriesOrLimitations",
+      "required": true,
+      "freeText": true,
+      "safetyField": true
+    },
+    {
+      "key": "excludedExerciseIds",
+      "required": false,
+      "multiSelect": true
+    },
+    {
+      "key": "preferredExerciseIds",
+      "required": false,
+      "multiSelect": true
+    },
+    {
+      "key": "locationConstraints",
+      "required": false,
+      "options": ["quiet", "small_space", "no_floor_work", "no_jumping", "none"]
+    },
+    {
+      "key": "recoveryStatus",
+      "required": false,
+      "options": ["low", "normal", "high"]
+    }
+  ],
+  "prescriptions": {
+    "beginner": {
+      "workingSets": 2,
+      "repRange": "8-12",
+      "strengthRestSeconds": 60,
+      "timedWorkSeconds": 30,
+      "timedRestSeconds": 30
+    },
+    "intermediate": {
+      "workingSets": 3,
+      "repRange": "8-15",
+      "strengthRestSeconds": 45,
+      "timedWorkSeconds": 40,
+      "timedRestSeconds": 20
+    },
+    "expert": {
+      "workingSets": 4,
+      "repRange": "6-15",
+      "strengthRestSeconds": 60,
+      "timedWorkSeconds": 45,
+      "timedRestSeconds": 15
+    }
+  },
+  "dayPatterns": {
+    "full_body_a": {
+      "label": "Full Body A",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "legs_glutes", "primaryMuscles": ["quadriceps", "glutes"], "force": "push", "count": 2, "role": "main"},
+        {"category": "chest_push", "primaryMuscles": ["chest", "triceps"], "force": "push", "count": 2, "role": "main"},
+        {"category": "back_pull", "primaryMuscles": ["lats", "middle back"], "force": "pull", "count": 1, "role": "main"},
+        {"category": "abs_core", "primaryMuscles": ["abdominals"], "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "full_body_b": {
+      "label": "Full Body B",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "legs_glutes", "primaryMuscles": ["hamstrings", "glutes"], "force": "pull", "count": 2, "role": "main"},
+        {"category": "arms_shoulders", "primaryMuscles": ["shoulders", "biceps", "triceps"], "count": 2, "role": "main"},
+        {"category": "back_pull", "primaryMuscles": ["lats", "lower back"], "count": 1, "role": "main"},
+        {"category": "abs_core", "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "full_body_c": {
+      "label": "Full Body C",
+      "slots": [
+        {"category": "cardio_hiit", "count": 1, "role": "warm_up"},
+        {"category": "legs_glutes", "count": 2, "role": "main"},
+        {"category": "chest_push", "count": 1, "role": "main"},
+        {"category": "back_pull", "count": 1, "role": "main"},
+        {"category": "arms_shoulders", "count": 1, "role": "main"},
+        {"category": "abs_core", "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "upper_push": {
+      "label": "Upper Push",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "chest_push", "primaryMuscles": ["chest"], "force": "push", "count": 3, "role": "main"},
+        {"category": "arms_shoulders", "primaryMuscles": ["shoulders", "triceps"], "force": "push", "count": 2, "role": "main"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "upper_pull": {
+      "label": "Upper Pull",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "back_pull", "primaryMuscles": ["lats", "middle back", "traps"], "force": "pull", "count": 3, "role": "main"},
+        {"category": "arms_shoulders", "primaryMuscles": ["biceps", "forearms"], "force": "pull", "count": 2, "role": "main"},
+        {"category": "abs_core", "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "lower_glutes": {
+      "label": "Lower Body - Glutes and Hamstrings",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "legs_glutes", "primaryMuscles": ["glutes", "hamstrings"], "count": 4, "role": "main"},
+        {"category": "abs_core", "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "lower_quads": {
+      "label": "Lower Body - Quads and Calves",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "legs_glutes", "primaryMuscles": ["quadriceps", "calves", "adductors", "abductors"], "count": 4, "role": "main"},
+        {"category": "abs_core", "count": 1, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "hiit_full": {
+      "label": "Full Body HIIT",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "cardio_hiit", "count": 4, "role": "circuit"},
+        {"category": "legs_glutes", "count": 1, "role": "circuit"},
+        {"category": "abs_core", "count": 1, "role": "circuit"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "cardio_core": {
+      "label": "Cardio and Core",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "cardio_hiit", "count": 3, "role": "circuit"},
+        {"category": "abs_core", "primaryMuscles": ["abdominals"], "count": 3, "role": "core"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "mixed_conditioning": {
+      "label": "Mixed Conditioning",
+      "slots": [
+        {"category": "cardio_hiit", "count": 2, "role": "circuit"},
+        {"category": "legs_glutes", "count": 1, "role": "circuit"},
+        {"category": "chest_push", "count": 1, "role": "circuit"},
+        {"category": "back_pull", "count": 1, "role": "circuit"},
+        {"category": "arms_shoulders", "count": 1, "role": "circuit"},
+        {"category": "abs_core", "count": 1, "role": "circuit"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "abs_focus": {
+      "label": "Abs and Core Focus",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "abs_core", "primaryMuscles": ["abdominals"], "count": 5, "role": "main"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "chest_focus": {
+      "label": "Chest Focus",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "chest_push", "primaryMuscles": ["chest"], "count": 4, "role": "main"},
+        {"category": "arms_shoulders", "primaryMuscles": ["triceps"], "count": 1, "role": "accessory"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "back_focus": {
+      "label": "Back Focus",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "back_pull", "primaryMuscles": ["lats", "middle back", "lower back", "traps"], "count": 4, "role": "main"},
+        {"category": "arms_shoulders", "primaryMuscles": ["biceps"], "count": 1, "role": "accessory"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "arms_shoulders_focus": {
+      "label": "Arms and Shoulders Focus",
+      "slots": [
+        {"category": "general_fitness", "count": 1, "role": "warm_up"},
+        {"category": "arms_shoulders", "primaryMuscles": ["shoulders", "biceps", "triceps", "forearms"], "count": 5, "role": "main"},
+        {"category": "back_pull", "count": 1, "role": "accessory"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    },
+    "mobility": {
+      "label": "Mobility and Recovery",
+      "slots": [
+        {"category": "general_fitness", "force": "static", "count": 1, "role": "warm_up"},
+        {"category": "stretching", "force": "static", "count": 5, "role": "mobility"},
+        {"category": "stretching", "count": 1, "role": "cool_down"}
+      ]
+    }
+  },
+  "plans": [
+    {"id": "general_beginner_3d", "title": "Beginner Full Body Starter", "goal": "general_fitness", "level": "beginner", "daysPerWeek": 3, "minutes": [30, 40], "schedule": ["full_body_a", "full_body_b", "full_body_a"], "preferredEquipment": ["bodyweight", "bands"]},
+    {"id": "general_intermediate_4d", "title": "Intermediate Total Fitness", "goal": "general_fitness", "level": "intermediate", "daysPerWeek": 4, "minutes": [40, 50], "schedule": ["full_body_a", "full_body_b", "full_body_c", "mobility"], "preferredEquipment": ["bodyweight", "dumbbell", "bands"]},
+    {"id": "general_expert_5d", "title": "Advanced Athletic Week", "goal": "general_fitness", "level": "expert", "daysPerWeek": 5, "minutes": [45, 60], "schedule": ["upper_push", "lower_glutes", "upper_pull", "mixed_conditioning", "mobility"], "preferredEquipment": ["bodyweight", "dumbbell", "kettlebells", "bands"]},
+
+    {"id": "muscle_beginner_3d", "title": "Beginner Strength Foundation", "goal": "build_muscle", "level": "beginner", "daysPerWeek": 3, "minutes": [30, 45], "schedule": ["full_body_a", "full_body_b", "lower_glutes"], "preferredEquipment": ["bodyweight", "bands", "dumbbell"]},
+    {"id": "muscle_intermediate_4d", "title": "Intermediate Upper Lower Builder", "goal": "build_muscle", "level": "intermediate", "daysPerWeek": 4, "minutes": [40, 55], "schedule": ["upper_push", "lower_quads", "upper_pull", "lower_glutes"], "preferredEquipment": ["dumbbell", "kettlebells", "bands"], "requiredAnyEquipment": ["dumbbell", "kettlebells", "bands"]},
+    {"id": "muscle_expert_5d", "title": "Expert Muscle Split", "goal": "build_muscle", "level": "expert", "daysPerWeek": 5, "minutes": [50, 60], "schedule": ["chest_focus", "back_focus", "lower_quads", "arms_shoulders_focus", "lower_glutes"], "preferredEquipment": ["dumbbell", "kettlebells", "bands"], "requiredAnyEquipment": ["dumbbell", "kettlebells", "bands"]},
+
+    {"id": "fatloss_beginner_3d", "title": "Beginner Low Barrier Fat Burn", "goal": "fat_loss", "level": "beginner", "daysPerWeek": 3, "minutes": [20, 35], "schedule": ["cardio_core", "full_body_a", "mobility"], "preferredEquipment": ["bodyweight"]},
+    {"id": "fatloss_intermediate_4d", "title": "Intermediate HIIT and Strength", "goal": "fat_loss", "level": "intermediate", "daysPerWeek": 4, "minutes": [30, 45], "schedule": ["hiit_full", "full_body_b", "cardio_core", "full_body_c"], "preferredEquipment": ["bodyweight", "dumbbell", "kettlebells"]},
+    {"id": "fatloss_expert_5d", "title": "Expert Conditioning", "goal": "fat_loss", "level": "expert", "daysPerWeek": 5, "minutes": [35, 50], "schedule": ["hiit_full", "upper_push", "mixed_conditioning", "lower_glutes", "cardio_core"], "preferredEquipment": ["bodyweight", "dumbbell", "kettlebells"]},
+
+    {"id": "focus_abs_3d", "title": "Abs and Core Focus", "goal": "focus_area", "focusCategories": ["abs_core"], "level": "adaptive", "daysPerWeek": 3, "minutes": [25, 40], "schedule": ["abs_focus", "full_body_b", "abs_focus"], "preferredEquipment": ["bodyweight", "exercise ball"]},
+    {"id": "focus_chest_3d", "title": "Chest Push Focus", "goal": "focus_area", "focusCategories": ["chest_push"], "level": "adaptive", "daysPerWeek": 3, "minutes": [30, 45], "schedule": ["chest_focus", "full_body_b", "chest_focus"], "preferredEquipment": ["bodyweight", "dumbbell", "bands"]},
+    {"id": "focus_back_3d", "title": "Back and Posture Focus", "goal": "focus_area", "focusCategories": ["back_pull"], "level": "adaptive", "daysPerWeek": 3, "minutes": [30, 45], "schedule": ["back_focus", "lower_glutes", "back_focus"], "preferredEquipment": ["bodyweight", "dumbbell", "bands"]},
+    {"id": "focus_arms_shoulders_3d", "title": "Arms and Shoulders Focus", "goal": "focus_area", "focusCategories": ["arms_shoulders"], "level": "adaptive", "daysPerWeek": 3, "minutes": [30, 45], "schedule": ["arms_shoulders_focus", "lower_quads", "arms_shoulders_focus"], "preferredEquipment": ["bodyweight", "dumbbell", "bands"]},
+    {"id": "focus_legs_glutes_3d", "title": "Legs and Glutes Focus", "goal": "focus_area", "focusCategories": ["legs_glutes"], "level": "adaptive", "daysPerWeek": 3, "minutes": [30, 45], "schedule": ["lower_glutes", "upper_pull", "lower_quads"], "preferredEquipment": ["bodyweight", "dumbbell", "kettlebells", "bands"]},
+
+    {"id": "mobility_5d", "title": "Daily Mobility and Recovery", "goal": "mobility", "level": "adaptive", "daysPerWeek": 5, "minutes": [15, 25], "schedule": ["mobility", "mobility", "mobility", "mobility", "mobility"], "preferredEquipment": ["bodyweight", "foam roll", "exercise ball"]},
+    {"id": "travel_bodyweight_4d", "title": "Travel Bodyweight Plan", "goal": "general_fitness", "level": "adaptive", "daysPerWeek": 4, "minutes": [20, 30], "schedule": ["full_body_a", "cardio_core", "full_body_b", "mobility"], "allowedEquipment": ["bodyweight"]}
+  ],
+  "planSelection": {
+    "hardFilters": [
+      "Do not auto-prescribe when the safety screen requires professional clearance.",
+      "Plan daysPerWeek must be no greater than the user's available days unless the schedule is explicitly compressed.",
+      "Every selected exercise must use bodyweight or equipment owned by the user.",
+      "Exclude blocked exercise IDs and exercises conflicting with recorded limitations.",
+      "A beginner may only receive beginner exercises; intermediate may receive beginner or intermediate; expert may receive any level."
+    ],
+    "templateScoreWeights": {
+      "goalMatch": 0.35,
+      "levelMatch": 0.2,
+      "daysMatch": 0.15,
+      "durationFit": 0.1,
+      "equipmentCoverage": 0.1,
+      "focusMatch": 0.1
+    },
+    "exerciseScoreWeights": {
+      "categoryMatch": 0.35,
+      "primaryMuscleMatch": 0.25,
+      "forceMatch": 0.1,
+      "equipmentMatch": 0.1,
+      "levelMatch": 0.1,
+      "recentNovelty": 0.1
+    },
+    "tieBreak": "Deterministic hash of user_id, ISO week and slot index.",
+    "fallbackOrder": [
+      "Remove secondary-muscle preference.",
+      "Remove force preference.",
+      "Allow exercises one level below the preferred level.",
+      "Reduce the slot count by one.",
+      "Never relax equipment, explicit exclusions or safety constraints."
+    ],
+    "diversityRules": [
+      "Do not repeat an exercise within seven days unless the plan is a focused specialization plan.",
+      "Avoid hard training of the same primary muscle on consecutive days.",
+      "Keep at least one warm-up and one cool-down slot for sessions of 20 minutes or longer.",
+      "Prefer a mix of push, pull and static movements when the day pattern permits."
+    ]
+  }
+}
