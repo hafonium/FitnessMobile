@@ -21,8 +21,10 @@ Enum unit_system_type {
 }
 
 Enum voice_type {
-  natural
+  male_coach
+  female_coach
   device_tts
+  custom
 }
 
 Enum exercise_category {
@@ -112,10 +114,13 @@ Table user_settings {
   rest_timer_sec int [not null, default: 30]
   prep_timer_sec int [not null, default: 15]
   music_enabled boolean [not null, default: true]
+  music_volume decimal(3,2) [not null, default: 1.0]
   sound_enabled boolean [not null, default: true]
+  sound_volume decimal(3,2) [not null, default: 1.0]
   coach_video_enabled boolean [not null, default: true]
   unit_system unit_system_type [not null, default: 'metric']
-  tts_voice_type voice_type [not null, default: 'natural']
+  tts_voice_type voice_type [not null, default: 'male_coach']
+  tts_voice_name varchar [note: 'Specific TTS engine voice id, set only when tts_voice_type = custom']
   keep_screen_on boolean [not null, default: true]
   daily_reminder_enabled boolean [not null, default: false]
   daily_reminder_time time

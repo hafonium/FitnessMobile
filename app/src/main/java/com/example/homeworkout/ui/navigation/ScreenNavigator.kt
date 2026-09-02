@@ -31,6 +31,7 @@ import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListScreen
 import com.example.homeworkout.ui.core.details.DetailScreen
 import com.example.homeworkout.ui.core.details.DetailViewModel
 import com.example.homeworkout.ui.core.editgoal.EditGoalScreen
+import com.example.homeworkout.ui.core.editgoal.EditGoalViewModel
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
@@ -45,6 +46,7 @@ import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
 import com.example.homeworkout.ui.core.report.ReportScreen
 import com.example.homeworkout.ui.core.settings.GeneralSettingsScreen
 import com.example.homeworkout.ui.core.settings.SettingsScreen
+import com.example.homeworkout.ui.core.settings.SettingsViewModel
 import com.example.homeworkout.ui.core.settings.VoiceOptionsScreen
 import com.example.homeworkout.ui.core.settings.WorkoutSettingsScreen
 import com.example.homeworkout.ui.core.workoutlist.WorkoutListScreen
@@ -97,7 +99,7 @@ fun ScreenNavigator() {
             // --- Bottom bar tabs ---
             composable(Screen.Home.route) {
                 val vm: HomeViewModel = viewModel(factory = viewModelFactory {
-                    initializer { HomeViewModel(appInstance.getWorkoutsUseCase) }
+                    initializer { HomeViewModel(appInstance.getWorkoutsUseCase, appInstance.getWeeklyGoalProgressUseCase) }
                 })
                 HomeScreen(
                     viewModel = vm,
@@ -216,7 +218,10 @@ fun ScreenNavigator() {
 
             // --- Training extras ---
             composable(Screen.EditGoal.route) {
-                EditGoalScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: EditGoalViewModel = viewModel(factory = viewModelFactory {
+                    initializer { EditGoalViewModel(appInstance.getSettingsUseCase, appInstance.updateSettingsUseCase) }
+                })
+                EditGoalScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(
@@ -246,13 +251,43 @@ fun ScreenNavigator() {
 
             // --- Settings tab ---
             composable(Screen.SettingsWorkout.route) {
-                WorkoutSettingsScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: SettingsViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        SettingsViewModel(
+                            appInstance.getSettingsUseCase,
+                            appInstance.updateSettingsUseCase,
+                            appInstance.resetWorkoutProgressUseCase,
+                            appInstance.ttsService
+                        )
+                    }
+                })
+                WorkoutSettingsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
             composable(Screen.SettingsGeneral.route) {
-                GeneralSettingsScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: SettingsViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        SettingsViewModel(
+                            appInstance.getSettingsUseCase,
+                            appInstance.updateSettingsUseCase,
+                            appInstance.resetWorkoutProgressUseCase,
+                            appInstance.ttsService
+                        )
+                    }
+                })
+                GeneralSettingsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
             composable(Screen.SettingsVoice.route) {
-                VoiceOptionsScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: SettingsViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        SettingsViewModel(
+                            appInstance.getSettingsUseCase,
+                            appInstance.updateSettingsUseCase,
+                            appInstance.resetWorkoutProgressUseCase,
+                            appInstance.ttsService
+                        )
+                    }
+                })
+                VoiceOptionsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
         }
     }

@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
         WorkoutSessionExerciseEntity::class,
         UserWeightLogEntity::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -78,6 +78,8 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
+                // Pre-release, local-only DB: schema bumps just reseed rather than needing migrations.
+                .fallbackToDestructiveMigration(true)
                 .addCallback(object : RoomDatabase.Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)

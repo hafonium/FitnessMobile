@@ -1,6 +1,8 @@
 package com.example.homeworkout.ui.core.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +11,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,9 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.homeworkout.domain.models.WeeklyGoalDay
+import com.example.homeworkout.domain.models.WeeklyGoalProgress
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.ui.components.AppCard
@@ -51,6 +59,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val weeklyGoalProgress by viewModel.weeklyGoalProgress.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         LazyColumn(
@@ -73,7 +82,7 @@ fun HomeScreen(
                 AppTextField(value = "", onValueChange = {}, placeholderText = "Search workouts, plans...")
             }
 
-            item { WeeklyGoalCard(onEditGoal = onOpenEditGoal) }
+            item { WeeklyGoalCard(progress = weeklyGoalProgress, onEditGoal = onOpenEditGoal) }
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -139,7 +148,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun WeeklyGoalCard(onEditGoal: () -> Unit) {
+private fun WeeklyGoalCard(progress: WeeklyGoalProgress, onEditGoal: () -> Unit) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
@@ -149,19 +158,65 @@ private fun WeeklyGoalCard(onEditGoal: () -> Unit) {
             ) {
                 Text("Weekly Goal", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("1/6", style = MaterialTheme.typography.titleMedium)
+                    Text("${progress.completedDays}/${progress.goalDays}", style = MaterialTheme.typography.titleMedium)
                     IconButton(onClick = onEditGoal) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit weekly goal")
                     }
                 }
             }
+            if (progress.days.isNotEmpty()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    progress.days.forEach { day -> WeeklyGoalDayPill(day) }
+                }
+            }
             Text(
-                "You're doing great! Don't forget to come here tomorrow.",
+                weeklyGoalMessage(progress),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
+}
+
+@Composable
+private fun WeeklyGoalDayPill(day: WeeklyGoalDay) {
+    when {
+        day.isCompleted -> Box(
+            modifier = Modifier.size(28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Default.Check,
+                contentDescription = "Completed",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        day.isToday -> Box(
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("${day.dayOfMonth}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        }
+
+        else -> Box(modifier = Modifier.size(28.dp), contentAlignment = Alignment.Center) {
+            Text(
+                "${day.dayOfMonth}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+private fun weeklyGoalMessage(progress: WeeklyGoalProgress): String = when {
+    progress.completedDays >= progress.goalDays -> "Goal complete! Great work this week."
+    progress.completedDays == 0 -> "Let's get started this week!"
+    else -> "You're doing great! Don't forget to come here tomorrow."
 }
 
 @Composable
