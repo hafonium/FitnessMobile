@@ -1,11 +1,13 @@
 package com.example.homeworkout.ui.core.editgoal
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.enums.WeekDay
@@ -40,6 +43,7 @@ fun EditGoalScreen(
     onNavigateBack: () -> Unit
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val isReady by viewModel.isReady.collectAsStateWithLifecycle()
 
     var goalDays by remember { mutableIntStateOf(settings.weeklyGoalDays) }
     var firstDay by remember { mutableStateOf(settings.firstDayOfWeek) }
@@ -53,6 +57,12 @@ fun EditGoalScreen(
     }
 
     Scaffold(topBar = { BackTopBar(title = "Weekly Goal", onNavigateBack = onNavigateBack) }) { padding ->
+        if (!isReady) {
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()

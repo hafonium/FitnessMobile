@@ -3,6 +3,7 @@ package com.example.homeworkout.ui.core.settings
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,10 +46,17 @@ fun VoiceOptionsScreen(
     onNavigateBack: () -> Unit
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val isReady by viewModel.isReady.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showBrowser by remember { mutableStateOf(false) }
 
     Scaffold(topBar = { BackTopBar(title = "Voice Options (TTS)", onNavigateBack = onNavigateBack) }) { padding ->
+        if (!isReady) {
+            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
         Column(
             modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)

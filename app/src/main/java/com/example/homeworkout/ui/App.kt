@@ -18,6 +18,7 @@ import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
+import com.example.homeworkout.ui.services.ReminderScheduler
 import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,7 @@ class App : Application() {
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
+    val reminderScheduler: ReminderScheduler by lazy { ReminderScheduler(this) }
 
     // Use Cases
     val getWorkoutsUseCase by lazy { GetWorkoutsUseCase(workoutRepository) }

@@ -9,10 +9,14 @@ import com.example.homeworkout.domain.models.enums.VoiceType
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
+import com.example.homeworkout.ui.services.ReminderScheduler
 import com.example.homeworkout.ui.services.TtsService
 import com.example.homeworkout.ui.services.TtsVoiceOption
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -21,10 +25,21 @@ class SettingsViewModel(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateSettingsUseCase: UpdateSettingsUseCase,
     private val resetWorkoutProgressUseCase: ResetWorkoutProgressUseCase,
-    private val ttsService: TtsService
+    private val ttsService: TtsService,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
+    private val _isReady = MutableStateFlow(false)
+
+    /**
+     * False until the first real value has loaded from Room. Screens gate their content behind
+     * this instead of rendering [SettingsPreferences]'s default values first — otherwise toggles
+     * visibly flash from the hardcoded default to the persisted value the instant the screen opens.
+     */
+    val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
+
     val settings: StateFlow<SettingsPreferences> = getSettingsUseCase()
+        .onEach { _isReady.value = true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsPreferences())
 
     private fun update(transform: (SettingsPreferences) -> SettingsPreferences) {
@@ -40,7 +55,17 @@ class SettingsViewModel(
     fun setPrepTimerSec(seconds: Int) = update { it.copy(prepTimerSec = seconds) }
     fun setUnitSystem(unitSystem: UnitSystemType) = update { it.copy(unitSystem = unitSystem) }
     fun setKeepScreenOn(enabled: Boolean) = update { it.copy(keepScreenOn = enabled) }
-    fun setDailyReminder(enabled: Boolean, time: String?) = update { it.copy(dailyReminderEnabled = enabled, dailyReminderTime = time) }
+
+    /** Persists the reminder preference AND arms/disarms the actual system alarm to match it. */
+    fun setDailyReminder(enabled: Boolean, time: String?) {
+        update { it.copy(dailyReminderEnabled = enabled, dailyReminderTime = time) }
+        if (enabled && time != null) {
+            reminderScheduler.schedule(time)
+        } else {
+            reminderScheduler.cancel()
+        }
+    }
+
     fun setVoiceType(voiceType: VoiceType) = update { it.copy(ttsVoiceType = voiceType) }
 
     /** Persists a specific engine voice (picked from [listVoices]) as the active coach voice. */

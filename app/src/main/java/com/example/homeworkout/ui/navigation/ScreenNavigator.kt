@@ -257,7 +257,8 @@ fun ScreenNavigator() {
                             appInstance.getSettingsUseCase,
                             appInstance.updateSettingsUseCase,
                             appInstance.resetWorkoutProgressUseCase,
-                            appInstance.ttsService
+                            appInstance.ttsService,
+                            appInstance.reminderScheduler
                         )
                     }
                 })
@@ -270,7 +271,8 @@ fun ScreenNavigator() {
                             appInstance.getSettingsUseCase,
                             appInstance.updateSettingsUseCase,
                             appInstance.resetWorkoutProgressUseCase,
-                            appInstance.ttsService
+                            appInstance.ttsService,
+                            appInstance.reminderScheduler
                         )
                     }
                 })
@@ -283,7 +285,8 @@ fun ScreenNavigator() {
                             appInstance.getSettingsUseCase,
                             appInstance.updateSettingsUseCase,
                             appInstance.resetWorkoutProgressUseCase,
-                            appInstance.ttsService
+                            appInstance.ttsService,
+                            appInstance.reminderScheduler
                         )
                     }
                 })
