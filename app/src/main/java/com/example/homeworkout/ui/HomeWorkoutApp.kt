@@ -6,6 +6,7 @@ import com.example.homeworkout.utils.ScreenWrapper
 
 @Composable
 fun HomeWorkoutApp() {
+    KeepScreenOnEffect()
     ScreenWrapper {
         ScreenNavigator()
     }

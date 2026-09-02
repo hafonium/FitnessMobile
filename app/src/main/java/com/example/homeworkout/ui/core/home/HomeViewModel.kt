@@ -2,8 +2,10 @@ package com.example.homeworkout.ui.core.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.homeworkout.domain.models.WeeklyGoalProgress
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
+import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +24,19 @@ sealed class HomeUiState {
 }
 
 class HomeViewModel(
-    private val getWorkoutsUseCase: GetWorkoutsUseCase
+    private val getWorkoutsUseCase: GetWorkoutsUseCase,
+    private val getWeeklyGoalProgressUseCase: GetWeeklyGoalProgressUseCase
 ) : ViewModel() {
 
     private val _selectedCategory = MutableStateFlow<WorkoutCategory?>(null)
     val selectedCategory: StateFlow<WorkoutCategory?> = _selectedCategory.asStateFlow()
+
+    val weeklyGoalProgress: StateFlow<WeeklyGoalProgress> = getWeeklyGoalProgressUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = WeeklyGoalProgress(goalDays = 6, completedDays = 0, days = emptyList())
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<HomeUiState> = _selectedCategory

@@ -40,4 +40,20 @@ interface WorkoutSessionDao {
 
     @Query("SELECT * FROM workout_session_exercises WHERE sessionId = :sessionId ORDER BY orderIndex")
     fun observeSessionExercises(sessionId: Long): Flow<List<WorkoutSessionExerciseEntity>>
+
+    /** Backs "Restart progress" — cascades to workout_session_exercises via FK. */
+    @Query("DELETE FROM workout_sessions WHERE userId = :userId")
+    suspend fun deleteAllSessionsForUser(userId: Long)
+
+    /** End timestamps of completed sessions in [fromMillis, toMillis) — backs the Home weekly-goal day tracker. */
+    @Query(
+        "SELECT endedAt FROM workout_sessions WHERE userId = :userId AND status = :status " +
+            "AND endedAt IS NOT NULL AND endedAt >= :fromMillis AND endedAt < :toMillis"
+    )
+    fun observeCompletedSessionEndTimes(
+        userId: Long,
+        status: WorkoutSessionStatus,
+        fromMillis: Long,
+        toMillis: Long
+    ): Flow<List<Long>>
 }
