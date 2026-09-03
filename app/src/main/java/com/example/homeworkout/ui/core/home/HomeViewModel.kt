@@ -10,6 +10,7 @@ import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.planselection.GetFitnessProfileUseCase
 import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCase
+import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,7 +42,8 @@ class HomeViewModel(
     private val getWorkoutsUseCase: GetWorkoutsUseCase,
     getFitnessProfileUseCase: GetFitnessProfileUseCase,
     private val recommendPlanUseCase: RecommendPlanUseCase,
-    private val getWeeklyGoalProgressUseCase: GetWeeklyGoalProgressUseCase
+    private val getWeeklyGoalProgressUseCase: GetWeeklyGoalProgressUseCase,
+    getStreakUseCase: GetStreakUseCase
 ) : ViewModel() {
 
     private val _selectedCategory = MutableStateFlow<WorkoutCategory?>(null)
@@ -52,6 +54,15 @@ class HomeViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeeklyGoalProgress(goalDays = 6, completedDays = 0, days = emptyList())
+        )
+
+    /** Current consecutive-day streak, shown next to the Home header's streak icon. */
+    val streak: StateFlow<Int> = getStreakUseCase()
+        .map { it.currentStreak }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 0
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)

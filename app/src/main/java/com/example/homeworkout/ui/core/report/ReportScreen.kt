@@ -19,12 +19,14 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
@@ -38,11 +40,15 @@ import com.example.homeworkout.ui.theme.TileShape
 import com.example.homeworkout.utils.ScreenWrapper
 
 /**
- * Report tab. Static sample figures matching the storyboard — wiring these to
- * `workout_sessions` / `user_weight_logs` is out of scope for this pass.
+ * Report tab. "Day Streak" / "Personal Best" are real, from [ReportViewModel] /
+ * [com.example.homeworkout.domain.usecases.report.GetStreakUseCase]. Everything else (Workouts/Kcal/Minute,
+ * the weekly calendar row, Weight, BMI) is still static sample figures matching the storyboard —
+ * wiring those to `workout_sessions` / `user_weight_logs` remains out of scope for this pass.
  */
 @Composable
-fun ReportScreen(onOpenHistory: () -> Unit) {
+fun ReportScreen(viewModel: ReportViewModel, onOpenHistory: () -> Unit) {
+    val streak by viewModel.streak.collectAsStateWithLifecycle()
+
     ScreenWrapper {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
@@ -91,8 +97,8 @@ fun ReportScreen(onOpenHistory: () -> Unit) {
 
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    LabeledValue("Day Streak", "🔥 1")
-                    LabeledValue("Personal Best", "1 day")
+                    LabeledValue("Day Streak", "🔥 ${streak.currentStreak}")
+                    LabeledValue("Personal Best", "${streak.bestStreak} day" + if (streak.bestStreak == 1) "" else "s")
                 }
             }
 

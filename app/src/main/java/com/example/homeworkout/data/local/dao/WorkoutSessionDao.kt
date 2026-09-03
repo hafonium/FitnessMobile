@@ -32,6 +32,10 @@ interface WorkoutSessionDao {
     @Query("SELECT COUNT(*) FROM workout_sessions WHERE userId = :userId AND status = :status")
     suspend fun countSessionsByStatus(userId: Long, status: WorkoutSessionStatus): Int
 
+    /** Most recent session (any status) started for this plan — backs day-by-day "Start" resolution. */
+    @Query("SELECT * FROM workout_sessions WHERE userId = :userId AND planId = :planId ORDER BY startedAt DESC LIMIT 1")
+    suspend fun getLatestSessionForPlan(userId: Long, planId: Long): WorkoutSessionEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSessionExercises(exercises: List<WorkoutSessionExerciseEntity>)
 
@@ -56,4 +60,10 @@ interface WorkoutSessionDao {
         fromMillis: Long,
         toMillis: Long
     ): Flow<List<Long>>
+
+    /** End timestamps of every completed session, unbounded — backs streak calculation (a streak can span more than one week). */
+    @Query(
+        "SELECT endedAt FROM workout_sessions WHERE userId = :userId AND status = :status AND endedAt IS NOT NULL ORDER BY endedAt DESC"
+    )
+    fun observeAllCompletedSessionEndTimes(userId: Long, status: WorkoutSessionStatus): Flow<List<Long>>
 }

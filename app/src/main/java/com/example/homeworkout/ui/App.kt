@@ -27,6 +27,13 @@ import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.planselection.GetFitnessProfileUseCase
 import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCase
 import com.example.homeworkout.domain.usecases.planselection.SaveFitnessProfileUseCase
+import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.CompleteWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.ResolveNextPlanDayUseCase
+import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
+import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
+import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
@@ -70,6 +77,13 @@ class App : Application(), ImageLoaderFactory {
     val updateSettingsUseCase by lazy { UpdateSettingsUseCase(settingsRepository) }
     val resetWorkoutProgressUseCase by lazy { ResetWorkoutProgressUseCase(settingsRepository) }
     val getWeeklyGoalProgressUseCase by lazy { GetWeeklyGoalProgressUseCase(settingsRepository, workoutSessionRepository) }
+    val getStreakUseCase by lazy { GetStreakUseCase(workoutSessionRepository) }
+    val resolveNextPlanDayUseCase by lazy { ResolveNextPlanDayUseCase(workoutRepository, workoutSessionRepository) }
+    val startWorkoutSessionUseCase by lazy { StartWorkoutSessionUseCase(resolveNextPlanDayUseCase, workoutSessionRepository) }
+    val startSpecificWorkoutDayUseCase by lazy { StartSpecificWorkoutDayUseCase(workoutRepository, workoutSessionRepository) }
+    val restartWorkoutDayUseCase by lazy { RestartWorkoutDayUseCase(workoutSessionRepository) }
+    val completeWorkoutSessionUseCase by lazy { CompleteWorkoutSessionUseCase(workoutSessionRepository) }
+    val abandonWorkoutSessionUseCase by lazy { AbandonWorkoutSessionUseCase(workoutSessionRepository) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.

@@ -50,8 +50,6 @@ import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.ui.components.ExerciseThumbnail
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
-import com.example.homeworkout.ui.core.details.DetailUiState
-import com.example.homeworkout.ui.core.details.DetailViewModel
 import com.example.homeworkout.ui.theme.BrandBlueTint
 import com.example.homeworkout.ui.theme.InkBlack
 import com.example.homeworkout.ui.theme.PillShape
@@ -65,12 +63,17 @@ private const val REST_SECONDS = 20
 private enum class Phase { PREP, EXERCISE, REST, COMPLETED }
 
 /**
- * The "During Workout" player: prep countdown -> exercise -> rest -> ... -> completed. Drives an
- * in-memory countdown only; nothing is written to `workout_sessions` (that is out of scope here).
+ * The "During Workout" player: prep countdown -> exercise -> rest -> ... -> completed, for one day
+ * of a plan at a time (never every day flattened together — see [WorkoutPlayerViewModel] /
+ * [StartWorkoutSessionUseCase][com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase]).
+ * Reaching the end or quitting reports back to the view model so the `workout_sessions` row is
+ * closed out as COMPLETED/ABANDONED, which is what drives day-by-day progression and streaks.
+ * Fine-grained progress (which exercise you were on) is still in-memory only, so quitting always
+ * restarts the day from the top next time.
  */
 @Composable
 fun WorkoutPlayerScreen(
-    viewModel: DetailViewModel,
+    viewModel: WorkoutPlayerViewModel,
     onClose: () -> Unit,
     onExerciseInfo: (Long) -> Unit
 ) {
@@ -78,19 +81,22 @@ fun WorkoutPlayerScreen(
 
     ScreenWrapper {
         when (val state = uiState) {
-            is DetailUiState.Success -> {
-                val exercises = state.detail.days.flatMap { it.exercises }
-                if (exercises.isEmpty()) {
-                    CenteredMessage("This workout has no exercises yet.")
-                } else {
-                    PlayerContent(exercises = exercises, onClose = onClose, onExerciseInfo = onExerciseInfo)
-                }
-            }
+            is PlayerUiState.Ready -> PlayerContent(
+                exercises = state.exercises,
+                dayNumber = state.dayNumber,
+                totalDays = state.totalDays,
+                onComplete = { viewModel.completeSession(state.sessionId) },
+                onAbandon = { viewModel.abandonSession(state.sessionId) },
+                onRestartSession = { viewModel.restartDay() },
+                onClose = onClose,
+                onExerciseInfo = onExerciseInfo
+            )
 
-            is DetailUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            is PlayerUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
-            else -> CenteredMessage("This workout could not be found.")
+
+            is PlayerUiState.Empty -> CenteredMessage("This workout has no exercises yet.")
         }
     }
 }
@@ -98,6 +104,11 @@ fun WorkoutPlayerScreen(
 @Composable
 private fun PlayerContent(
     exercises: List<PlanExerciseSummary>,
+    dayNumber: Int,
+    totalDays: Int,
+    onComplete: () -> Unit,
+    onAbandon: () -> Unit,
+    onRestartSession: () -> Unit,
     onClose: () -> Unit,
     onExerciseInfo: (Long) -> Unit
 ) {
@@ -115,6 +126,7 @@ private fun PlayerContent(
         completedCount = (index + 1).coerceAtMost(exercises.size)
         if (index >= exercises.lastIndex) {
             phase = Phase.COMPLETED
+            onComplete()
         } else {
             phase = Phase.REST
             remaining = REST_SECONDS
@@ -177,6 +189,7 @@ private fun PlayerContent(
             onSkip = {
                 if (index >= exercises.lastIndex) {
                     phase = Phase.COMPLETED
+                    onComplete()
                 } else {
                     index += 1
                     phase = Phase.EXERCISE
@@ -189,6 +202,7 @@ private fun PlayerContent(
             completedCount = completedCount,
             onKeepExercising = onClose,
             onRestart = {
+                onRestartSession()
                 index = 0
                 completedCount = 0
                 remaining = PREP_SECONDS
@@ -197,6 +211,16 @@ private fun PlayerContent(
             onDoItLater = onClose
         )
     }
+
+        if (totalDays > 1 && phase != Phase.COMPLETED) {
+            Text(
+                "DAY $dayNumber/$totalDays",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = if (phase == Phase.REST) Color.White else SlateGray,
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 12.dp)
+            )
+        }
 
         if (phase != Phase.COMPLETED) {
             IconButton(
@@ -218,7 +242,7 @@ private fun PlayerContent(
             title = { Text("Quit workout?") },
             text = { Text("You'll leave this session and go back to the plan. Progress isn't saved.") },
             confirmButton = {
-                TextButton(onClick = { showQuitDialog = false; onClose() }) { Text("Quit") }
+                TextButton(onClick = { showQuitDialog = false; onAbandon(); onClose() }) { Text("Quit") }
             },
             dismissButton = {
                 TextButton(onClick = { showQuitDialog = false }) { Text("Keep going") }

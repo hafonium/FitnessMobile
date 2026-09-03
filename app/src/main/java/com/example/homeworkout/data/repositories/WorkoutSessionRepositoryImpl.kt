@@ -3,7 +3,10 @@ package com.example.homeworkout.data.repositories
 import com.example.homeworkout.data.local.dao.UserDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.entities.UserEntity
+import com.example.homeworkout.data.local.entities.UserSettingsEntity
+import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
+import com.example.homeworkout.domain.models.WorkoutSessionSummary
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,4 +30,52 @@ class WorkoutSessionRepositoryImpl(
         flow { emit(currentUserId()) }.flatMapLatest { userId ->
             workoutSessionDao.observeCompletedSessionEndTimes(userId, WorkoutSessionStatus.COMPLETED, fromMillis, toMillis)
         }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeAllCompletedSessionTimestamps(): Flow<List<Long>> =
+        flow { emit(currentUserId()) }.flatMapLatest { userId ->
+            workoutSessionDao.observeAllCompletedSessionEndTimes(userId, WorkoutSessionStatus.COMPLETED)
+        }
+
+    override suspend fun getLatestSessionForPlan(planId: Long): WorkoutSessionSummary? {
+        val session = workoutSessionDao.getLatestSessionForPlan(currentUserId(), planId) ?: return null
+        return WorkoutSessionSummary(sessionId = session.sessionId, planDayId = session.planDayId, status = session.status)
+    }
+
+    override suspend fun createSession(planId: Long, planDayId: Long): Long {
+        val userId = currentUserId()
+        // Snapshot the settings in effect right now, so a later settings change never rewrites this session's history.
+        val settings = userDao.getUserSettings(userId) ?: UserSettingsEntity(userId = userId)
+        val session = WorkoutSessionEntity(
+            userId = userId,
+            planId = planId,
+            planDayId = planDayId,
+            restTimerSec = settings.restTimerSec,
+            prepTimerSec = settings.prepTimerSec,
+            musicEnabled = settings.musicEnabled,
+            soundEnabled = settings.soundEnabled,
+            coachVideoEnabled = settings.coachVideoEnabled,
+            ttsVoiceType = settings.ttsVoiceType
+        )
+        return workoutSessionDao.insertSession(session)
+    }
+
+    override suspend fun completeSession(sessionId: Long) {
+        val session = workoutSessionDao.getSessionById(sessionId) ?: return
+        val now = System.currentTimeMillis()
+        workoutSessionDao.updateSession(
+            session.copy(
+                status = WorkoutSessionStatus.COMPLETED,
+                endedAt = now,
+                durationSeconds = ((now - session.startedAt) / 1000).toInt().coerceAtLeast(0)
+            )
+        )
+    }
+
+    override suspend fun abandonSession(sessionId: Long) {
+        val session = workoutSessionDao.getSessionById(sessionId) ?: return
+        workoutSessionDao.updateSession(
+            session.copy(status = WorkoutSessionStatus.ABANDONED, endedAt = System.currentTimeMillis())
+        )
+    }
 }

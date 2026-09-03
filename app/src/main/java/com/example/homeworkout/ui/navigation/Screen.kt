@@ -26,8 +26,11 @@ sealed class Screen(val route: String) {
     }
 
     // During Workout
-    object Player : Screen("player/{planId}") {
-        fun createRoute(planId: Long) = "player/$planId"
+    object Player : Screen("player/{planId}?planDayId={planDayId}") {
+        fun createRoute(planId: Long, planDayId: Long? = null): String {
+            val base = "player/$planId"
+            return if (planDayId != null) "$base?planDayId=$planDayId" else base
+        }
     }
 
     // Training extras
