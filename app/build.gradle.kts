@@ -78,4 +78,7 @@ dependencies {
     val coilVersion = "2.7.0"
     implementation("io.coil-kt:coil-compose:$coilVersion")
     implementation("io.coil-kt:coil-gif:$coilVersion")
+
+    // Reorderable list
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }

@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.homeworkout.data.local.dao.ExerciseDao
+import com.example.homeworkout.data.local.dao.BadgeDao
 import com.example.homeworkout.data.local.dao.UserDao
 import com.example.homeworkout.data.local.dao.WeightLogDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
@@ -17,6 +19,7 @@ import com.example.homeworkout.data.local.entities.ExerciseInstructionStepEntity
 import com.example.homeworkout.data.local.entities.ExerciseMuscleEntity
 import com.example.homeworkout.data.local.entities.MuscleEntity
 import com.example.homeworkout.data.local.entities.UserEntity
+import com.example.homeworkout.data.local.entities.UserBadgeEntity
 import com.example.homeworkout.data.local.entities.UserFitnessProfileEntity
 import com.example.homeworkout.data.local.entities.UserSettingsEntity
 import com.example.homeworkout.data.local.entities.UserWeightLogEntity
@@ -50,12 +53,11 @@ import kotlinx.coroutines.launch
         WorkoutSessionEntity::class,
         WorkoutSessionExerciseEntity::class,
         UserWeightLogEntity::class,
-        UserFitnessProfileEntity::class
+        UserFitnessProfileEntity::class,
+        UserBadgeEntity::class
     ],
-    // Bumped past both branches' versions (workout-plans was 2, main was 3) — this is a
-    // pre-release, destructive-migration-only DB (see fallbackToDestructiveMigration below), so
-    // the number just needs to be higher than any prior install's.
-    version = 4,
+    // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -64,9 +66,29 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workoutPlanDao(): WorkoutPlanDao
     abstract fun workoutSessionDao(): WorkoutSessionDao
     abstract fun weightLogDao(): WeightLogDao
+    abstract fun badgeDao(): BadgeDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"
+
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `user_badges` (
+                        `userId` INTEGER NOT NULL,
+                        `badgeId` TEXT NOT NULL,
+                        `unlockedAt` INTEGER NOT NULL,
+                        `triggerSessionId` INTEGER,
+                        `isSeen` INTEGER NOT NULL,
+                        PRIMARY KEY(`userId`, `badgeId`),
+                        FOREIGN KEY(`userId`) REFERENCES `users`(`userId`)
+                            ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -83,6 +105,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
+                .addMigrations(MIGRATION_4_5)
                 // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {

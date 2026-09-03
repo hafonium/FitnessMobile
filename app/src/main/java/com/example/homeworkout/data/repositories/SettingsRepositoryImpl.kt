@@ -1,6 +1,7 @@
 package com.example.homeworkout.data.repositories
 
 import com.example.homeworkout.data.local.dao.UserDao
+import com.example.homeworkout.data.local.dao.BadgeDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.entities.UserEntity
 import com.example.homeworkout.data.local.entities.UserSettingsEntity
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.map
 
 class SettingsRepositoryImpl(
     private val userDao: UserDao,
-    private val workoutSessionDao: WorkoutSessionDao
+    private val workoutSessionDao: WorkoutSessionDao,
+    private val badgeDao: BadgeDao
 ) : SettingsRepository {
 
     /** This app has a single local user; resolve (or lazily create) it by its seeded email. */
@@ -46,7 +48,9 @@ class SettingsRepositoryImpl(
     }
 
     override suspend fun resetWorkoutProgress() {
-        workoutSessionDao.deleteAllSessionsForUser(currentUserId())
+        val userId = currentUserId()
+        workoutSessionDao.deleteAllSessionsForUser(userId)
+        badgeDao.deleteAllBadgesForUser(userId)
     }
 }
 

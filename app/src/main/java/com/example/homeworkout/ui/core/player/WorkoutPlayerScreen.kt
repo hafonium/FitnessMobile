@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.ui.components.ExerciseThumbnail
+import com.example.homeworkout.ui.components.BadgeUnlockedDialog
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.theme.BrandBlueTint
@@ -78,6 +79,7 @@ fun WorkoutPlayerScreen(
     onExerciseInfo: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val newlyUnlockedBadges by viewModel.newlyUnlockedBadges.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         when (val state = uiState) {
@@ -98,6 +100,13 @@ fun WorkoutPlayerScreen(
 
             is PlayerUiState.Empty -> CenteredMessage("This workout has no exercises yet.")
         }
+    }
+
+    newlyUnlockedBadges.firstOrNull()?.let { badge ->
+        BadgeUnlockedDialog(
+            badge = badge,
+            onDismiss = { viewModel.dismissUnlockedBadge(badge.definition.id) }
+        )
     }
 }
 

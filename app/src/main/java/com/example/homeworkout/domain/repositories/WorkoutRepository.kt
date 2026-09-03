@@ -27,6 +27,12 @@ interface WorkoutRepository {
     /** Updates one plan-exercise slot's target rep count. */
     suspend fun updatePlanExerciseReps(planExerciseId: Long, targetReps: Int)
 
+    /** Removes one exercise slot and compacts the remaining order; CUSTOM plans only. */
+    suspend fun deletePlanExercise(planExerciseId: Long)
+
+    /** Persists the complete exercise order for one day; CUSTOM plans only. */
+    suspend fun reorderPlanExercises(planDayId: Long, orderedPlanExerciseIds: List<Long>)
+
     /** Writes a brand-new, user-authored multi-day plan (source = CUSTOM, owned by the single
      *  local user). Days are numbered by their position in [days]; empty days should be filtered
      *  out by the caller, since a day with no exercises isn't worth persisting. */

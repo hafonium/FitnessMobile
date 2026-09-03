@@ -3,7 +3,9 @@ package com.example.homeworkout.ui.core.planedit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.usecases.planedit.AddExercisesToPlanDayUseCase
+import com.example.homeworkout.domain.usecases.planedit.DeletePlanExerciseUseCase
 import com.example.homeworkout.domain.usecases.planedit.ReplacePlanExerciseUseCase
+import com.example.homeworkout.domain.usecases.planedit.ReorderPlanExercisesUseCase
 import com.example.homeworkout.domain.usecases.planedit.UpdatePlanExerciseRepsUseCase
 import kotlinx.coroutines.launch
 
@@ -17,7 +19,9 @@ import kotlinx.coroutines.launch
 class PlanExerciseEditViewModel(
     private val addExercisesToPlanDayUseCase: AddExercisesToPlanDayUseCase,
     private val replacePlanExerciseUseCase: ReplacePlanExerciseUseCase,
-    private val updatePlanExerciseRepsUseCase: UpdatePlanExerciseRepsUseCase
+    private val updatePlanExerciseRepsUseCase: UpdatePlanExerciseRepsUseCase,
+    private val deletePlanExerciseUseCase: DeletePlanExerciseUseCase,
+    private val reorderPlanExercisesUseCase: ReorderPlanExercisesUseCase
 ) : ViewModel() {
 
     fun addExercises(planDayId: Long, exerciseIds: List<Long>, onDone: () -> Unit = {}) {
@@ -36,5 +40,13 @@ class PlanExerciseEditViewModel(
 
     fun updateReps(planExerciseId: Long, reps: Int) {
         viewModelScope.launch { updatePlanExerciseRepsUseCase(planExerciseId, reps) }
+    }
+
+    fun deleteExercise(planExerciseId: Long) {
+        viewModelScope.launch { deletePlanExerciseUseCase(planExerciseId) }
+    }
+
+    fun reorderExercises(planDayId: Long, orderedPlanExerciseIds: List<Long>) {
+        viewModelScope.launch { reorderPlanExercisesUseCase(planDayId, orderedPlanExerciseIds) }
     }
 }

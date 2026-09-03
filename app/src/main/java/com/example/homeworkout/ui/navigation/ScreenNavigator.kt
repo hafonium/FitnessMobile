@@ -31,6 +31,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.ui.App
+import com.example.homeworkout.ui.core.achievements.AchievementsScreen
+import com.example.homeworkout.ui.core.achievements.AchievementsViewModel
 import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanScreen
 import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanViewModel
 import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListScreen
@@ -142,9 +144,20 @@ fun ScreenNavigator() {
 
             composable(Screen.Report.route) {
                 val vm: ReportViewModel = viewModel(factory = viewModelFactory {
-                    initializer { ReportViewModel(appInstance.getStreakUseCase) }
+                    initializer {
+                        ReportViewModel(
+                            appInstance.getStreakUseCase,
+                            appInstance.getBadgesUseCase,
+                            appInstance.evaluateBadgesUseCase,
+                            appInstance.markBadgesSeenUseCase
+                        )
+                    }
                 })
-                ReportScreen(viewModel = vm, onOpenHistory = { navController.navigate(Screen.History.route) })
+                ReportScreen(
+                    viewModel = vm,
+                    onOpenHistory = { navController.navigate(Screen.History.route) },
+                    onOpenAchievements = { navController.navigate(Screen.Achievements.route) }
+                )
             }
 
             composable(Screen.SettingsHome.route) {
@@ -209,7 +222,9 @@ fun ScreenNavigator() {
                         PlanExerciseEditViewModel(
                             appInstance.addExercisesToPlanDayUseCase,
                             appInstance.replacePlanExerciseUseCase,
-                            appInstance.updatePlanExerciseRepsUseCase
+                            appInstance.updatePlanExerciseRepsUseCase,
+                            appInstance.deletePlanExerciseUseCase,
+                            appInstance.reorderPlanExercisesUseCase
                         )
                     }
                 })
@@ -219,7 +234,9 @@ fun ScreenNavigator() {
                     onNavigateBack = { navController.popBackStack() },
                     onAlterExercise = { planExerciseId -> navController.navigate(Screen.AlterExercise.createRoute(planExerciseId)) },
                     onAddExercises = { planDayId -> navController.navigate(Screen.AddExercises.createRoute(planDayId)) },
-                    onUpdateReps = { planExerciseId, reps -> editVm.updateReps(planExerciseId, reps) }
+                    onUpdateReps = { planExerciseId, reps -> editVm.updateReps(planExerciseId, reps) },
+                    onDeleteExercise = editVm::deleteExercise,
+                    onReorder = editVm::reorderExercises
                 )
             }
 
@@ -236,7 +253,9 @@ fun ScreenNavigator() {
                         PlanExerciseEditViewModel(
                             appInstance.addExercisesToPlanDayUseCase,
                             appInstance.replacePlanExerciseUseCase,
-                            appInstance.updatePlanExerciseRepsUseCase
+                            appInstance.updatePlanExerciseRepsUseCase,
+                            appInstance.deletePlanExerciseUseCase,
+                            appInstance.reorderPlanExercisesUseCase
                         )
                     }
                 })
@@ -264,7 +283,9 @@ fun ScreenNavigator() {
                         PlanExerciseEditViewModel(
                             appInstance.addExercisesToPlanDayUseCase,
                             appInstance.replacePlanExerciseUseCase,
-                            appInstance.updatePlanExerciseRepsUseCase
+                            appInstance.updatePlanExerciseRepsUseCase,
+                            appInstance.deletePlanExerciseUseCase,
+                            appInstance.reorderPlanExercisesUseCase
                         )
                     }
                 })
@@ -316,7 +337,8 @@ fun ScreenNavigator() {
                             appInstance.startSpecificWorkoutDayUseCase,
                             appInstance.restartWorkoutDayUseCase,
                             appInstance.completeWorkoutSessionUseCase,
-                            appInstance.abandonWorkoutSessionUseCase
+                            appInstance.abandonWorkoutSessionUseCase,
+                            appInstance.markBadgesSeenUseCase
                         )
                     }
                 })
@@ -365,7 +387,14 @@ fun ScreenNavigator() {
 
             composable(Screen.CreateCustomPlan.route) {
                 val vm: CreateCustomPlanViewModel = viewModel(factory = viewModelFactory {
-                    initializer { CreateCustomPlanViewModel(appInstance.getExercisesByIdsUseCase, appInstance.createCustomWorkoutPlanUseCase) }
+                    initializer {
+                        CreateCustomPlanViewModel(
+                            appInstance.getExercisesByIdsUseCase,
+                            appInstance.createCustomWorkoutPlanUseCase,
+                            appInstance.getWorkoutsUseCase,
+                            appInstance.getWorkoutDetailsUseCase
+                        )
+                    }
                 })
                 val exerciseBrowserVm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
@@ -386,6 +415,18 @@ fun ScreenNavigator() {
             // --- Report tab ---
             composable(Screen.History.route) {
                 HistoryScreen(onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.Achievements.route) {
+                val vm: AchievementsViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        AchievementsViewModel(
+                            appInstance.getBadgesUseCase,
+                            appInstance.evaluateBadgesUseCase
+                        )
+                    }
+                })
+                AchievementsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             // --- Settings tab ---

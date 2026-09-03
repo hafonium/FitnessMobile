@@ -56,7 +56,8 @@ class WorkoutRepositoryImpl(
                             gifUrl = row.exerciseGifUrl,
                             imageUrl = row.exerciseImageUrl,
                             targetReps = row.targetReps,
-                            targetDurationSec = row.targetDurationSec
+                            targetDurationSec = row.targetDurationSec,
+                            restAfterSec = row.restAfterSec
                         )
                     }
                 )
@@ -71,6 +72,7 @@ class WorkoutRepositoryImpl(
 
     override suspend fun addExercisesToDay(planDayId: Long, exerciseIds: List<Long>) {
         if (exerciseIds.isEmpty()) return
+        if (workoutPlanDao.getPlanSourceForDay(planDayId) != WorkoutPlanSource.CUSTOM) return
 
         val maxOrderIndex = workoutPlanDao.getMaxOrderIndexForDay(planDayId) ?: -1
         var currentOrderIndex = maxOrderIndex + 1
@@ -93,12 +95,22 @@ class WorkoutRepositoryImpl(
 
     override suspend fun replacePlanExercise(planExerciseId: Long, newExerciseId: Long) {
         val existing = workoutPlanDao.getPlanExerciseById(planExerciseId) ?: return
+        if (workoutPlanDao.getPlanSourceForDay(existing.planDayId) != WorkoutPlanSource.CUSTOM) return
         workoutPlanDao.updatePlanExercise(existing.copy(exerciseId = newExerciseId))
     }
 
     override suspend fun updatePlanExerciseReps(planExerciseId: Long, targetReps: Int) {
         val existing = workoutPlanDao.getPlanExerciseById(planExerciseId) ?: return
+        if (workoutPlanDao.getPlanSourceForDay(existing.planDayId) != WorkoutPlanSource.CUSTOM) return
         workoutPlanDao.updatePlanExercise(existing.copy(targetReps = targetReps))
+    }
+
+    override suspend fun deletePlanExercise(planExerciseId: Long) {
+        workoutPlanDao.deleteCustomPlanExercise(planExerciseId)
+    }
+
+    override suspend fun reorderPlanExercises(planDayId: Long, orderedPlanExerciseIds: List<Long>) {
+        workoutPlanDao.reorderPlanExercises(planDayId, orderedPlanExerciseIds)
     }
 
     override suspend fun createCustomPlan(
@@ -156,6 +168,7 @@ private fun WorkoutPlanEntity.toDomain(totalDays: Int, totalExercises: Int): Wor
     description = description,
     category = category,
     level = level,
+    source = source,
     coverImageUrl = coverImageUrl,
     requiresPremium = requiresPremium,
     totalDays = totalDays,

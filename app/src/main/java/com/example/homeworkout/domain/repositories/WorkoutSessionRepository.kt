@@ -1,6 +1,7 @@
 package com.example.homeworkout.domain.repositories
 
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
+import com.example.homeworkout.domain.models.AchievementTotals
 import kotlinx.coroutines.flow.Flow
 
 interface WorkoutSessionRepository {
@@ -9,6 +10,9 @@ interface WorkoutSessionRepository {
 
     /** End timestamps (epoch millis) of every completed workout session ever, for the single local user. */
     fun observeAllCompletedSessionTimestamps(): Flow<List<Long>>
+
+    /** Aggregate values used to display badge progress and evaluate achievement rules. */
+    fun observeAchievementTotals(): Flow<AchievementTotals>
 
     /** The most recently started session (any status) for [planId], or null if it's never been played. */
     suspend fun getLatestSessionForPlan(planId: Long): WorkoutSessionSummary?

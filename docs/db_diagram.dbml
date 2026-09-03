@@ -130,6 +130,20 @@ Table user_settings {
   Note: 'These are global defaults. Each workout session stores its own setting snapshot.'
 }
 
+Table user_badges {
+  user_id bigint [not null, ref: > users.user_id]
+  badge_id varchar [not null]
+  unlocked_at timestamp [not null]
+  trigger_session_id bigint
+  is_seen boolean [not null, default: false]
+
+  indexes {
+    (user_id, badge_id) [pk]
+  }
+
+  Note: 'Badge definitions and conditions live in the domain catalog; this table stores permanent unlock state only.'
+}
+
 Table exercises {
   exercise_id bigint [pk, increment]
   source varchar [not null, default: 'free-exercise-db']

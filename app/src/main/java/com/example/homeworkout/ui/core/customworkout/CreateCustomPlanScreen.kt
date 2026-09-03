@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,7 +17,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -70,6 +75,7 @@ fun CreateCustomPlanScreen(
     onPlanCreated: (Long) -> Unit
 ) {
     var pickerForDay by remember { mutableStateOf<Int?>(null) }
+    var showTemplatePicker by remember { mutableStateOf(false) }
     val dayLocalId = pickerForDay
 
     if (dayLocalId != null) {
@@ -88,7 +94,52 @@ fun CreateCustomPlanScreen(
 
     val form by viewModel.form.collectAsStateWithLifecycle()
     val saveState by viewModel.saveState.collectAsStateWithLifecycle()
+    val templates by viewModel.templates.collectAsStateWithLifecycle()
+    val importingTemplate by viewModel.isImportingTemplate.collectAsStateWithLifecycle()
     val saving = saveState is SaveState.Saving
+
+    if (showTemplatePicker) {
+        AlertDialog(
+            onDismissRequest = { if (!importingTemplate) showTemplatePicker = false },
+            title = { Text("Choose a template") },
+            text = {
+                if (templates.isEmpty()) {
+                    Text("No plan templates are available.")
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(templates, key = { it.id }) { template ->
+                            AppCard(
+                                modifier = Modifier.fillMaxWidth().clickable(enabled = !importingTemplate) {
+                                    viewModel.importTemplate(template.id)
+                                    showTemplatePicker = false
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(template.title, fontWeight = FontWeight.Bold)
+                                        Text(
+                                            "${template.totalDays} days · ${template.totalExercises} exercises · ${template.level.label()}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Icon(Icons.Default.ContentCopy, contentDescription = "Clone template")
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = { TextButton(onClick = { showTemplatePicker = false }) { Text("Cancel") } }
+        )
+    }
 
     LaunchedEffect(saveState) {
         (saveState as? SaveState.Saved)?.let { onPlanCreated(it.planId) }
@@ -102,6 +153,30 @@ fun CreateCustomPlanScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                AppCard(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = null, tint = BrandBlue)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Start from a template", fontWeight = FontWeight.Bold)
+                            Text(
+                                "Clone all days and exercises, then customize your own copy.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (importingTemplate) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                        } else {
+                            TextButton(onClick = { showTemplatePicker = true }) { Text("Choose") }
+                        }
+                    }
+                }
+            }
             item {
                 OutlinedTextField(
                     value = form.title,
@@ -188,7 +263,8 @@ fun CreateCustomPlanScreen(
                         pickerForDay = day.localId
                     },
                     onRemoveExercise = { exerciseId -> viewModel.removeExercise(day.localId, exerciseId) },
-                    onRepsChange = { exerciseId, reps -> viewModel.updateReps(day.localId, exerciseId, reps) }
+                    onRepsChange = { exerciseId, reps -> viewModel.updateReps(day.localId, exerciseId, reps) },
+                    onDurationChange = { exerciseId, seconds -> viewModel.updateDuration(day.localId, exerciseId, seconds) }
                 )
             }
             item {
@@ -218,7 +294,8 @@ private fun DayBuilderCard(
     onRemoveDay: () -> Unit,
     onAddExercises: () -> Unit,
     onRemoveExercise: (Long) -> Unit,
-    onRepsChange: (Long, Int) -> Unit
+    onRepsChange: (Long, Int) -> Unit,
+    onDurationChange: (Long, Int) -> Unit
 ) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -257,13 +334,21 @@ private fun DayBuilderCard(
                     day.exercises.forEachIndexed { index, exercise ->
                         ExerciseRow(
                             title = exercise.title,
-                            subtitle = "x${exercise.targetReps}",
+                            subtitle = exercise.targetDurationSec?.let { "$it sec" } ?: "x${exercise.targetReps ?: 10}",
                             imageUrl = exercise.imageUrl,
                             showDivider = index != day.exercises.lastIndex
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 FilledTonalIconButton(
-                                    onClick = { if (exercise.targetReps > 1) onRepsChange(exercise.exerciseId, exercise.targetReps - 1) },
+                                    onClick = {
+                                        val duration = exercise.targetDurationSec
+                                        if (duration != null) {
+                                            if (duration > 5) onDurationChange(exercise.exerciseId, duration - 5)
+                                        } else {
+                                            val reps = exercise.targetReps ?: 10
+                                            if (reps > 1) onRepsChange(exercise.exerciseId, reps - 1)
+                                        }
+                                    },
                                     modifier = Modifier.size(28.dp),
                                     colors = IconButtonDefaults.filledTonalIconButtonColors(
                                         containerColor = CloudGray,
@@ -271,13 +356,17 @@ private fun DayBuilderCard(
                                     )
                                 ) { Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp)) }
                                 Text(
-                                    "${exercise.targetReps}",
+                                    exercise.targetDurationSec?.let { "${it}s" } ?: "${exercise.targetReps ?: 10}",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                 )
                                 FilledTonalIconButton(
-                                    onClick = { onRepsChange(exercise.exerciseId, exercise.targetReps + 1) },
+                                    onClick = {
+                                        val duration = exercise.targetDurationSec
+                                        if (duration != null) onDurationChange(exercise.exerciseId, duration + 5)
+                                        else onRepsChange(exercise.exerciseId, (exercise.targetReps ?: 10) + 1)
+                                    },
                                     modifier = Modifier.size(28.dp),
                                     colors = IconButtonDefaults.filledTonalIconButtonColors(
                                         containerColor = CloudGray,

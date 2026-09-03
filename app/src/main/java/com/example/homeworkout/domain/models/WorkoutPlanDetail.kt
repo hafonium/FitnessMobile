@@ -23,5 +23,6 @@ data class PlanExerciseSummary(
     val gifUrl: String?,
     val imageUrl: String?,
     val targetReps: Int?,
-    val targetDurationSec: Int?
+    val targetDurationSec: Int?,
+    val restAfterSec: Int?
 )

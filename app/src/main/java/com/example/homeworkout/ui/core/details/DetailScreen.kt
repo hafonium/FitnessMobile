@@ -41,6 +41,7 @@ import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.WorkoutPlanDayDetail
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
 import com.example.homeworkout.domain.usecases.player.ResolvedPlanDay
+import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
@@ -151,7 +152,11 @@ private fun PlanDetailContent(
             )
         }
         item {
-            SectionHeader(title = "Exercises", actionText = "Edit", onActionClick = onEditExercises)
+            SectionHeader(
+                title = "Exercises",
+                actionText = if (detail.plan.source == WorkoutPlanSource.CUSTOM) "Edit" else null,
+                onActionClick = onEditExercises
+            )
         }
 
         if (isMultiDay) {

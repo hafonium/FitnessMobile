@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
+import com.example.homeworkout.ui.components.BadgeMedallion
+import com.example.homeworkout.ui.components.BadgeUnlockedDialog
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
 import com.example.homeworkout.ui.components.buttons.AppButton
@@ -46,8 +51,14 @@ import com.example.homeworkout.utils.ScreenWrapper
  * wiring those to `workout_sessions` / `user_weight_logs` remains out of scope for this pass.
  */
 @Composable
-fun ReportScreen(viewModel: ReportViewModel, onOpenHistory: () -> Unit) {
+fun ReportScreen(
+    viewModel: ReportViewModel,
+    onOpenHistory: () -> Unit,
+    onOpenAchievements: () -> Unit
+) {
     val streak by viewModel.streak.collectAsStateWithLifecycle()
+    val badges by viewModel.badges.collectAsStateWithLifecycle()
+    val unseenBadge = badges.firstOrNull { it.isUnlocked && !it.isSeen }
 
     ScreenWrapper {
         LazyColumn(
@@ -148,7 +159,83 @@ fun ReportScreen(viewModel: ReportViewModel, onOpenHistory: () -> Unit) {
                     }
                 }
             }
+
+            item {
+                AppCard(
+                    modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenAchievements)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    "Achievements",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    "${badges.count { it.isUnlocked }} of ${badges.size} badges unlocked",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SlateGray
+                                )
+                            }
+                            AppButton(
+                                text = "View all",
+                                onClick = onOpenAchievements,
+                                variant = AppButtonVariant.Tonal
+                            )
+                        }
+
+                        val featured = badges.filter { it.isUnlocked }
+                            .sortedByDescending { it.unlockedAt }
+                            .take(4)
+                            .ifEmpty { badges.take(4) }
+                        if (featured.isEmpty()) {
+                            Text(
+                                "Complete a workout to begin earning badges.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = SlateGray
+                            )
+                        } else {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                featured.forEach { badge ->
+                                    Column(
+                                        modifier = Modifier.width(68.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        BadgeMedallion(badge = badge, size = 58.dp)
+                                        Spacer(Modifier.height(6.dp))
+                                        Text(
+                                            badge.definition.title,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                            maxLines = 2
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    unseenBadge?.let { badge ->
+        BadgeUnlockedDialog(
+            badge = badge,
+            onDismiss = { viewModel.markBadgeSeen(badge.definition.id) }
+        )
     }
 }
 

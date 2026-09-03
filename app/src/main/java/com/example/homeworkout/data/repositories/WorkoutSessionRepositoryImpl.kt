@@ -7,12 +7,14 @@ import com.example.homeworkout.data.local.entities.UserSettingsEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
+import com.example.homeworkout.domain.models.AchievementTotals
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class WorkoutSessionRepositoryImpl(
     private val userDao: UserDao,
@@ -35,6 +37,18 @@ class WorkoutSessionRepositoryImpl(
     override fun observeAllCompletedSessionTimestamps(): Flow<List<Long>> =
         flow { emit(currentUserId()) }.flatMapLatest { userId ->
             workoutSessionDao.observeAllCompletedSessionEndTimes(userId, WorkoutSessionStatus.COMPLETED)
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeAchievementTotals(): Flow<AchievementTotals> =
+        flow { emit(currentUserId()) }.flatMapLatest { userId ->
+            workoutSessionDao.observeAchievementTotals(userId, WorkoutSessionStatus.COMPLETED).map { row ->
+                AchievementTotals(
+                    completedSessions = row.completedSessions,
+                    totalDurationSeconds = row.totalDurationSeconds,
+                    completedPlans = row.completedPlans
+                )
+            }
         }
 
     override suspend fun getLatestSessionForPlan(planId: Long): WorkoutSessionSummary? {

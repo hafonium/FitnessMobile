@@ -3,6 +3,8 @@ package com.example.homeworkout.ui.core.player
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.PlanExerciseSummary
+import com.example.homeworkout.domain.models.BadgeProgress
+import com.example.homeworkout.domain.usecases.badges.MarkBadgesSeenUseCase
 import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.CompleteWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
@@ -40,11 +42,15 @@ class WorkoutPlayerViewModel(
     private val startSpecificWorkoutDayUseCase: StartSpecificWorkoutDayUseCase,
     private val restartWorkoutDayUseCase: RestartWorkoutDayUseCase,
     private val completeWorkoutSessionUseCase: CompleteWorkoutSessionUseCase,
-    private val abandonWorkoutSessionUseCase: AbandonWorkoutSessionUseCase
+    private val abandonWorkoutSessionUseCase: AbandonWorkoutSessionUseCase,
+    private val markBadgesSeenUseCase: MarkBadgesSeenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
+
+    private val _newlyUnlockedBadges = MutableStateFlow<List<BadgeProgress>>(emptyList())
+    val newlyUnlockedBadges: StateFlow<List<BadgeProgress>> = _newlyUnlockedBadges.asStateFlow()
 
     init {
         viewModelScope.launch { beginDay() }
@@ -80,7 +86,16 @@ class WorkoutPlayerViewModel(
     }
 
     fun completeSession(sessionId: Long) {
-        viewModelScope.launch { completeWorkoutSessionUseCase(sessionId) }
+        viewModelScope.launch {
+            _newlyUnlockedBadges.value = completeWorkoutSessionUseCase(sessionId)
+        }
+    }
+
+    fun dismissUnlockedBadge(badgeId: String) {
+        _newlyUnlockedBadges.value = _newlyUnlockedBadges.value.filterNot {
+            it.definition.id == badgeId
+        }
+        viewModelScope.launch { markBadgesSeenUseCase(listOf(badgeId)) }
     }
 
     fun abandonSession(sessionId: Long) {
