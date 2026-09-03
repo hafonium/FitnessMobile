@@ -44,6 +44,7 @@ class WorkoutRepositoryImpl(
                             exerciseId = row.exerciseId,
                             title = row.exerciseTitle,
                             gifUrl = row.exerciseGifUrl,
+                            imageUrl = row.exerciseImageUrl,
                             targetReps = row.targetReps,
                             targetDurationSec = row.targetDurationSec
                         )

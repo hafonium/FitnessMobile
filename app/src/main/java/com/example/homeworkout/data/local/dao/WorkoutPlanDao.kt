@@ -90,6 +90,9 @@ interface WorkoutPlanDao {
         SELECT pe.planExerciseId, pe.planDayId, d.dayNumber, d.title AS dayTitle, pe.orderIndex,
                pe.targetReps, pe.targetDurationSec, pe.restAfterSec,
                e.exerciseId, e.title AS exerciseTitle, e.gifUrl AS exerciseGifUrl,
+               (SELECT ei.imageUrl FROM exercise_images ei
+                    WHERE ei.exerciseId = e.exerciseId
+                    ORDER BY ei.orderIndex LIMIT 1) AS exerciseImageUrl,
                e.category AS exerciseCategory, e.level AS exerciseLevel
         FROM workout_plan_exercises pe
         INNER JOIN workout_plan_days d ON d.planDayId = pe.planDayId

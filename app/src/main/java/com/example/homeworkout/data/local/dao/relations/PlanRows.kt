@@ -33,6 +33,7 @@ data class PlanDayExerciseRow(
     val exerciseId: Long,
     val exerciseTitle: String,
     val exerciseGifUrl: String?,
+    val exerciseImageUrl: String?,
     val exerciseCategory: ExerciseCategory,
     val exerciseLevel: ExerciseLevel
 )

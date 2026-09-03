@@ -135,7 +135,7 @@ private fun PlanDetailContent(
             ExerciseRow(
                 title = exercise.title,
                 subtitle = exercise.subtitleText(),
-                imageUrl = exercise.gifUrl,
+                imageUrl = exercise.imageUrl,
                 onClick = { onOpenExerciseInfo(exercise.exerciseId) }
             )
         }
