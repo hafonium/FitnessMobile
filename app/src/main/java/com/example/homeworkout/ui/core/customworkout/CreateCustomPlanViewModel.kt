@@ -2,13 +2,13 @@ package com.example.homeworkout.ui.core.customworkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.homeworkout.domain.models.CustomDaySpec
+import com.example.homeworkout.domain.models.CustomExerciseSpec
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.models.enums.WorkoutLevel
 import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
-import com.example.homeworkout.domain.usecases.customworkout.CustomDaySpec
-import com.example.homeworkout.domain.usecases.customworkout.CustomExerciseSpec
 import com.example.homeworkout.domain.usecases.customworkout.GetExercisesByIdsUseCase
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
