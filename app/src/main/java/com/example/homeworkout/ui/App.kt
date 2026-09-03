@@ -19,6 +19,9 @@ import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
+import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
+import com.example.homeworkout.domain.usecases.customworkout.DeleteCustomWorkoutPlanUseCase
+import com.example.homeworkout.domain.usecases.customworkout.GetExercisesByIdsUseCase
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
@@ -84,6 +87,9 @@ class App : Application(), ImageLoaderFactory {
     val restartWorkoutDayUseCase by lazy { RestartWorkoutDayUseCase(workoutSessionRepository) }
     val completeWorkoutSessionUseCase by lazy { CompleteWorkoutSessionUseCase(workoutSessionRepository) }
     val abandonWorkoutSessionUseCase by lazy { AbandonWorkoutSessionUseCase(workoutSessionRepository) }
+    val getExercisesByIdsUseCase by lazy { GetExercisesByIdsUseCase(exerciseRepository) }
+    val createCustomWorkoutPlanUseCase by lazy { CreateCustomWorkoutPlanUseCase(workoutPlanDao, database.userDao()) }
+    val deleteCustomWorkoutPlanUseCase by lazy { DeleteCustomWorkoutPlanUseCase(workoutPlanDao) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.

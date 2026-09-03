@@ -40,6 +40,7 @@ sealed class Screen(val route: String) {
         fun createRoute(category: String) = "workout_list/$category"
     }
     object CustomWorkoutList : Screen("custom_workout_list")
+    object CreateCustomPlan : Screen("create_custom_plan")
 
     // Report tab
     object History : Screen("history")

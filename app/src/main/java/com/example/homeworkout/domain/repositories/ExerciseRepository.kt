@@ -19,4 +19,7 @@ interface ExerciseRepository {
 
     /** Full detail for the Exercise Information sheet. */
     suspend fun getExerciseDetail(exerciseId: Long): ExerciseDetail?
+
+    /** Batch lookup used by the Custom Workout builder to resolve picked exercise ids. */
+    suspend fun getExercisesByIds(exerciseIds: List<Long>): List<Exercise>
 }

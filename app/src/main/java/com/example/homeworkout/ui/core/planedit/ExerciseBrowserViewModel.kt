@@ -51,6 +51,12 @@ class ExerciseBrowserViewModel(
         }
     }
 
+    /** Resets the selection, e.g. before reopening this same picker for a fresh pick session
+     *  (the Custom Workout builder reuses one instance across each day's "Add Exercises" step). */
+    fun clearSelection() {
+        _selectedExerciseIds.value = emptySet()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val exercises: StateFlow<List<Exercise>> = combine(_query, _category, _filterState) { query, category, filter ->
         Triple(query, category, filter)

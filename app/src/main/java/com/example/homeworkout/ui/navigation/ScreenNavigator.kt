@@ -35,7 +35,10 @@ import androidx.navigation.navArgument
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.usecases.details.EditWorkoutPlanUseCase
 import com.example.homeworkout.ui.App
+import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanScreen
+import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanViewModel
 import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListScreen
+import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListViewModel
 import com.example.homeworkout.ui.core.details.DetailScreen
 import com.example.homeworkout.ui.core.details.DetailViewModel
 import com.example.homeworkout.ui.core.editgoal.EditGoalScreen
@@ -340,7 +343,35 @@ fun ScreenNavigator() {
             }
 
             composable(Screen.CustomWorkoutList.route) {
-                CustomWorkoutListScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: CustomWorkoutListViewModel = viewModel(factory = viewModelFactory {
+                    initializer { CustomWorkoutListViewModel(appInstance.getWorkoutsUseCase, appInstance.deleteCustomWorkoutPlanUseCase) }
+                })
+                CustomWorkoutListScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onCreatePlan = { navController.navigate(Screen.CreateCustomPlan.route) },
+                    onOpenPlan = { planId -> navController.navigate(Screen.Details.createRoute(planId)) }
+                )
+            }
+
+            composable(Screen.CreateCustomPlan.route) {
+                val vm: CreateCustomPlanViewModel = viewModel(factory = viewModelFactory {
+                    initializer { CreateCustomPlanViewModel(appInstance.getExercisesByIdsUseCase, appInstance.createCustomWorkoutPlanUseCase) }
+                })
+                val exerciseBrowserVm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
+                    initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
+                })
+                CreateCustomPlanScreen(
+                    viewModel = vm,
+                    exerciseBrowserViewModel = exerciseBrowserVm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
+                    onPlanCreated = { planId ->
+                        navController.navigate(Screen.Details.createRoute(planId)) {
+                            popUpTo(Screen.CreateCustomPlan.route) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             // --- Report tab ---

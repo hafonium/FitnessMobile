@@ -1,6 +1,7 @@
 package com.example.homeworkout.ui.core.customworkout
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,48 +16,60 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
-import com.example.homeworkout.ui.components.ExerciseThumbnail
+import com.example.homeworkout.ui.components.ConfirmDialog
+import com.example.homeworkout.ui.components.PlanThumbnail
 import com.example.homeworkout.ui.theme.BrandBlue
 import com.example.homeworkout.ui.theme.BrandBlueTint
 
-private data class CustomPlanRow(val title: String, val summary: String)
-
-private val sampleCustomPlans = listOf(
-    CustomPlanRow("test", "1 min · 1 exercise")
-)
-
 /**
- * "Custom Workout" list. Static — the FAB is a no-op here; a real custom plan would be written to
- * `workout_plans` with source = CUSTOM and owned by the current user.
+ * "Custom Workout" list — the user's own plans (source = CUSTOM), backed by
+ * [CustomWorkoutListViewModel]. The FAB opens the "Create Workout" builder; tapping a plan opens
+ * the same Workout Screen (plan detail) used for system plans, since a custom plan is just a plan.
  */
 @Composable
-fun CustomWorkoutListScreen(onNavigateBack: () -> Unit) {
+fun CustomWorkoutListScreen(
+    viewModel: CustomWorkoutListViewModel,
+    onNavigateBack: () -> Unit,
+    onCreatePlan: () -> Unit,
+    onOpenPlan: (Long) -> Unit
+) {
+    val plans by viewModel.customPlans.collectAsStateWithLifecycle()
+    var pendingDelete by remember { mutableStateOf<WorkoutModel?>(null) }
+
     Scaffold(
         topBar = { BackTopBar(title = "Custom Workout", onNavigateBack = onNavigateBack) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = onCreatePlan,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
             ) { Icon(Icons.Default.Add, contentDescription = "Create custom workout") }
         }
     ) { padding ->
-        if (sampleCustomPlans.isEmpty()) {
+        if (plans.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(
@@ -81,18 +94,37 @@ fun CustomWorkoutListScreen(onNavigateBack: () -> Unit) {
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(sampleCustomPlans) { plan ->
-                    AppCard(modifier = Modifier.fillMaxWidth()) {
+                items(plans, key = { it.id }) { plan ->
+                    AppCard(modifier = Modifier.fillMaxWidth().clickable { onOpenPlan(plan.id) }) {
                         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            ExerciseThumbnail(size = 56.dp)
+                            PlanThumbnail(planId = plan.id, coverImageUrl = plan.coverImageUrl, size = 56.dp)
                             Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
                                 Text(plan.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text(plan.summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(plan.summaryText(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            IconButton(onClick = { pendingDelete = plan }) {
+                                Icon(Icons.Default.DeleteOutline, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
                 }
             }
         }
+
+        pendingDelete?.let { plan ->
+            ConfirmDialog(
+                title = "Delete workout?",
+                message = "\"${plan.title}\" will be permanently deleted.",
+                confirmLabel = "Delete",
+                onConfirm = { viewModel.deletePlan(plan.id) },
+                onDismiss = { pendingDelete = null }
+            )
+        }
     }
+}
+
+private fun WorkoutModel.summaryText(): String {
+    val days = "$totalDays day" + if (totalDays == 1) "" else "s"
+    val exercises = "$totalExercises exercise" + if (totalExercises == 1) "" else "s"
+    return "$days · $exercises"
 }

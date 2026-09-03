@@ -8,6 +8,7 @@ import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.WorkoutPlanDayDetail
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
+import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,8 +17,8 @@ class WorkoutRepositoryImpl(
     private val workoutPlanDao: WorkoutPlanDao
 ) : WorkoutRepository {
 
-    override fun getWorkouts(category: WorkoutCategory?): Flow<List<WorkoutModel>> {
-        return workoutPlanDao.observePlanSummaries(category = category).map { rows -> rows.map { it.toDomain() } }
+    override fun getWorkouts(category: WorkoutCategory?, source: WorkoutPlanSource?): Flow<List<WorkoutModel>> {
+        return workoutPlanDao.observePlanSummaries(category = category, source = source).map { rows -> rows.map { it.toDomain() } }
     }
 
     override suspend fun getWorkoutById(id: Long): WorkoutModel? {

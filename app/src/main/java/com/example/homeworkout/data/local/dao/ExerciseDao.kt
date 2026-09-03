@@ -81,6 +81,17 @@ interface ExerciseDao {
     )
     suspend fun getExerciseRowById(exerciseId: Long): ExerciseListRow?
 
+    /** Batch lookup for the Custom Workout builder, resolving picked exercise ids back to display rows. */
+    @Query(
+        """
+        SELECT e.exerciseId, e.title, e.gifUrl, e.category, e.level, e.force, eq.name AS equipmentName
+        FROM exercises e
+        INNER JOIN equipment_types eq ON eq.equipmentId = e.equipmentId
+        WHERE e.exerciseId IN (:exerciseIds)
+        """
+    )
+    suspend fun getExerciseRowsByIds(exerciseIds: List<Long>): List<ExerciseListRow>
+
     @Query("SELECT * FROM exercises WHERE isActive = 1 ORDER BY title")
     fun observeExercises(): Flow<List<ExerciseEntity>>
 

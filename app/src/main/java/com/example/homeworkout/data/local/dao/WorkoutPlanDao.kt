@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.homeworkout.data.local.dao.relations.PlanDayExerciseRow
 import com.example.homeworkout.data.local.dao.relations.WorkoutPlanSummaryRow
@@ -14,6 +15,17 @@ import com.example.homeworkout.data.local.entities.WorkoutPlanExerciseEntity
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 import kotlinx.coroutines.flow.Flow
+
+/**
+ * One day's worth of exercises for [WorkoutPlanDao.insertCustomPlan]. Each exercise's
+ * [WorkoutPlanExerciseEntity.planDayId] is a placeholder (ignored) — the real id is assigned once
+ * the day itself has been inserted.
+ */
+data class NewPlanDay(
+    val dayNumber: Int,
+    val title: String?,
+    val exercises: List<WorkoutPlanExerciseEntity>
+)
 
 @Dao
 interface WorkoutPlanDao {
@@ -108,4 +120,26 @@ interface WorkoutPlanDao {
         """
     )
     fun observePlanExerciseRows(planId: Long): Flow<List<PlanDayExerciseRow>>
+
+    // --- Custom plan creation ---
+
+    /**
+     * Creates a full multi-day custom plan — the plan row, each day, and each day's exercises —
+     * as one atomic write (mirroring how
+     * [com.example.homeworkout.data.local.seed.AppDatabaseSeeder] builds a system plan), so an
+     * interrupted save never leaves a half-created plan visible to [observePlanSummaries].
+     */
+    @Transaction
+    suspend fun insertCustomPlan(plan: WorkoutPlanEntity, days: List<NewPlanDay>): Long {
+        val planId = insertPlan(plan)
+        val allExercises = ArrayList<WorkoutPlanExerciseEntity>()
+        days.forEach { day ->
+            val dayId = insertPlanDay(WorkoutPlanDayEntity(planId = planId, dayNumber = day.dayNumber, title = day.title))
+            day.exercises.forEachIndexed { index, exercise ->
+                allExercises += exercise.copy(planDayId = dayId, orderIndex = index)
+            }
+        }
+        insertPlanExercises(allExercises)
+        return planId
+    }
 }
