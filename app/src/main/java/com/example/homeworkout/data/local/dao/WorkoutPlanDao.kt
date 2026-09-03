@@ -81,6 +81,12 @@ interface WorkoutPlanDao {
     @Delete
     suspend fun deletePlanExercise(exercise: WorkoutPlanExerciseEntity)
 
+    @Query("SELECT * FROM workout_plan_exercises WHERE planExerciseId = :planExerciseId")
+    suspend fun getPlanExerciseById(planExerciseId: Long): WorkoutPlanExerciseEntity?
+
+    @Query("SELECT MAX(orderIndex) FROM workout_plan_exercises WHERE planDayId = :planDayId")
+    suspend fun getMaxOrderIndexForDay(planDayId: Long): Int?
+
     /** Every exercise across every day of a plan, pre-joined with its [com.example.homeworkout.data.local.entities.ExerciseEntity]. */
     @Query(
         """

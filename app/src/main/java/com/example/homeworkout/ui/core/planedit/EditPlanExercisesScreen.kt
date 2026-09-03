@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -43,27 +44,29 @@ import com.example.homeworkout.ui.core.details.DetailViewModel
 fun EditPlanExercisesScreen(
     viewModel: DetailViewModel,
     onNavigateBack: () -> Unit,
-    onAlterExercise: () -> Unit,
-    onAddExercises: () -> Unit
+    onAlterExercise: (planExerciseId: Long) -> Unit,
+    onAddExercises: (planDayId: Long) -> Unit,
+    onUpdateReps: (planExerciseId: Long, reps: Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // planExerciseId -> locally edited reps, purely for on-screen stepper feedback.
     val repsOverrides = remember { mutableStateMapOf<Long, Int>() }
 
-    Scaffold(
-        topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddExercises) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
-        }
-    ) { padding ->
         when (val state = uiState) {
             is DetailUiState.Success -> {
                 val exercises = state.detail.days.flatMap { it.exercises }
+                val firstDayId = state.detail.days.firstOrNull()?.planDayId ?: 0L
+                Scaffold(
+                    topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) },
+                    floatingActionButton = {
+                        FloatingActionButton(onClick = { onAddExercises(firstDayId) }) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
+                    }
+                ) { innerPadding ->
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp, bottom = 24.dp,
-                        top = padding.calculateTopPadding() + 8.dp
+                        start = 16.dp, end = 16.dp, bottom = 100.dp,
+                        top = innerPadding.calculateTopPadding() + 8.dp
                     )
                 ) {
                     items(exercises, key = { it.planExerciseId }) { exercise ->
@@ -76,14 +79,19 @@ fun EditPlanExercisesScreen(
                                 if (exercise.targetReps != null) {
                                     IconButton(onClick = {
                                         val current = reps ?: 0
-                                        if (current > 1) repsOverrides[exercise.planExerciseId] = current - 1
+                                        if (current > 1) {
+                                            repsOverrides[exercise.planExerciseId] = current - 1
+                                            onUpdateReps(exercise.planExerciseId, current - 1)
+                                        }
                                     }) { Icon(Icons.Default.Remove, contentDescription = "Decrease") }
                                     Text("${reps ?: 0}", style = MaterialTheme.typography.bodyLarge)
                                     IconButton(onClick = {
-                                        repsOverrides[exercise.planExerciseId] = (reps ?: 0) + 1
+                                        val newReps = (reps ?: 0) + 1
+                                        repsOverrides[exercise.planExerciseId] = newReps
+                                        onUpdateReps(exercise.planExerciseId, newReps)
                                     }) { Icon(Icons.Default.Add, contentDescription = "Increase") }
                                 }
-                                IconButton(onClick = onAlterExercise) {
+                                IconButton(onClick = { onAlterExercise(exercise.planExerciseId) }) {
                                     Icon(Icons.Default.SwapHoriz, contentDescription = "Replace exercise")
                                 }
                                 Icon(Icons.Default.DragHandle, contentDescription = "Reorder", tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -91,13 +99,12 @@ fun EditPlanExercisesScreen(
                         }
                     }
                 }
+                }
             }
 
-            is DetailUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-
-            else -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("This workout could not be found.") }
+            is DetailUiState.Loading -> Scaffold(topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) }) { inner -> Box(Modifier.fillMaxSize().padding(inner), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
+            else -> Scaffold(topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) }) { inner -> Box(Modifier.fillMaxSize().padding(inner), contentAlignment = Alignment.Center) { Text("This workout could not be found.") } }
         }
-    }
 }
 
 private fun PlanExerciseSummary.subtitleText(overrideReps: Int?): String = when {

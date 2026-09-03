@@ -36,6 +36,7 @@ class WorkoutRepositoryImpl(
             val dayDetails = days.map { day ->
                 val dayRows = exerciseRowsByDay[day.planDayId].orEmpty().sortedBy { it.orderIndex }
                 WorkoutPlanDayDetail(
+                    planDayId = day.planDayId,
                     dayNumber = day.dayNumber,
                     title = day.title,
                     exercises = dayRows.map { row ->

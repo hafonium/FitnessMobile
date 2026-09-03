@@ -14,9 +14,13 @@ sealed class Screen(val route: String) {
     object EditPlanExercises : Screen("edit_plan/{planId}") {
         fun createRoute(planId: Long) = "edit_plan/$planId"
     }
-    object AlterExercise : Screen("alter_exercise")
+    object AlterExercise : Screen("alter_exercise/{planExerciseId}") {
+        fun createRoute(planExerciseId: Long) = "alter_exercise/$planExerciseId"
+    }
     object FilterExercise : Screen("filter_exercise")
-    object AddExercises : Screen("add_exercises")
+    object AddExercises : Screen("add_exercises/{planDayId}") {
+        fun createRoute(planDayId: Long) = "add_exercises/$planDayId"
+    }
     object WorkoutSettingsSheet : Screen("workout_settings_sheet")
     object ExerciseInfo : Screen("exercise_info/{exerciseId}") {
         fun createRoute(exerciseId: Long) = "exercise_info/$exerciseId"

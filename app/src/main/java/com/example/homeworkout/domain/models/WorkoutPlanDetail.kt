@@ -9,6 +9,7 @@ data class WorkoutPlanDetail(
 }
 
 data class WorkoutPlanDayDetail(
+    val planDayId: Long,
     val dayNumber: Int,
     val title: String?,
     val exercises: List<PlanExerciseSummary>

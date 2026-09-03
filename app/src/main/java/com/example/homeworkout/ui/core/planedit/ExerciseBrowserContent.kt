@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,12 +36,13 @@ import com.example.homeworkout.ui.components.label
 fun ExerciseBrowserContent(
     viewModel: ExerciseBrowserViewModel,
     topPadding: Dp,
-    onExerciseInfo: (Long) -> Unit
+    onExerciseInfo: (Long) -> Unit,
+    isActioned: (Long) -> Boolean,
+    onActionClick: (Long) -> Unit
 ) {
     val query by viewModel.query.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.category.collectAsStateWithLifecycle()
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
-    var addedIds by remember { mutableStateOf(setOf<Long>()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -74,16 +73,16 @@ fun ExerciseBrowserContent(
             item { Text("No exercises match this search.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         } else {
             items(exercises, key = { it.id }) { exercise: Exercise ->
-                val added = exercise.id in addedIds
+                val added = isActioned(exercise.id)
                 ExerciseRow(
                     title = exercise.title,
                     subtitle = "${exercise.equipmentName} · ${exercise.level.name.lowercase()}",
                     onClick = { onExerciseInfo(exercise.id) }
                 ) {
-                    IconButton(onClick = { addedIds = if (added) addedIds - exercise.id else addedIds + exercise.id }) {
+                    IconButton(onClick = { onActionClick(exercise.id) }) {
                         Icon(
-                            imageVector = if (added) Icons.Default.Check else Icons.Default.Add,
-                            contentDescription = if (added) "Added" else "Add",
+                            imageVector = if (added) Icons.Filled.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
+                            contentDescription = if (added) "Selected" else "Select",
                             tint = if (added) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }

@@ -32,6 +32,8 @@ class App : Application() {
     // Room database
     private val database: AppDatabase by lazy { AppDatabase.getInstance(this, applicationScope) }
 
+    val workoutPlanDao by lazy { database.workoutPlanDao() }
+
     // Repositories
     val workoutRepository: WorkoutRepository by lazy { WorkoutRepositoryImpl(database.workoutPlanDao()) }
     val exerciseRepository: ExerciseRepository by lazy { ExerciseRepositoryImpl(database.exerciseDao()) }

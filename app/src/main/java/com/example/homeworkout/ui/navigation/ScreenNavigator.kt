@@ -12,6 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
+import com.example.homeworkout.domain.usecases.details.EditWorkoutPlanUseCase
 import com.example.homeworkout.ui.App
 import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListScreen
 import com.example.homeworkout.ui.core.details.DetailScreen
@@ -149,40 +153,84 @@ fun ScreenNavigator() {
                 val vm: DetailViewModel = viewModel(key = "edit-detail-$planId", factory = viewModelFactory {
                     initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase) }
                 })
+                
+                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
+                val coroutineScope = rememberCoroutineScope()
+                
                 EditPlanExercisesScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
-                    onAlterExercise = { navController.navigate(Screen.AlterExercise.route) },
-                    onAddExercises = { navController.navigate(Screen.AddExercises.route) }
+                    onAlterExercise = { planExerciseId -> navController.navigate(Screen.AlterExercise.createRoute(planExerciseId)) },
+                    onAddExercises = { planDayId -> navController.navigate(Screen.AddExercises.createRoute(planDayId)) },
+                    onUpdateReps = { planExerciseId, reps ->
+                        coroutineScope.launch { editUseCase.updateReps(planExerciseId, reps) }
+                    }
                 )
             }
 
-            composable(Screen.AlterExercise.route) {
+            composable(
+                route = Screen.AlterExercise.route,
+                arguments = listOf(navArgument("planExerciseId") { type = NavType.LongType })
+            ) { entry ->
+                val planExerciseId = entry.arguments?.getLong("planExerciseId") ?: return@composable
                 val vm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
                 })
+                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
+                val coroutineScope = rememberCoroutineScope()
+                
                 AlterExerciseScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onOpenFilter = { navController.navigate(Screen.FilterExercise.route) },
-                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) }
+                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
+                    onReplaceExercise = { newExerciseId ->
+                        coroutineScope.launch {
+                            editUseCase.replaceExercise(planExerciseId, newExerciseId)
+                            navController.popBackStack()
+                        }
+                    }
                 )
             }
 
-            composable(Screen.AddExercises.route) {
+            composable(
+                route = Screen.AddExercises.route,
+                arguments = listOf(navArgument("planDayId") { type = NavType.LongType })
+            ) { entry ->
+                val planDayId = entry.arguments?.getLong("planDayId") ?: return@composable
                 val vm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
                 })
+                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
+                val coroutineScope = rememberCoroutineScope()
+                
                 AddExercisesScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onOpenFilter = { navController.navigate(Screen.FilterExercise.route) },
-                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) }
+                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
+                    onAddExercises = { exerciseIds ->
+                        coroutineScope.launch {
+                            editUseCase.addExercises(planDayId, exerciseIds)
+                            navController.popBackStack()
+                        }
+                    }
                 )
             }
 
             composable(Screen.FilterExercise.route) {
-                FilterExerciseScreen(onNavigateBack = { navController.popBackStack() })
+                val parentEntry = remember { navController.previousBackStackEntry }
+                val appInstance = LocalContext.current.applicationContext as App
+                val vm: ExerciseBrowserViewModel = if (parentEntry != null) {
+                    viewModel(viewModelStoreOwner = parentEntry, factory = viewModelFactory {
+                        initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
+                    })
+                } else {
+                    viewModel(factory = viewModelFactory {
+                        initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
+                    })
+                }
+                FilterExerciseScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(Screen.WorkoutSettingsSheet.route) {
