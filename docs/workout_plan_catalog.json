@@ -162,7 +162,7 @@
       "label": "Full Body B",
       "slots": [
         {"category": "general_fitness", "count": 1, "role": "warm_up"},
-        {"category": "legs_glutes", "primaryMuscles": ["hamstrings", "glutes"], "force": "pull", "count": 2, "role": "main"},
+        {"category": "legs_glutes", "primaryMuscles": ["hamstrings", "glutes"], "force": "push", "count": 2, "role": "main"},
         {"category": "arms_shoulders", "primaryMuscles": ["shoulders", "biceps", "triceps"], "count": 2, "role": "main"},
         {"category": "back_pull", "primaryMuscles": ["lats", "lower back"], "count": 1, "role": "main"},
         {"category": "abs_core", "count": 1, "role": "core"},
