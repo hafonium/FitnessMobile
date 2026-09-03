@@ -63,7 +63,7 @@ import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.AppTextField
-import com.example.homeworkout.ui.components.ExerciseThumbnail
+import com.example.homeworkout.ui.components.PlanThumbnail
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
@@ -512,7 +512,7 @@ private fun PlanCard(plan: WorkoutModel, onClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ExerciseThumbnail(size = 56.dp, imageUrl = plan.coverImageUrl)
+            PlanThumbnail(planId = plan.id, coverImageUrl = plan.coverImageUrl, size = 56.dp)
             Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(plan.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)

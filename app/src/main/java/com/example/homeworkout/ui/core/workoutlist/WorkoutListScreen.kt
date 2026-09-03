@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
-import com.example.homeworkout.ui.components.ExerciseThumbnail
+import com.example.homeworkout.ui.components.PlanThumbnail
 import com.example.homeworkout.ui.components.label
 
 /** Category Workout List (e.g. "Build Muscle"), backed by the real seeded plans for that category. */
@@ -49,7 +49,7 @@ fun WorkoutListScreen(
             items(workouts, key = { it.id }) { plan ->
                 AppCard(modifier = Modifier.fillMaxWidth().clickable { onOpenPlan(plan.id) }) {
                     Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        ExerciseThumbnail(size = 56.dp, imageUrl = plan.coverImageUrl)
+                        PlanThumbnail(planId = plan.id, coverImageUrl = plan.coverImageUrl, size = 56.dp)
                         Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
                             Text(plan.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text(

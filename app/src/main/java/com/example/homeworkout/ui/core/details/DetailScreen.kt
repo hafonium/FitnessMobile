@@ -34,10 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import coil.compose.SubcomposeAsyncImage
 import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
 import com.example.homeworkout.ui.components.BackTopBar
+import com.example.homeworkout.ui.components.planThemeDrawableRes
 import com.example.homeworkout.ui.components.ExerciseRow
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.buttons.AppButton
@@ -115,7 +118,7 @@ private fun PlanDetailContent(
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item { HeroBanner(coverImageUrl = detail.plan.coverImageUrl) }
+        item { HeroBanner(planId = detail.plan.id, coverImageUrl = detail.plan.coverImageUrl) }
         item {
             Text(detail.plan.title, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
         }
@@ -143,7 +146,7 @@ private fun PlanDetailContent(
 }
 
 @Composable
-private fun HeroBanner(coverImageUrl: String?) {
+private fun HeroBanner(planId: Long, coverImageUrl: String?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,7 +154,7 @@ private fun HeroBanner(coverImageUrl: String?) {
             .clip(CardShape)
     ) {
         if (coverImageUrl.isNullOrBlank()) {
-            HeroBannerFallback()
+            ThemedHeroImage(planId)
         } else {
             SubcomposeAsyncImage(
                 model = coverImageUrl,
@@ -159,10 +162,20 @@ private fun HeroBanner(coverImageUrl: String?) {
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 loading = { HeroBannerFallback() },
-                error = { HeroBannerFallback() }
+                error = { ThemedHeroImage(planId) }
             )
         }
     }
+}
+
+@Composable
+private fun ThemedHeroImage(planId: Long) {
+    Image(
+        painter = painterResource(id = planThemeDrawableRes(planId)),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.FillBounds
+    )
 }
 
 @Composable
