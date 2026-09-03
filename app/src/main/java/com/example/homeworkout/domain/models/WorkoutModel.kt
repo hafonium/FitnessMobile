@@ -2,6 +2,7 @@ package com.example.homeworkout.domain.models
 
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.models.enums.WorkoutLevel
+import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 
 /**
  * Pure Kotlin domain representation of a workout plan summary card, as shown on the Training
@@ -15,6 +16,7 @@ data class WorkoutModel(
     val description: String?,
     val category: WorkoutCategory,
     val level: WorkoutLevel,
+    val source: WorkoutPlanSource,
     val coverImageUrl: String?,
     val requiresPremium: Boolean,
     val totalDays: Int,

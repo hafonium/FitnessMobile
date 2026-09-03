@@ -10,6 +10,12 @@ import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import kotlinx.coroutines.flow.Flow
 
+data class AchievementTotalsRow(
+    val completedSessions: Long,
+    val totalDurationSeconds: Long,
+    val completedPlans: Long
+)
+
 @Dao
 interface WorkoutSessionDao {
     @Insert
@@ -66,4 +72,37 @@ interface WorkoutSessionDao {
         "SELECT endedAt FROM workout_sessions WHERE userId = :userId AND status = :status AND endedAt IS NOT NULL ORDER BY endedAt DESC"
     )
     fun observeAllCompletedSessionEndTimes(userId: Long, status: WorkoutSessionStatus): Flow<List<Long>>
+
+    @Query(
+        """
+        SELECT
+            COUNT(*) AS completedSessions,
+            COALESCE(SUM(durationSeconds), 0) AS totalDurationSeconds,
+            (
+                SELECT COUNT(*)
+                FROM workout_plans p
+                WHERE EXISTS (
+                    SELECT 1 FROM workout_plan_days d WHERE d.planId = p.planId
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM workout_plan_days d
+                    WHERE d.planId = p.planId
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM workout_sessions completed
+                        WHERE completed.userId = :userId
+                        AND completed.planDayId = d.planDayId
+                        AND completed.status = :status
+                    )
+                )
+            ) AS completedPlans
+        FROM workout_sessions
+        WHERE userId = :userId AND status = :status
+        """
+    )
+    fun observeAchievementTotals(
+        userId: Long,
+        status: WorkoutSessionStatus
+    ): Flow<AchievementTotalsRow>
 }

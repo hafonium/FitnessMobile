@@ -48,7 +48,8 @@ class WorkoutRepositoryImpl(
                             gifUrl = row.exerciseGifUrl,
                             imageUrl = row.exerciseImageUrl,
                             targetReps = row.targetReps,
-                            targetDurationSec = row.targetDurationSec
+                            targetDurationSec = row.targetDurationSec,
+                            restAfterSec = row.restAfterSec
                         )
                     }
                 )
@@ -70,6 +71,7 @@ private fun WorkoutPlanEntity.toDomain(totalDays: Int, totalExercises: Int): Wor
     description = description,
     category = category,
     level = level,
+    source = source,
     coverImageUrl = coverImageUrl,
     requiresPremium = requiresPremium,
     totalDays = totalDays,

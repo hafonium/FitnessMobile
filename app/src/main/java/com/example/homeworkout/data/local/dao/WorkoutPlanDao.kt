@@ -99,8 +99,84 @@ interface WorkoutPlanDao {
     @Query("SELECT * FROM workout_plan_exercises WHERE planExerciseId = :planExerciseId")
     suspend fun getPlanExerciseById(planExerciseId: Long): WorkoutPlanExerciseEntity?
 
+    /** Deletes one exercise from a custom plan and closes any gap left in its ordering. */
+    @Transaction
+    suspend fun deleteCustomPlanExercise(planExerciseId: Long) {
+        val existing = getPlanExerciseById(planExerciseId) ?: return
+        if (getPlanSourceForDay(existing.planDayId) != WorkoutPlanSource.CUSTOM) return
+
+        deletePlanExercise(existing)
+        reorderPlanExercises(
+            planDayId = existing.planDayId,
+            orderedPlanExerciseIds = getPlanExerciseIdsForDay(existing.planDayId)
+        )
+    }
+
     @Query("SELECT MAX(orderIndex) FROM workout_plan_exercises WHERE planDayId = :planDayId")
     suspend fun getMaxOrderIndexForDay(planDayId: Long): Int?
+
+    @Query(
+        """
+        SELECT p.source
+        FROM workout_plans p
+        INNER JOIN workout_plan_days d ON d.planId = p.planId
+        WHERE d.planDayId = :planDayId
+        """
+    )
+    suspend fun getPlanSourceForDay(planDayId: Long): WorkoutPlanSource?
+
+    @Query(
+        """
+        SELECT planExerciseId
+        FROM workout_plan_exercises
+        WHERE planDayId = :planDayId
+        ORDER BY orderIndex
+        """
+    )
+    suspend fun getPlanExerciseIdsForDay(planDayId: Long): List<Long>
+
+    @Query(
+        """
+        UPDATE workout_plan_exercises
+        SET orderIndex = :orderIndex
+        WHERE planExerciseId = :planExerciseId AND planDayId = :planDayId
+        """
+    )
+    suspend fun updatePlanExerciseOrderIndex(
+        planExerciseId: Long,
+        planDayId: Long,
+        orderIndex: Int
+    )
+
+    /**
+     * Reorders a complete day atomically. Indices are first moved to a temporary negative range
+     * so swapping two rows cannot violate the unique (planDayId, orderIndex) index halfway through.
+     */
+    @Transaction
+    suspend fun reorderPlanExercises(planDayId: Long, orderedPlanExerciseIds: List<Long>) {
+        if (getPlanSourceForDay(planDayId) != WorkoutPlanSource.CUSTOM) return
+
+        val existingIds = getPlanExerciseIdsForDay(planDayId)
+        if (
+            orderedPlanExerciseIds.size != existingIds.size ||
+            orderedPlanExerciseIds.toSet() != existingIds.toSet()
+        ) return
+
+        orderedPlanExerciseIds.forEachIndexed { index, planExerciseId ->
+            updatePlanExerciseOrderIndex(
+                planExerciseId = planExerciseId,
+                planDayId = planDayId,
+                orderIndex = -index - 1
+            )
+        }
+        orderedPlanExerciseIds.forEachIndexed { index, planExerciseId ->
+            updatePlanExerciseOrderIndex(
+                planExerciseId = planExerciseId,
+                planDayId = planDayId,
+                orderIndex = index
+            )
+        }
+    }
 
     /** Every exercise across every day of a plan, pre-joined with its [com.example.homeworkout.data.local.entities.ExerciseEntity]. */
     @Query(
