@@ -1,62 +1,69 @@
 package com.example.homeworkout.ui.core.planedit
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.homeworkout.ui.components.BackTopBar
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.homeworkout.R
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
-import com.example.homeworkout.ui.theme.BrandBlue
-import com.example.homeworkout.ui.theme.BrandBlueTint
-import com.example.homeworkout.ui.theme.CloudGray
-import com.example.homeworkout.ui.theme.PillShape
-import com.example.homeworkout.ui.theme.SlateGray
 
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
-private val bodyParts = listOf("Back", "Arm", "Leg", "Glutes", "Shoulder", "Chest", "Core")
+private val bodyParts = listOf("Abs", "Chest", "Back", "Arm", "Leg", "Glutes", "Shoulder")
 private val difficulties = listOf("Easy", "Medium", "Hard")
 private val types = listOf("Warm up", "Stretch", "Training")
 private val equipmentOptions = listOf("No equipment", "Dumbbell", "Band", "Chair", "Bench", "Mat")
 
 /**
- * "Filter Exercise": lets you narrow the exercise library by body part, difficulty, type and
- * equipment. The exercise pool is small enough that a full set of picks can easily match
- * nothing, so every toggle is applied to the [ExerciseBrowserViewModel] immediately — filtering
- * happens online, per constraint, instead of batching everything behind Save — and the live
- * match count below the chips reflects it in real time. Cancel (the back arrow or the button)
- * restores whatever filter was active when the screen was opened; Save just keeps the live
- * selection and returns.
+ * Filter static bottom popup content. The exercise pool is small enough that a full set of
+ * picks can easily match nothing, so every toggle is applied to the [ExerciseBrowserViewModel]
+ * immediately — filtering happens online, per constraint, instead of batching everything behind
+ * Save — and the live count in the header reflects it in real time, turning red at zero. Leaving
+ * without Save (Cancel, tapping outside the sheet, or the system back gesture) restores whatever
+ * filter was active when the sheet was opened; Save just keeps the live selection and closes.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FilterExerciseScreen(viewModel: ExerciseBrowserViewModel, onNavigateBack: () -> Unit) {
+fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: () -> Unit) {
     val originalState = remember { viewModel.filterState.value }
+    val exercises by viewModel.exercises.collectAsStateWithLifecycle()
 
     var selectedBodyParts by remember { mutableStateOf(originalState.bodyParts) }
     var selectedDifficulty by remember { mutableStateOf(originalState.difficulty) }
     var selectedTypes by remember { mutableStateOf(originalState.types) }
     var selectedEquipment by remember { mutableStateOf(originalState.equipment) }
-
-    val matchingExercises by viewModel.exercises.collectAsStateWithLifecycle()
 
     fun applyFilter() {
         viewModel.setFilterState(
@@ -71,81 +78,162 @@ fun FilterExerciseScreen(viewModel: ExerciseBrowserViewModel, onNavigateBack: ()
 
     fun cancel() {
         viewModel.setFilterState(originalState)
-        onNavigateBack()
+        onDismiss()
     }
 
-    Scaffold(
-        topBar = { BackTopBar(title = "Filter", onNavigateBack = { cancel() }) },
-        bottomBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = when (matchingExercises.size) {
-                        0 -> "No exercises match these filters"
-                        1 -> "1 exercise matches"
-                        else -> "${matchingExercises.size} exercises match"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (matchingExercises.isEmpty()) MaterialTheme.colorScheme.error else SlateGray
-                )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AppButton(
-                        text = "Cancel",
-                        onClick = { cancel() },
-                        modifier = Modifier.weight(1f),
-                        variant = AppButtonVariant.Outlined
-                    )
-                    AppButton(
-                        text = "Save",
-                        onClick = onNavigateBack,
-                        modifier = Modifier.weight(1f),
-                        variant = AppButtonVariant.Primary
-                    )
-                }
-            }
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = padding.calculateBottomPadding() + 16.dp,
-                top = padding.calculateTopPadding() + 8.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+    Dialog(
+        onDismissRequest = { cancel() },
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { cancel() }
+                ),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            item {
-                FilterSection(title = "Body Part", options = bodyParts, isSelected = { it in selectedBodyParts }) { option ->
-                    selectedBodyParts = if (option in selectedBodyParts) selectedBodyParts - option else selectedBodyParts + option
-                    applyFilter()
-                }
-            }
-            item {
-                FilterSection(title = "Difficulty", options = difficulties, isSelected = { it == selectedDifficulty }) { option ->
-                    selectedDifficulty = if (selectedDifficulty == option) null else option
-                    applyFilter()
-                }
-            }
-            item {
-                FilterSection(title = "Type", options = types, isSelected = { it in selectedTypes }) { option ->
-                    selectedTypes = if (option in selectedTypes) selectedTypes - option else selectedTypes + option
-                    applyFilter()
-                }
-            }
-            item {
-                FilterSection(title = "Equipment", options = equipmentOptions, isSelected = { it in selectedEquipment }) { option ->
-                    selectedEquipment = if (option in selectedEquipment) selectedEquipment - option else selectedEquipment + option
-                    applyFilter()
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {} // Consume clicks inside the content area
+                    )
+                    .padding(top = 24.dp), // allow some spacing from the very top of the screen if content is tall
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
+                ) {
+                    // Header
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("All Exercises", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                            IconButton(onClick = {
+                                selectedBodyParts = emptySet()
+                                selectedDifficulty = null
+                                selectedTypes = emptySet()
+                                selectedEquipment = emptySet()
+                                applyFilter()
+                            }) {
+                                Icon(Icons.Outlined.DeleteOutline, contentDescription = "Clear Filters", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        Text(
+                            text = if (exercises.isEmpty()) "No matches" else "${exercises.size} exercises",
+                            color = if (exercises.isEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text("Focus Area", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                bodyParts.chunked(2).forEach { rowItems ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        rowItems.forEach { option ->
+                                            val iconResId = when (option) {
+                                                "Abs" -> R.drawable.ic_muscle_abs
+                                                "Chest" -> R.drawable.ic_muscle_chest
+                                                "Back" -> R.drawable.ic_muscle_back
+                                                "Arm" -> R.drawable.ic_muscle_arm
+                                                "Leg" -> R.drawable.ic_muscle_leg
+                                                "Glutes" -> R.drawable.ic_muscle_glutes
+                                                "Shoulder" -> R.drawable.ic_muscle_shoulder
+                                                else -> R.drawable.ic_muscle_abs
+                                            }
+
+                                            val isSelected = option in selectedBodyParts
+
+                                            Surface(
+                                                onClick = {
+                                                    selectedBodyParts = if (isSelected) selectedBodyParts - option else selectedBodyParts + option
+                                                    applyFilter()
+                                                },
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(64.dp),
+                                                shape = RoundedCornerShape(12.dp),
+                                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(12.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = iconResId),
+                                                        contentDescription = option,
+                                                        tint = Color.Unspecified,
+                                                        modifier = Modifier.size(40.dp)
+                                                    )
+                                                    Text(option, fontWeight = FontWeight.Bold)
+                                                }
+                                            }
+                                        }
+                                        if (rowItems.size == 1) {
+                                            androidx.compose.foundation.layout.Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        FilterSection(title = "Difficulty", options = difficulties, isSelected = { it == selectedDifficulty }) { option ->
+                            selectedDifficulty = if (selectedDifficulty == option) null else option
+                            applyFilter()
+                        }
+                        FilterSection(title = "Type", options = types, isSelected = { it in selectedTypes }) { option ->
+                            selectedTypes = if (option in selectedTypes) selectedTypes - option else selectedTypes + option
+                            applyFilter()
+                        }
+                        FilterSection(title = "Equipment", options = equipmentOptions, isSelected = { it in selectedEquipment }) { option ->
+                            selectedEquipment = if (option in selectedEquipment) selectedEquipment - option else selectedEquipment + option
+                            applyFilter()
+                        }
+                        Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            AppButton(
+                                text = "Cancel",
+                                onClick = { cancel() },
+                                modifier = Modifier.weight(1f).height(56.dp),
+                                variant = AppButtonVariant.Outlined
+                            )
+                            AppButton(
+                                text = "Save",
+                                onClick = onDismiss,
+                                modifier = Modifier.weight(1f).height(56.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FilterSection(
     title: String,
@@ -153,22 +241,30 @@ private fun FilterSection(
     isSelected: (String) -> Boolean,
     onToggle: (String) -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             options.forEach { option ->
-                FilterChip(
-                    selected = isSelected(option),
+                val selected = isSelected(option)
+                Surface(
                     onClick = { onToggle(option) },
-                    label = { Text(option) },
-                    shape = PillShape,
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor = CloudGray,
-                        labelColor = SlateGray,
-                        selectedContainerColor = BrandBlueTint,
-                        selectedLabelColor = BrandBlue
-                    )
-                )
+                    shape = RoundedCornerShape(percent = 50),
+                    color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Box(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = option,
+                            fontWeight = FontWeight.Bold,
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }

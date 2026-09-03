@@ -51,7 +51,6 @@ import com.example.homeworkout.ui.core.planedit.AddExercisesScreen
 import com.example.homeworkout.ui.core.planedit.AlterExerciseScreen
 import com.example.homeworkout.ui.core.planedit.EditPlanExercisesScreen
 import com.example.homeworkout.ui.core.planedit.ExerciseBrowserViewModel
-import com.example.homeworkout.ui.core.planedit.FilterExerciseScreen
 import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
 import com.example.homeworkout.ui.core.report.ReportScreen
 import com.example.homeworkout.ui.core.settings.GeneralSettingsScreen
@@ -228,7 +227,6 @@ fun ScreenNavigator() {
                 AlterExerciseScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
-                    onOpenFilter = { navController.navigate(Screen.FilterExercise.route) },
                     onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onReplaceExercise = { newExerciseId ->
                         coroutineScope.launch {
@@ -253,7 +251,6 @@ fun ScreenNavigator() {
                 AddExercisesScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
-                    onOpenFilter = { navController.navigate(Screen.FilterExercise.route) },
                     onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onAddExercises = { exerciseIds ->
                         coroutineScope.launch {
@@ -262,21 +259,6 @@ fun ScreenNavigator() {
                         }
                     }
                 )
-            }
-
-            composable(Screen.FilterExercise.route) {
-                val parentEntry = remember { navController.previousBackStackEntry }
-                val appInstance = LocalContext.current.applicationContext as App
-                val vm: ExerciseBrowserViewModel = if (parentEntry != null) {
-                    viewModel(viewModelStoreOwner = parentEntry, factory = viewModelFactory {
-                        initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
-                    })
-                } else {
-                    viewModel(factory = viewModelFactory {
-                        initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
-                    })
-                }
-                FilterExerciseScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(Screen.WorkoutSettingsSheet.route) {
