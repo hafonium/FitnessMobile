@@ -6,8 +6,10 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -41,11 +45,12 @@ import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.home.HomeScreen
 import com.example.homeworkout.ui.core.home.HomeViewModel
+import com.example.homeworkout.ui.core.onboarding.OnboardingScreen
+import com.example.homeworkout.ui.core.onboarding.OnboardingViewModel
 import com.example.homeworkout.ui.core.planedit.AddExercisesScreen
 import com.example.homeworkout.ui.core.planedit.AlterExerciseScreen
 import com.example.homeworkout.ui.core.planedit.EditPlanExercisesScreen
 import com.example.homeworkout.ui.core.planedit.ExerciseBrowserViewModel
-
 import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
 import com.example.homeworkout.ui.core.report.ReportScreen
 import com.example.homeworkout.ui.core.settings.GeneralSettingsScreen
@@ -76,7 +81,10 @@ fun ScreenNavigator() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    tonalElevation = 0.dp
+                ) {
                     bottomTabs.forEach { tab ->
                         NavigationBarItem(
                             selected = currentRoute?.destination?.route == tab.screen.route,
@@ -88,7 +96,14 @@ fun ScreenNavigator() {
                                 }
                             },
                             icon = { Icon(tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) }
+                            label = { Text(tab.label, style = MaterialTheme.typography.labelMedium) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = Color.Transparent
+                            )
                         )
                     }
                 }
@@ -103,14 +118,22 @@ fun ScreenNavigator() {
             // --- Bottom bar tabs ---
             composable(Screen.Home.route) {
                 val vm: HomeViewModel = viewModel(factory = viewModelFactory {
-                    initializer { HomeViewModel(appInstance.getWorkoutsUseCase, appInstance.getWeeklyGoalProgressUseCase) }
+                    initializer {
+                        HomeViewModel(
+                            appInstance.getWorkoutsUseCase,
+                            appInstance.getFitnessProfileUseCase,
+                            appInstance.recommendPlanUseCase,
+                            appInstance.getWeeklyGoalProgressUseCase
+                        )
+                    }
                 })
                 HomeScreen(
                     viewModel = vm,
                     onOpenPlan = { planId -> navController.navigate(Screen.Details.createRoute(planId)) },
                     onOpenCustomWorkout = { navController.navigate(Screen.CustomWorkoutList.route) },
                     onOpenEditGoal = { navController.navigate(Screen.EditGoal.route) },
-                    onOpenWorkoutList = { category -> navController.navigate(Screen.WorkoutList.createRoute(category.name)) }
+                    onOpenWorkoutList = { category -> navController.navigate(Screen.WorkoutList.createRoute(category.name)) },
+                    onOpenOnboarding = { navController.navigate(Screen.Onboarding.route) }
                 )
             }
 
@@ -120,9 +143,31 @@ fun ScreenNavigator() {
 
             composable(Screen.SettingsHome.route) {
                 SettingsScreen(
+                    onOpenPlanSetup = { navController.navigate(Screen.Onboarding.route) },
                     onOpenWorkoutSettings = { navController.navigate(Screen.SettingsWorkout.route) },
                     onOpenGeneralSettings = { navController.navigate(Screen.SettingsGeneral.route) },
                     onOpenVoiceOptions = { navController.navigate(Screen.SettingsVoice.route) }
+                )
+            }
+
+            composable(Screen.Onboarding.route) {
+                val vm: OnboardingViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        OnboardingViewModel(
+                            appInstance.recommendPlanUseCase,
+                            appInstance.saveFitnessProfileUseCase,
+                            appInstance.getFitnessProfileUseCase
+                        )
+                    }
+                })
+                OnboardingScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenPlan = { planId ->
+                        navController.navigate(Screen.Details.createRoute(planId)) {
+                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    }
                 )
             }
 
@@ -215,7 +260,6 @@ fun ScreenNavigator() {
                     }
                 )
             }
-
 
             composable(Screen.WorkoutSettingsSheet.route) {
                 WorkoutSettingsSheetScreen(onDone = { navController.popBackStack() })

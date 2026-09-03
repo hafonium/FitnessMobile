@@ -73,4 +73,9 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion") // For Coroutines/Flow support
     ksp("androidx.room:room-compiler:$roomVersion")
+
+    // Coil — async image loading for exercise photos and GIF demos (image_url / gif_url from the seed data)
+    val coilVersion = "2.7.0"
+    implementation("io.coil-kt:coil-compose:$coilVersion")
+    implementation("io.coil-kt:coil-gif:$coilVersion")
 }

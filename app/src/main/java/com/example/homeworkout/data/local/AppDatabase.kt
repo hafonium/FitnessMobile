@@ -17,6 +17,7 @@ import com.example.homeworkout.data.local.entities.ExerciseInstructionStepEntity
 import com.example.homeworkout.data.local.entities.ExerciseMuscleEntity
 import com.example.homeworkout.data.local.entities.MuscleEntity
 import com.example.homeworkout.data.local.entities.UserEntity
+import com.example.homeworkout.data.local.entities.UserFitnessProfileEntity
 import com.example.homeworkout.data.local.entities.UserSettingsEntity
 import com.example.homeworkout.data.local.entities.UserWeightLogEntity
 import com.example.homeworkout.data.local.entities.WorkoutPlanDayEntity
@@ -48,9 +49,13 @@ import kotlinx.coroutines.launch
         WorkoutPlanExerciseEntity::class,
         WorkoutSessionEntity::class,
         WorkoutSessionExerciseEntity::class,
-        UserWeightLogEntity::class
+        UserWeightLogEntity::class,
+        UserFitnessProfileEntity::class
     ],
-    version = 3,
+    // Bumped past both branches' versions (workout-plans was 2, main was 3) — this is a
+    // pre-release, destructive-migration-only DB (see fallbackToDestructiveMigration below), so
+    // the number just needs to be higher than any prior install's.
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -78,28 +83,38 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                // Pre-release, local-only DB: schema bumps just reseed rather than needing migrations.
-                .fallbackToDestructiveMigration(true)
+                // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        applicationScope.launch {
-                            try {
-                                val database = getInstance(appContext, applicationScope)
-                                AppDatabaseSeeder.seedIfNeeded(
-                                    context = appContext,
-                                    userDao = database.userDao(),
-                                    exerciseDao = database.exerciseDao(),
-                                    workoutPlanDao = database.workoutPlanDao()
-                                )
-                            } catch (t: Throwable) {
-                                // Never crash the app over a seed failure — the app still runs empty.
-                                Log.e("AppDatabase", "Database seeding failed", t)
-                            }
-                        }
+                        seed(appContext, applicationScope)
+                    }
+
+                    override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                        super.onDestructiveMigration(db)
+                        // A destructive upgrade recreates the tables but does not fire onCreate.
+                        seed(appContext, applicationScope)
                     }
                 })
                 .build()
+        }
+
+        private fun seed(appContext: Context, applicationScope: CoroutineScope) {
+            applicationScope.launch {
+                try {
+                    val database = getInstance(appContext, applicationScope)
+                    AppDatabaseSeeder.seedIfNeeded(
+                        context = appContext,
+                        userDao = database.userDao(),
+                        exerciseDao = database.exerciseDao(),
+                        workoutPlanDao = database.workoutPlanDao()
+                    )
+                } catch (t: Throwable) {
+                    // Never crash the app over a seed failure — the app still runs empty.
+                    Log.e("AppDatabase", "Database seeding failed", t)
+                }
+            }
         }
     }
 }

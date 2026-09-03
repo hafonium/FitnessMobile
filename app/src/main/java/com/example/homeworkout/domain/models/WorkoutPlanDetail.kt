@@ -21,6 +21,7 @@ data class PlanExerciseSummary(
     val exerciseId: Long,
     val title: String,
     val gifUrl: String?,
+    val imageUrl: String?,
     val targetReps: Int?,
     val targetDurationSec: Int?
 )

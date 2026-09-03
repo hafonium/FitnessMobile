@@ -12,9 +12,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,11 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.enums.UnitSystemType
+import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.ClockWheelPicker
 import com.example.homeworkout.ui.components.SettingsNavRow
 import com.example.homeworkout.ui.components.SettingsSwitchRow
 import com.example.homeworkout.ui.components.SingleChoiceDialog
+import com.example.homeworkout.ui.theme.HairlineGray
+import com.example.homeworkout.ui.theme.SettingsBlue
+import com.example.homeworkout.ui.theme.SettingsOrange
+import com.example.homeworkout.ui.theme.SettingsSlate
+import com.example.homeworkout.ui.theme.SettingsTeal
 
 // TODO: point this at the real hosted privacy policy before release.
 private const val PRIVACY_POLICY_URL = "https://example.com/privacy-policy"
@@ -86,37 +99,55 @@ fun GeneralSettingsScreen(
             return@Scaffold
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SettingsSwitchRow(
-                label = "Remind me to work out every day",
-                checked = settings.dailyReminderEnabled,
-                onCheckedChange = { enabled ->
-                    if (enabled) enableReminder() else viewModel.setDailyReminder(false, settings.dailyReminderTime)
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SettingsSwitchRow(
+                        label = "Remind me to work out every day",
+                        checked = settings.dailyReminderEnabled,
+                        onCheckedChange = { enabled ->
+                            if (enabled) enableReminder() else viewModel.setDailyReminder(false, settings.dailyReminderTime)
+                        },
+                        icon = Icons.Default.Notifications,
+                        iconTint = SettingsOrange
+                    )
+                    if (settings.dailyReminderEnabled) {
+                        HorizontalDivider(color = HairlineGray)
+                        SettingsNavRow(
+                            label = "Reminder time",
+                            value = settings.dailyReminderTime?.let(::formatTimeLabel) ?: "Set time",
+                            onClick = { showTimePicker = true },
+                            icon = Icons.Default.Notifications,
+                            iconTint = SettingsOrange
+                        )
+                    }
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Metric & Imperial Units",
+                        value = if (settings.unitSystem == UnitSystemType.METRIC) "Metric (kg/cm)" else "Imperial (lbs/in)",
+                        onClick = { showUnitDialog = true },
+                        icon = Icons.Default.Straighten,
+                        iconTint = SettingsBlue
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsSwitchRow(
+                        label = "Keep the screen on",
+                        checked = settings.keepScreenOn,
+                        onCheckedChange = viewModel::setKeepScreenOn,
+                        icon = Icons.Default.BrightnessHigh,
+                        iconTint = SettingsTeal
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Privacy Policy",
+                        onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL))) },
+                        icon = Icons.Default.PrivacyTip,
+                        iconTint = SettingsSlate
+                    )
                 }
-            )
-            if (settings.dailyReminderEnabled) {
-                SettingsNavRow(
-                    label = "Reminder time",
-                    value = settings.dailyReminderTime?.let(::formatTimeLabel) ?: "Set time",
-                    onClick = { showTimePicker = true }
-                )
             }
-            SettingsNavRow(
-                label = "Metric & Imperial Units",
-                value = if (settings.unitSystem == UnitSystemType.METRIC) "Metric (kg/cm)" else "Imperial (lbs/in)",
-                onClick = { showUnitDialog = true }
-            )
-            SettingsSwitchRow(
-                label = "Keep the screen on",
-                checked = settings.keepScreenOn,
-                onCheckedChange = viewModel::setKeepScreenOn
-            )
-            SettingsNavRow(
-                label = "Privacy Policy",
-                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL))) }
-            )
         }
     }
 

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,10 +35,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.enums.VoiceType
+import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.SettingsRadioRow
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.services.TtsVoiceOption
+import com.example.homeworkout.ui.theme.HairlineGray
 
 /** Settings-tab "Voice Options (TTS)". */
 @Composable
@@ -58,38 +61,45 @@ fun VoiceOptionsScreen(
             return@Scaffold
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SettingsRadioRow(
-                label = "Male Coach Voice",
-                subtitle = "Deeper pitch, energetic coaching tone",
-                selected = settings.ttsVoiceType == VoiceType.MALE_COACH,
-                onSelect = { viewModel.setVoiceType(VoiceType.MALE_COACH) }
-            )
-            SettingsRadioRow(
-                label = "Female Coach Voice",
-                subtitle = "Higher pitch, energetic coaching tone",
-                selected = settings.ttsVoiceType == VoiceType.FEMALE_COACH,
-                onSelect = { viewModel.setVoiceType(VoiceType.FEMALE_COACH) }
-            )
-            SettingsRadioRow(
-                label = "Device TTS Engine",
-                subtitle = "Fallback to your device's system voice",
-                selected = settings.ttsVoiceType == VoiceType.DEVICE_TTS,
-                onSelect = { viewModel.setVoiceType(VoiceType.DEVICE_TTS) }
-            )
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SettingsRadioRow(
+                        label = "Male Coach Voice",
+                        subtitle = "Deeper pitch, energetic coaching tone",
+                        selected = settings.ttsVoiceType == VoiceType.MALE_COACH,
+                        onSelect = { viewModel.setVoiceType(VoiceType.MALE_COACH) }
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsRadioRow(
+                        label = "Female Coach Voice",
+                        subtitle = "Higher pitch, energetic coaching tone",
+                        selected = settings.ttsVoiceType == VoiceType.FEMALE_COACH,
+                        onSelect = { viewModel.setVoiceType(VoiceType.FEMALE_COACH) }
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsRadioRow(
+                        label = "Device TTS Engine",
+                        subtitle = "Fallback to your device's system voice",
+                        selected = settings.ttsVoiceType == VoiceType.DEVICE_TTS,
+                        onSelect = { viewModel.setVoiceType(VoiceType.DEVICE_TTS) }
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsRadioRow(
+                        label = "Custom voice",
+                        subtitle = settings.customVoiceName ?: "Browse and pick any voice your engine offers",
+                        selected = settings.ttsVoiceType == VoiceType.CUSTOM,
+                        onSelect = { showBrowser = true }
+                    )
+                }
+            }
             Text(
                 viewModel.engineDiagnostics(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 8.dp)
-            )
-            SettingsRadioRow(
-                label = "Custom voice",
-                subtitle = settings.customVoiceName ?: "Browse and pick any voice your engine offers",
-                selected = settings.ttsVoiceType == VoiceType.CUSTOM,
-                onSelect = { showBrowser = true }
             )
             AppButton(
                 text = "Preview / Test Voice",

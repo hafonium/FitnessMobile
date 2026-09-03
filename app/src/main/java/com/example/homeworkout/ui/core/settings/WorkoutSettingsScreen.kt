@@ -6,8 +6,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AvTimer
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Wc
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -24,12 +32,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.enums.UserGender
+import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.ConfirmDialog
 import com.example.homeworkout.ui.components.DurationWheelPicker
 import com.example.homeworkout.ui.components.SettingsNavRow
 import com.example.homeworkout.ui.components.SettingsSwitchRow
 import com.example.homeworkout.ui.components.SingleChoiceDialog
+import com.example.homeworkout.ui.theme.HairlineGray
+import com.example.homeworkout.ui.theme.SettingsBlue
+import com.example.homeworkout.ui.theme.SettingsGreen
+import com.example.homeworkout.ui.theme.SettingsOrange
+import com.example.homeworkout.ui.theme.SettingsPurple
+import com.example.homeworkout.ui.theme.SettingsSlate
+import com.example.homeworkout.ui.theme.SettingsTeal
 
 private const val MIN_TIMER_SEC = 0
 private const val MAX_TIMER_SEC = 59 * 60 + 59
@@ -62,27 +78,58 @@ fun WorkoutSettingsScreen(
             return@Scaffold
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SettingsNavRow(
-                label = "Gender",
-                value = settings.gender?.let { it.name.lowercase().replaceFirstChar(Char::uppercase) } ?: "Not set",
-                onClick = { showGenderDialog = true }
-            )
-            SettingsSwitchRow(label = "Music", checked = settings.musicEnabled, onCheckedChange = viewModel::setMusicEnabled)
-            SettingsNavRow(
-                label = "Rest timer",
-                value = formatTimer(settings.restTimerSec),
-                onClick = { showRestTimerDialog = true }
-            )
-            SettingsNavRow(
-                label = "Prep timer",
-                value = formatTimer(settings.prepTimerSec),
-                onClick = { showPrepTimerDialog = true }
-            )
-            SettingsNavRow(label = "Sound options", onClick = { showSoundOptions = true })
-            SettingsNavRow(label = "Restart progress", onClick = { showResetConfirm = true })
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SettingsNavRow(
+                        label = "Gender",
+                        value = settings.gender?.let { it.name.lowercase().replaceFirstChar(Char::uppercase) } ?: "Not set",
+                        onClick = { showGenderDialog = true },
+                        icon = Icons.Default.Wc,
+                        iconTint = SettingsPurple
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsSwitchRow(
+                        label = "Music",
+                        checked = settings.musicEnabled,
+                        onCheckedChange = viewModel::setMusicEnabled,
+                        icon = Icons.Default.MusicNote,
+                        iconTint = SettingsBlue
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Rest timer",
+                        value = formatTimer(settings.restTimerSec),
+                        onClick = { showRestTimerDialog = true },
+                        icon = Icons.Default.Timer,
+                        iconTint = SettingsGreen
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Prep timer",
+                        value = formatTimer(settings.prepTimerSec),
+                        onClick = { showPrepTimerDialog = true },
+                        icon = Icons.Default.AvTimer,
+                        iconTint = SettingsOrange
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Sound options",
+                        onClick = { showSoundOptions = true },
+                        icon = Icons.Default.VolumeUp,
+                        iconTint = SettingsTeal
+                    )
+                    HorizontalDivider(color = HairlineGray)
+                    SettingsNavRow(
+                        label = "Restart progress",
+                        onClick = { showResetConfirm = true },
+                        icon = Icons.Default.RestartAlt,
+                        iconTint = SettingsSlate
+                    )
+                }
+            }
         }
     }
 

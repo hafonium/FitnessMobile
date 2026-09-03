@@ -31,6 +31,7 @@ sealed class Screen(val route: String) {
     }
 
     // Training extras
+    object Onboarding : Screen("onboarding")
     object EditGoal : Screen("edit_goal")
     object WorkoutList : Screen("workout_list/{category}") {
         fun createRoute(category: String) = "workout_list/$category"

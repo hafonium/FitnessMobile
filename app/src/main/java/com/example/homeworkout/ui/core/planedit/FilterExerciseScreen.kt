@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +39,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.R
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 
 private val bodyParts = listOf("Abs", "Chest", "Back", "Arm", "Leg", "Glutes", "Shoulder")
 private val difficulties = listOf("Easy", "Medium", "Hard")
@@ -49,21 +47,42 @@ private val types = listOf("Warm up", "Stretch", "Training")
 private val equipmentOptions = listOf("No equipment", "Dumbbell", "Band", "Chair", "Bench", "Mat")
 
 /**
- * Filter static bottom popup content.
+ * Filter static bottom popup content. The exercise pool is small enough that a full set of
+ * picks can easily match nothing, so every toggle is applied to the [ExerciseBrowserViewModel]
+ * immediately — filtering happens online, per constraint, instead of batching everything behind
+ * Save — and the live count in the header reflects it in real time, turning red at zero. Leaving
+ * without Save (Cancel, tapping outside the sheet, or the system back gesture) restores whatever
+ * filter was active when the sheet was opened; Save just keeps the live selection and closes.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: () -> Unit) {
-    val currentState by viewModel.filterState.collectAsStateWithLifecycle()
+    val originalState = remember { viewModel.filterState.value }
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
-    
-    var selectedBodyParts by remember { mutableStateOf(currentState.bodyParts) }
-    var selectedDifficulty by remember { mutableStateOf(currentState.difficulty) }
-    var selectedTypes by remember { mutableStateOf(currentState.types) }
-    var selectedEquipment by remember { mutableStateOf(currentState.equipment) }
+
+    var selectedBodyParts by remember { mutableStateOf(originalState.bodyParts) }
+    var selectedDifficulty by remember { mutableStateOf(originalState.difficulty) }
+    var selectedTypes by remember { mutableStateOf(originalState.types) }
+    var selectedEquipment by remember { mutableStateOf(originalState.equipment) }
+
+    fun applyFilter() {
+        viewModel.setFilterState(
+            FilterState(
+                bodyParts = selectedBodyParts,
+                difficulty = selectedDifficulty,
+                types = selectedTypes,
+                equipment = selectedEquipment
+            )
+        )
+    }
+
+    fun cancel() {
+        viewModel.setFilterState(originalState)
+        onDismiss()
+    }
 
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { cancel() },
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true)
     ) {
         Box(
@@ -72,7 +91,7 @@ fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: (
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onDismiss
+                    onClick = { cancel() }
                 ),
             contentAlignment = Alignment.BottomCenter
         ) {
@@ -108,11 +127,16 @@ fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: (
                                 selectedDifficulty = null
                                 selectedTypes = emptySet()
                                 selectedEquipment = emptySet()
+                                applyFilter()
                             }) {
                                 Icon(Icons.Outlined.DeleteOutline, contentDescription = "Clear Filters", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
-                        Text("${exercises.size} exercises", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium)
+                        Text(
+                            text = if (exercises.isEmpty()) "No matches" else "${exercises.size} exercises",
+                            color = if (exercises.isEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
 
                     Column(
@@ -141,12 +165,13 @@ fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: (
                                                 "Shoulder" -> R.drawable.ic_muscle_shoulder
                                                 else -> R.drawable.ic_muscle_abs
                                             }
-                                            
+
                                             val isSelected = option in selectedBodyParts
-                                            
+
                                             Surface(
                                                 onClick = {
                                                     selectedBodyParts = if (isSelected) selectedBodyParts - option else selectedBodyParts + option
+                                                    applyFilter()
                                                 },
                                                 modifier = Modifier
                                                     .weight(1f)
@@ -178,32 +203,28 @@ fun FilterExerciseSheetContent(viewModel: ExerciseBrowserViewModel, onDismiss: (
                         }
                         FilterSection(title = "Difficulty", options = difficulties, isSelected = { it == selectedDifficulty }) { option ->
                             selectedDifficulty = if (selectedDifficulty == option) null else option
+                            applyFilter()
                         }
                         FilterSection(title = "Type", options = types, isSelected = { it in selectedTypes }) { option ->
                             selectedTypes = if (option in selectedTypes) selectedTypes - option else selectedTypes + option
+                            applyFilter()
                         }
                         FilterSection(title = "Equipment", options = equipmentOptions, isSelected = { it in selectedEquipment }) { option ->
                             selectedEquipment = if (option in selectedEquipment) selectedEquipment - option else selectedEquipment + option
+                            applyFilter()
                         }
                         Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             AppButton(
                                 text = "Cancel",
-                                onClick = onDismiss,
+                                onClick = { cancel() },
                                 modifier = Modifier.weight(1f).height(56.dp),
-                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                variant = AppButtonVariant.Outlined
                             )
-                            AppButton(text = "Save", onClick = {
-                                viewModel.setFilterState(FilterState(
-                                    bodyParts = selectedBodyParts,
-                                    difficulty = selectedDifficulty,
-                                    types = selectedTypes,
-                                    equipment = selectedEquipment
-                                ))
-                                onDismiss()
-                            }, modifier = Modifier.weight(1f).height(56.dp))
+                            AppButton(
+                                text = "Save",
+                                onClick = onDismiss,
+                                modifier = Modifier.weight(1f).height(56.dp)
+                            )
                         }
                     }
                 }
