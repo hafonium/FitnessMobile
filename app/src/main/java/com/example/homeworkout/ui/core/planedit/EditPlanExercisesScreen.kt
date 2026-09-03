@@ -51,31 +51,33 @@ import com.example.homeworkout.ui.theme.CloudGray
 fun EditPlanExercisesScreen(
     viewModel: DetailViewModel,
     onNavigateBack: () -> Unit,
-    onAlterExercise: () -> Unit,
-    onAddExercises: () -> Unit
+    onAlterExercise: (planExerciseId: Long) -> Unit,
+    onAddExercises: (planDayId: Long) -> Unit,
+    onUpdateReps: (planExerciseId: Long, reps: Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     // planExerciseId -> locally edited reps, purely for on-screen stepper feedback.
     val repsOverrides = remember { mutableStateMapOf<Long, Int>() }
 
-    Scaffold(
-        topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddExercises,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            ) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
-        }
-    ) { padding ->
         when (val state = uiState) {
             is DetailUiState.Success -> {
                 val exercises = state.detail.days.flatMap { it.exercises }
+                val firstDayId = state.detail.days.firstOrNull()?.planDayId ?: 0L
+                Scaffold(
+                    topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = { onAddExercises(firstDayId) },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        ) { Icon(Icons.Default.Add, contentDescription = "Add exercise") }
+                    }
+                ) { innerPadding ->
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp, bottom = 24.dp,
-                        top = padding.calculateTopPadding() + 8.dp
+                        start = 16.dp, end = 16.dp, bottom = 100.dp,
+                        top = innerPadding.calculateTopPadding() + 8.dp
                     )
                 ) {
                     items(exercises, key = { it.planExerciseId }) { exercise ->
@@ -90,7 +92,10 @@ fun EditPlanExercisesScreen(
                                     FilledTonalIconButton(
                                         onClick = {
                                             val current = reps ?: 0
-                                            if (current > 1) repsOverrides[exercise.planExerciseId] = current - 1
+                                            if (current > 1) {
+                                                repsOverrides[exercise.planExerciseId] = current - 1
+                                                onUpdateReps(exercise.planExerciseId, current - 1)
+                                            }
                                         },
                                         modifier = Modifier.size(28.dp),
                                         colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -105,7 +110,11 @@ fun EditPlanExercisesScreen(
                                         modifier = Modifier.padding(horizontal = 8.dp)
                                     )
                                     FilledTonalIconButton(
-                                        onClick = { repsOverrides[exercise.planExerciseId] = (reps ?: 0) + 1 },
+                                        onClick = {
+                                            val newReps = (reps ?: 0) + 1
+                                            repsOverrides[exercise.planExerciseId] = newReps
+                                            onUpdateReps(exercise.planExerciseId, newReps)
+                                        },
                                         modifier = Modifier.size(28.dp),
                                         colors = IconButtonDefaults.filledTonalIconButtonColors(
                                             containerColor = CloudGray,
@@ -114,7 +123,7 @@ fun EditPlanExercisesScreen(
                                     ) { Icon(Icons.Default.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp)) }
                                     Spacer(modifier = Modifier.width(4.dp))
                                 }
-                                IconButton(onClick = onAlterExercise) {
+                                IconButton(onClick = { onAlterExercise(exercise.planExerciseId) }) {
                                     Icon(Icons.Default.SwapHoriz, contentDescription = "Replace exercise", tint = MaterialTheme.colorScheme.primary)
                                 }
                                 Icon(Icons.Default.DragHandle, contentDescription = "Reorder", tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -122,13 +131,12 @@ fun EditPlanExercisesScreen(
                         }
                     }
                 }
+                }
             }
 
-            is DetailUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-
-            else -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("This workout could not be found.") }
+            is DetailUiState.Loading -> Scaffold(topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) }) { inner -> Box(Modifier.fillMaxSize().padding(inner), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
+            else -> Scaffold(topBar = { BackTopBar(title = "Edit plan", onNavigateBack = onNavigateBack) }) { inner -> Box(Modifier.fillMaxSize().padding(inner), contentAlignment = Alignment.Center) { Text("This workout could not be found.") } }
         }
-    }
 }
 
 private fun PlanExerciseSummary.subtitleText(overrideReps: Int?): String = when {

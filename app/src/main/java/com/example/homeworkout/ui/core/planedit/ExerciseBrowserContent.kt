@@ -20,9 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -47,12 +45,13 @@ import com.example.homeworkout.ui.theme.SlateGray
 fun ExerciseBrowserContent(
     viewModel: ExerciseBrowserViewModel,
     topPadding: Dp,
-    onExerciseInfo: (Long) -> Unit
+    onExerciseInfo: (Long) -> Unit,
+    isActioned: (Long) -> Boolean,
+    onActionClick: (Long) -> Unit
 ) {
     val query by viewModel.query.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.category.collectAsStateWithLifecycle()
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
-    var addedIds by remember { mutableStateOf(setOf<Long>()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -101,7 +100,7 @@ fun ExerciseBrowserContent(
             item { Text("No exercises match this search.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         } else {
             items(exercises, key = { it.id }) { exercise: Exercise ->
-                val added = exercise.id in addedIds
+                val added = isActioned(exercise.id)
                 ExerciseRow(
                     title = exercise.title,
                     subtitle = "${exercise.equipmentName} · ${exercise.level.name.lowercase()}",
@@ -110,7 +109,7 @@ fun ExerciseBrowserContent(
                 ) {
                     if (added) {
                         FilledIconButton(
-                            onClick = { addedIds = addedIds - exercise.id },
+                            onClick = { onActionClick(exercise.id) },
                             modifier = Modifier.size(32.dp),
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
@@ -121,7 +120,7 @@ fun ExerciseBrowserContent(
                         }
                     } else {
                         FilledTonalIconButton(
-                            onClick = { addedIds = addedIds + exercise.id },
+                            onClick = { onActionClick(exercise.id) },
                             modifier = Modifier.size(32.dp),
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = BrandBlueTint,

@@ -3,8 +3,10 @@ package com.example.homeworkout.ui.core.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.RecommendedPlan
+import com.example.homeworkout.domain.models.WeeklyGoalProgress
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
+import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.planselection.GetFitnessProfileUseCase
 import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCase
@@ -38,11 +40,19 @@ sealed class ChallengeState {
 class HomeViewModel(
     private val getWorkoutsUseCase: GetWorkoutsUseCase,
     getFitnessProfileUseCase: GetFitnessProfileUseCase,
-    private val recommendPlanUseCase: RecommendPlanUseCase
+    private val recommendPlanUseCase: RecommendPlanUseCase,
+    private val getWeeklyGoalProgressUseCase: GetWeeklyGoalProgressUseCase
 ) : ViewModel() {
 
     private val _selectedCategory = MutableStateFlow<WorkoutCategory?>(null)
     val selectedCategory: StateFlow<WorkoutCategory?> = _selectedCategory.asStateFlow()
+
+    val weeklyGoalProgress: StateFlow<WeeklyGoalProgress> = getWeeklyGoalProgressUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = WeeklyGoalProgress(goalDays = 6, completedDays = 0, days = emptyList())
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<HomeUiState> = _selectedCategory

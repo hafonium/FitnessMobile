@@ -52,7 +52,10 @@ import kotlinx.coroutines.launch
         UserWeightLogEntity::class,
         UserFitnessProfileEntity::class
     ],
-    version = 2,
+    // Bumped past both branches' versions (workout-plans was 2, main was 3) — this is a
+    // pre-release, destructive-migration-only DB (see fallbackToDestructiveMigration below), so
+    // the number just needs to be higher than any prior install's.
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

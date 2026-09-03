@@ -17,5 +17,8 @@ enum class UnitSystemType {
 
 /** Mirrors the `voice_type` enum in docs/db_diagram.dbml. */
 enum class VoiceType {
-    NATURAL, DEVICE_TTS
+    MALE_COACH, FEMALE_COACH, DEVICE_TTS,
+
+    /** A specific engine voice picked by name from the Voice Options browser; see [com.example.homeworkout.domain.models.SettingsPreferences.customVoiceName]. */
+    CUSTOM
 }

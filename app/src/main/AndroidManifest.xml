@@ -3,6 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!--
+      USE_EXACT_ALARM (API 33+): auto-granted at install, unlike SCHEDULE_EXACT_ALARM which needs
+      an explicit user grant via system Settings on API 33+. Play Store restricts USE_EXACT_ALARM
+      to apps whose core function is alarms/calendaring and will reject an app that declares it
+      without that justification — irrelevant for local/sideloaded debug builds, but replace with
+      just SCHEDULE_EXACT_ALARM before any Play Store submission.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!--
+      Lets the app ask the user to exempt it from stock-Android battery optimization/Doze
+      throttling — necessary on top of the exact-alarm permission on OEMs (Vivo/Oppo/OnePlus/
+      Realme/Xiaomi/Samsung) that run their own aggressive background-process killer beyond
+      stock Android's. This permission only covers the AOSP layer; the OEM-specific killer still
+      needs its own manual opt-out in system Settings — see docs/settings-feature.md.
+    -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name=".ui.App"
@@ -25,6 +44,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".ui.receivers.ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".ui.receivers.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

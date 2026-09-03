@@ -31,6 +31,8 @@ import com.example.homeworkout.ui.theme.CloudGray
 import com.example.homeworkout.ui.theme.PillShape
 import com.example.homeworkout.ui.theme.SlateGray
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 private val bodyParts = listOf("Back", "Arm", "Leg", "Glutes", "Shoulder", "Chest", "Core")
 private val difficulties = listOf("Easy", "Medium", "Hard")
 private val types = listOf("Warm up", "Stretch", "Training")
@@ -38,14 +40,16 @@ private val equipmentOptions = listOf("No equipment", "Dumbbell", "Band", "Chair
 
 /**
  * "Filter Exercise": lets you narrow the exercise library by body part, difficulty, type and
- * equipment. Static — selections here are local to the screen and Cancel/Save both just close it.
+ * equipment. Selections are backed by the [ExerciseBrowserViewModel].
  */
 @Composable
-fun FilterExerciseScreen(onNavigateBack: () -> Unit) {
-    var selectedBodyParts by remember { mutableStateOf(setOf<String>()) }
-    var selectedDifficulty by remember { mutableStateOf<String?>(null) }
-    var selectedTypes by remember { mutableStateOf(setOf<String>()) }
-    var selectedEquipment by remember { mutableStateOf(setOf<String>()) }
+fun FilterExerciseScreen(viewModel: ExerciseBrowserViewModel, onNavigateBack: () -> Unit) {
+    val currentState by viewModel.filterState.collectAsStateWithLifecycle()
+    
+    var selectedBodyParts by remember { mutableStateOf(currentState.bodyParts) }
+    var selectedDifficulty by remember { mutableStateOf(currentState.difficulty) }
+    var selectedTypes by remember { mutableStateOf(currentState.types) }
+    var selectedEquipment by remember { mutableStateOf(currentState.equipment) }
 
     Scaffold(topBar = { BackTopBar(title = "Filter", onNavigateBack = onNavigateBack) }) { padding ->
         LazyColumn(
@@ -83,7 +87,15 @@ fun FilterExerciseScreen(onNavigateBack: () -> Unit) {
                     )
                     AppButton(
                         text = "Save",
-                        onClick = onNavigateBack,
+                        onClick = {
+                            viewModel.setFilterState(FilterState(
+                                bodyParts = selectedBodyParts,
+                                difficulty = selectedDifficulty,
+                                types = selectedTypes,
+                                equipment = selectedEquipment
+                            ))
+                            onNavigateBack()
+                        },
                         modifier = Modifier.weight(1f),
                         variant = AppButtonVariant.Primary
                     )

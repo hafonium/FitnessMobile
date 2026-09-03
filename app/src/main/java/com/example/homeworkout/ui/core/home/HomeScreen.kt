@@ -2,6 +2,7 @@ package com.example.homeworkout.ui.core.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.RecommendedPlan
+import com.example.homeworkout.domain.models.WeeklyGoalDay
+import com.example.homeworkout.domain.models.WeeklyGoalProgress
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.ui.components.AppCard
@@ -74,7 +77,6 @@ import com.example.homeworkout.ui.theme.PillShape
 import com.example.homeworkout.ui.theme.SlateGray
 import com.example.homeworkout.ui.theme.TileShape
 import com.example.homeworkout.utils.ScreenWrapper
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +91,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val challenge by viewModel.challenge.collectAsStateWithLifecycle()
+    val weeklyGoalProgress by viewModel.weeklyGoalProgress.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         LazyColumn(
@@ -102,7 +105,7 @@ fun HomeScreen(
                 AppTextField(value = "", onValueChange = {}, placeholderText = "Search workouts, plans...")
             }
 
-            item { WeeklyGoalCard(onEditGoal = onOpenEditGoal) }
+            item { WeeklyGoalCard(progress = weeklyGoalProgress, onEditGoal = onOpenEditGoal) }
 
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -203,72 +206,6 @@ private fun ProBadge() {
 private fun ProTag() {
     Box(modifier = Modifier.clip(PillShape).background(AppGradients.ProBadge).padding(horizontal = 6.dp, vertical = 2.dp)) {
         Text("PRO", style = MaterialTheme.typography.labelSmall, color = InkBlack, fontWeight = FontWeight.Bold)
-    }
-}
-
-private data class DayCell(val dayOfMonth: Int, val isToday: Boolean, val isPast: Boolean)
-
-private fun currentWeekDays(): List<DayCell> {
-    val cursor = Calendar.getInstance()
-    cursor.add(Calendar.DAY_OF_YEAR, -(cursor.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY))
-    val today = Calendar.getInstance()
-    return (0 until 7).map { _ ->
-        val isToday = cursor.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-            cursor.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
-        val isPast = !isToday && cursor.before(today)
-        val cell = DayCell(dayOfMonth = cursor.get(Calendar.DAY_OF_MONTH), isToday = isToday, isPast = isPast)
-        cursor.add(Calendar.DAY_OF_YEAR, 1)
-        cell
-    }
-}
-
-@Composable
-private fun WeeklyGoalCard(onEditGoal: () -> Unit) {
-    val week = remember { currentWeekDays() }
-    AppCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Weekly Goal", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("1", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                    Text("/6", style = MaterialTheme.typography.titleMedium, color = SlateGray)
-                    IconButton(onClick = onEditGoal, modifier = Modifier.size(30.dp).padding(start = 6.dp)) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit weekly goal", tint = SlateGray, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                week.forEach { day -> DayPill(day) }
-            }
-
-            CoachTipBubble("You're doing great! Don't forget to come here tomorrow.")
-        }
-    }
-}
-
-@Composable
-private fun DayPill(day: DayCell) {
-    Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
-        if (day.isToday) {
-            Box(
-                modifier = Modifier.size(34.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.Check, contentDescription = "Today", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-        } else {
-            Text(
-                "${day.dayOfMonth}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (day.isPast) FontWeight.Bold else FontWeight.Medium,
-                color = if (day.isPast) InkBlack else SlateGray.copy(alpha = 0.6f)
-            )
-        }
     }
 }
 
@@ -418,6 +355,85 @@ private fun ChallengeCard(
             }
         }
     }
+}
+
+/** Real weekly-goal progress (from [HomeViewModel.weeklyGoalProgress]), rendered in the same
+ * card/pill/coach-tip visual language as the rest of this redesigned Home screen. */
+@Composable
+private fun WeeklyGoalCard(progress: WeeklyGoalProgress, onEditGoal: () -> Unit) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Weekly Goal", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "${progress.completedDays}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text("/${progress.goalDays}", style = MaterialTheme.typography.titleMedium, color = SlateGray)
+                    IconButton(onClick = onEditGoal, modifier = Modifier.size(30.dp).padding(start = 6.dp)) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit weekly goal", tint = SlateGray, modifier = Modifier.size(18.dp))
+                    }
+                }
+            }
+
+            if (progress.days.isNotEmpty()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    progress.days.forEach { day -> WeeklyGoalDayPill(day) }
+                }
+            }
+
+            CoachTipBubble(weeklyGoalMessage(progress))
+        }
+    }
+}
+
+@Composable
+private fun WeeklyGoalDayPill(day: WeeklyGoalDay) {
+    Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+        when {
+            day.isCompleted -> Box(
+                modifier = Modifier.size(34.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.Check, contentDescription = "Completed", tint = Color.White, modifier = Modifier.size(18.dp))
+            }
+
+            day.isToday -> Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "${day.dayOfMonth}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            else -> Text(
+                "${day.dayOfMonth}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color = SlateGray.copy(alpha = 0.6f)
+            )
+        }
+    }
+}
+
+private fun weeklyGoalMessage(progress: WeeklyGoalProgress): String = when {
+    progress.completedDays >= progress.goalDays -> "Goal complete! Great work this week."
+    progress.completedDays == 0 -> "Let's get started this week!"
+    else -> "You're doing great! Don't forget to come here tomorrow."
 }
 
 @Composable

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Language
@@ -23,16 +22,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.SettingsNavRow
-import com.example.homeworkout.ui.components.SettingsSwitchRow
 import com.example.homeworkout.ui.theme.HairlineGray
 import com.example.homeworkout.ui.theme.SettingsBlue
 import com.example.homeworkout.ui.theme.SettingsGreen
@@ -50,8 +44,6 @@ fun SettingsScreen(
     onOpenGeneralSettings: () -> Unit,
     onOpenVoiceOptions: () -> Unit
 ) {
-    var healthConnect by remember { mutableStateOf(false) }
-
     ScreenWrapper {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -74,14 +66,6 @@ fun SettingsScreen(
                         SettingsNavRow(label = "Suggest Other Features", icon = Icons.Default.Forum, iconTint = SettingsTeal)
                         HorizontalDivider(color = HairlineGray)
                         SettingsNavRow(label = "Language Options", value = "Default", icon = Icons.Default.Language, iconTint = SettingsPurple)
-                        HorizontalDivider(color = HairlineGray)
-                        SettingsSwitchRow(
-                            label = "Sync to Health Connect",
-                            checked = healthConnect,
-                            onCheckedChange = { healthConnect = it },
-                            icon = Icons.Default.Favorite,
-                            iconTint = SettingsGreen
-                        )
                     }
                 }
             }
