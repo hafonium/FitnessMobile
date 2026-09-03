@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,20 +25,21 @@ import androidx.compose.ui.unit.sp
 import com.example.homeworkout.ui.components.BackTopBar
 
 /** "Replace it with...": browse the real library for a replacement exercise. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlterExerciseScreen(
     viewModel: ExerciseBrowserViewModel,
     onNavigateBack: () -> Unit,
-    onOpenFilter: () -> Unit,
     onExerciseInfo: (Long) -> Unit,
     onReplaceExercise: (Long) -> Unit
 ) {
     var selectedId by remember { mutableStateOf<Long?>(null) }
+    var showFilterSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             BackTopBar(title = "Replace it with...", onNavigateBack = onNavigateBack) {
-                IconButton(onClick = onOpenFilter) { Icon(Icons.Default.FilterList, contentDescription = "Filter") }
+                IconButton(onClick = { showFilterSheet = true }) { Icon(Icons.Default.FilterList, contentDescription = "Filter") }
             }
         },
         bottomBar = {
@@ -65,7 +67,15 @@ fun AlterExerciseScreen(
             topPadding = padding.calculateTopPadding(),
             onExerciseInfo = onExerciseInfo,
             isActioned = { it == selectedId },
-            onActionClick = { selectedId = it }
+            onActionClick = { selectedId = it },
+            onOpenFilter = { showFilterSheet = true }
         )
+
+        if (showFilterSheet) {
+            FilterExerciseSheetContent(
+                viewModel = viewModel,
+                onDismiss = { showFilterSheet = false }
+            )
+        }
     }
 }
