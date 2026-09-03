@@ -25,32 +25,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/2gPfomN.gif"
   },
   {
-    "id": "90_90_Hamstring",
-    "name": "90/90 Hamstring",
-    "originalName": "90/90 Hamstring",
-    "category": "legs_glutes",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves"
-    ],
-    "instructions": [
-      "Lie on your back, with one leg extended straight out.",
-      "With the other leg, bend the hip and knee to 90 degrees. You may brace your leg with your hands if necessary. This will be your starting position.",
-      "Extend your leg straight into the air, pausing briefly at the top. Return the leg to the starting position.",
-      "Repeat for 10-20 repetitions, and then switch to the other leg."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/90_90_Hamstring/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/90_90_Hamstring/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/fBnPpzd.gif"
-  },
-  {
     "id": "Ab_Crunch_Machine",
     "name": "Ab Crunch Machine",
     "originalName": "Ab Crunch Machine",
@@ -572,28 +546,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/03lzqwk.gif"
   },
   {
-    "id": "Anterior_Tibialis-SMR",
-    "name": "Anterior Tibialis - SMR",
-    "originalName": "Anterior Tibialis-SMR",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Begin seated on the ground with your legs bent and your feet on the floor.",
-      "Using a Muscle Roller or a rolling pin, apply pressure to the muscles on the outside of your shins. Work from just below the knee to above the ankle, pausing at points of tension for 10-30 seconds. Repeat on the other leg."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Anterior_Tibialis-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Anterior_Tibialis-SMR/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Anti-Gravity_Press",
     "name": "Anti - Gravity Press",
     "originalName": "Anti-Gravity Press",
@@ -699,71 +651,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/4KJEpzb.gif"
   },
   {
-    "id": "Atlas_Stone_Trainer",
-    "name": "Atlas Stone Trainer",
-    "originalName": "Atlas Stone Trainer",
-    "category": "stretching",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "quadriceps"
-    ],
-    "instructions": [
-      "This trainer is effective for developing Atlas Stone strength for those who don't have access to stones, and are typically made from bar ends or heavy pipe.",
-      "Begin by loading the desired weight onto the bar. Straddle the weight, wrapping your arms around the implement, bending at the hips.",
-      "Begin by pulling the weight up past the knees, extending through the hips. As the weight clears the knees, it can be lapped by resting it on your thighs and sitting back, hugging it tightly to your chest.",
-      "Finish the movement by extending through your hips and knees to raise the weight as high as possible. The weight can be returned to the lap or to the ground for successive repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Atlas_Stone_Trainer/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Atlas_Stone_Trainer/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/PCUYOMs.gif"
-  },
-  {
-    "id": "Atlas_Stones",
-    "name": "Atlas Stones",
-    "originalName": "Atlas Stones",
-    "category": "stretching",
-    "equipment": "other",
-    "level": "expert",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "adductors",
-      "biceps",
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "middle back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "Begin with the atlas stone between your feet. Bend at the hips to wrap your arms vertically around the Atlas Stone, attempting to get your fingers underneath the stone. Many stones will have a small flat portion on the bottom, which will make the stone easier to hold.",
-      "Pulling the stone into your torso, drive through the back half of your feet to pull the stone from the ground.",
-      "As the stone passes the knees, lap it by sitting backward, pulling the stone on top of your thighs.",
-      "Sit low, getting the stone high onto your chest as you change your grip to reach over the stone. Stand, driving through with your hips. Close distance to the loading platform, and lean back, extending the hips to get the stone as high as possible."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Atlas_Stones/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Atlas_Stones/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Axle_Deadlift",
     "name": "Axle Deadlift",
     "originalName": "Axle Deadlift",
@@ -793,63 +680,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Axle_Deadlift/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/eGDudUV.gif"
-  },
-  {
-    "id": "Back_Flyes_-_With_Bands",
-    "name": "Back Flyes - With Bands",
-    "originalName": "Back Flyes - With Bands",
-    "category": "chest_push",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "middle back",
-      "triceps"
-    ],
-    "instructions": [
-      "Run a band around a stationary post like that of a squat rack.",
-      "Grab the band by the handles and stand back so that the tension in the band rises.",
-      "Extend and lift the arms straight in front of you. Tip: Your arms should be straight and parallel to the floor while perpendicular to your torso. Your feet should be firmly planted on the floor spread at shoulder width. This will be your starting position.",
-      "As you exhale, move your arms to the sides and back. Keep your arms extended and parallel to the floor. Continue the movement until the arms are extended to your sides.",
-      "After a pause, go back to the original position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Back_Flyes_-_With_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Back_Flyes_-_With_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Backward_Drag",
-    "name": "Backward Drag",
-    "originalName": "Backward Drag",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Load a sled with the desired weight, attaching a rope or straps to the sled that you can hold onto.",
-      "Begin the exercise by moving backwards for a given distance. Leaning back, extend through the legs for short steps to move as quickly as possible."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Backward_Drag/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Backward_Drag/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Backward_Medicine_Ball_Throw",
@@ -958,32 +788,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/r1XNRYB.gif"
   },
   {
-    "id": "Band_Good_Morning",
-    "name": "Band Good Morning",
-    "originalName": "Band Good Morning",
-    "category": "legs_glutes",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back"
-    ],
-    "instructions": [
-      "Using a 41 inch band, stand on one end, spreading your feet a small amount. Bend at the hips to loop the end of the band behind your neck. This will be your starting position.",
-      "Keeping your legs straight, extend through the hips to come to a near vertical position.",
-      "Ensure that you do not round your back as you go down back to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Good_Morning/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Good_Morning/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Band_Good_Morning_Pull_Through",
     "name": "Band Good Morning (Pull Through)",
     "originalName": "Band Good Morning (Pull Through)",
@@ -1008,82 +812,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Good_Morning_Pull_Through/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0V2YQjW.gif"
-  },
-  {
-    "id": "Band_Hip_Adductions",
-    "name": "Band Hip Adductions",
-    "originalName": "Band Hip Adductions",
-    "category": "legs_glutes",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "adductors"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Anchor a band around a solid post or other object.",
-      "Stand with your left side to the post, and put your right foot through the band, getting it around the ankle.",
-      "Stand up straight and hold onto the post if needed. This will be your starting position.",
-      "Keeping the knee straight, raise your right legs out to the side as far as you can.",
-      "Return to the starting position and repeat for the desired rep count.",
-      "Switch sides."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Hip_Adductions/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Band_Pull_Apart",
-    "name": "Band Pull Apart",
-    "originalName": "Band Pull Apart",
-    "category": "arms_shoulders",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "middle back",
-      "traps"
-    ],
-    "instructions": [
-      "Begin with your arms extended straight out in front of you, holding the band with both hands.",
-      "Initiate the movement by performing a reverse fly motion, moving your hands out laterally to your sides.",
-      "Keep your elbows extended as you perform the movement, bringing the band to your chest. Ensure that you keep your shoulders back during the exercise.",
-      "Pause as you complete the movement, returning to the starting position under control."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Pull_Apart/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Pull_Apart/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Band_Skull_Crusher",
-    "name": "Band Skull Crusher",
-    "originalName": "Band Skull Crusher",
-    "category": "arms_shoulders",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Secure a band to the base of a rack or the bench. Lay on the bench so that the band is lined up with your head.",
-      "Take hold of the band, raising your elbows so that the upper arm is perpendicular to the floor. With the elbow flexed, the band should be above your head. This will be your starting position.",
-      "Extend through the elbow to straighten your arm, keeping your upper arm in place. Pause at the top of the motion, and return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Skull_Crusher/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Barbell_Ab_Rollout",
@@ -2374,57 +2102,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/kjE55n5.gif"
   },
   {
-    "id": "Bicycling",
-    "name": "Bicycling",
-    "originalName": "Bicycling",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "beginner",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "To begin, seat yourself on the bike and adjust the seat to your height."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
-    "id": "Bicycling_Stationary",
-    "name": "Bicycling, Stationary",
-    "originalName": "Bicycling, Stationary",
-    "category": "cardio_hiit",
-    "equipment": "machine",
-    "level": "beginner",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "To begin, seat yourself on the bike and adjust the seat to your height.",
-      "Select the desired option from the menu. You may have to start pedaling to turn it on. You can use the manual setting, or you can select a program to use. Typically, you can enter your age and weight to estimate the amount of calories burned during exercise. The level of resistance can be changed throughout the workout. The handles can be used to monitor your heart rate to help you stay at an appropriate intensity."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Board_Press",
     "name": "Board Press",
     "originalName": "Board Press",
@@ -2533,32 +2210,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Flyes/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/1PLE8e9.gif"
-  },
-  {
-    "id": "Bodyweight_Mid_Row",
-    "name": "Bodyweight Mid Row",
-    "originalName": "Bodyweight Mid Row",
-    "category": "back_pull",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "instructions": [
-      "Begin by taking a medium to wide grip on a pull-up apparatus with your palms facing away from you. From a hanging position, tuck your knees to your chest, leaning back and getting your legs over your side of the pull-up apparatus. This will be your starting position.",
-      "Beginning with your arms straight, flex the elbows and retract the shoulder blades to raise your body up until your legs contact the pull-up apparatus.",
-      "After a brief pause, return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Mid_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bodyweight_Mid_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1oE78pm.gif"
   },
   {
     "id": "Bodyweight_Squat",
@@ -2781,91 +2432,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0lQnxMZ.gif"
-  },
-  {
-    "id": "Box_Squat_with_Bands",
-    "name": "Box Squat with Bands",
-    "originalName": "Box Squat with Bands",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin in a power rack with a box at the appropriate height behind you. Set up the bands on the sleeves, secured to either band pegs, the rack, or dumbbells so that there is appropriate tension. If dumbbells are used, secure them so that they don't move. Also, ensure that the dumbbells you are using are heavy enough for the bands that you are using. Additional plates can be used to hold the dumbbells down. If more tension is needed, you can either widen the base on the floor or choke the bands. Typically, you would aim for a box height that brings you to a parallel squat, but you can train higher or lower if desired.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wider for more emphasis on the back, glutes, adductors, and hamstrings, or closer together for more quad development. Keep your head facing forward.",
-      "With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips until you are seated on the box. Ideally, your shins should be perpendicular to the ground. Pause when you reach the box, and relax the hip flexors. Never bounce off of a box.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward off of the box as you lead the movement with your head. Continue upward, maintaining tightness head to toe. Use care to return the barbell to the rack."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Box_Squat_with_Chains",
-    "name": "Box Squat with Chains",
-    "originalName": "Box Squat with Chains",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin in a power rack with a box at the appropriate height behind you. Typically, you would aim for a box height that brings you to a parallel squat, but you can train higher or lower if desired.",
-      "To set up the chains, begin by looping the leader chain over the sleeves of the bar. The heavy chain should be attached using a snap hook. Adjust the length of the lead chain so that a few links are still on the floor at the top of the movement.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wider for more emphasis on the back, glutes, adductors, and hamstrings, or closer together for more quad development. Keep your head facing forward.",
-      "With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips until you are seated on the box. Ideally, your shins should be perpendicular to the ground. Pause when you reach the box, and relax the hip flexors. Never bounce off of a box.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward off of the box as you lead the movement with your head. Continue upward, maintaining tightness head to toe."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat_with_Chains/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Box_Squat_with_Chains/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Brachialis-SMR",
-    "name": "Brachialis - SMR",
-    "originalName": "Brachialis-SMR",
-    "category": "arms_shoulders",
-    "equipment": "foam roll",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lie on your side, with your upper arm against the foam roller. The upper arm should be more or less aligned with your body, with the outside of the bicep pressed against the foam roller.",
-      "Raise your hips off of the floor, supporting your weight on your arm and on your feet. Hold for 10-30 seconds, and then switch sides."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Brachialis-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Brachialis-SMR/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Bradford_Rocky_Presses",
@@ -3183,31 +2749,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/Hx1WC8I.gif"
   },
   {
-    "id": "Cable_Internal_Rotation",
-    "name": "Cable Internal Rotation",
-    "originalName": "Cable Internal Rotation",
-    "category": "arms_shoulders",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Sit next to a low pulley sideways (with legs stretched in front of you or crossed) and grasp the single hand cable attachment with the arm nearest to the cable. Tip: If you can adjust the pulley's height, you can use a flat bench to sit on instead.",
-      "Position the elbow against your side with the elbow bent at 90\u00b0 and the arm pointing towards the pulley. This will be your starting position.",
-      "Pull the single hand cable attachment toward your body by internally rotating your shoulder until your forearm is across your abs. You will be creating an imaginary semi-circle. Tip: The forearm should be perpendicular to your torso at all times.",
-      "Slowly go back to the initial position.",
-      "Repeat for the recommended amount of repetitions and then repeat the movement with the next arm."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Internal_Rotation/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Internal_Rotation/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Cable_Iron_Cross",
     "name": "Cable Iron Cross",
     "originalName": "Cable Iron Cross",
@@ -3338,30 +2879,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/P2lNrGL.gif"
   },
   {
-    "id": "Cable_Rear_Delt_Fly",
-    "name": "Cable Rear Delt Fly",
-    "originalName": "Cable Rear Delt Fly",
-    "category": "arms_shoulders",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Adjust the pulleys to the appropriate height and adjust the weight. The pulleys should be above your head.",
-      "Grab the left pulley with your right hand and the right pulley with your left hand, crossing them in front of you. This will be your starting position.",
-      "Initiate the movement by moving your arms back and outward, keeping your arms straight as you execute the movement.",
-      "Pause at the end of the motion before returning the handles to the start position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rear_Delt_Fly/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rear_Delt_Fly/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Cable_Reverse_Crunch",
     "name": "Cable Reverse Crunch",
     "originalName": "Cable Reverse Crunch",
@@ -3411,35 +2928,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rope_Overhead_Triceps_Extension/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/2IxROQ1.gif"
-  },
-  {
-    "id": "Cable_Rope_Rear-Delt_Rows",
-    "name": "Cable Rope Rear - Delt Rows",
-    "originalName": "Cable Rope Rear-Delt Rows",
-    "category": "arms_shoulders",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back"
-    ],
-    "instructions": [
-      "Sit in the same position on a low pulley row station as you would if you were doing seated cable rows for the back.",
-      "Attach a rope to the pulley and grasp it with an overhand grip. Your arms should be extended and parallel to the floor with the elbows flared out.",
-      "Keep your lower back upright and slide your hips back so that your knees are slightly bent. This will be your starting position.",
-      "Pull the cable attachment towards your upper chest, just below the neck, as you keep your elbows up and out to the sides. Continue this motion as you exhale until the elbows travel slightly behind the back. Tip: Keep your upper arms horizontal, perpendicular to the torso and parallel to the floor throughout the motion.",
-      "Go back to the initial position where the arms are extended and the shoulders are stretched forward. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rope_Rear-Delt_Rows/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Rope_Rear-Delt_Rows/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
   },
   {
     "id": "Cable_Russian_Twists",
@@ -3699,31 +3187,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/fKZgDEO.gif"
   },
   {
-    "id": "Calf_Raises_-_With_Bands",
-    "name": "Calf Raises - With Bands",
-    "originalName": "Calf Raises - With Bands",
-    "category": "arms_shoulders",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Grab an exercise band and stand on it with your toes making sure that the length of the band between the foot and the arms is the same for both sides.",
-      "While holding the handles of the band, raise the arms to the side of your head as if you were getting ready to perform a shoulder press. The palms should be facing forward with the elbows bent and to the sides. This movement will create tension on the band. This will be your starting position.",
-      "Keeping the hands by your shoulder, stand up on your toes as you exhale and contract the calves hard at the top of the movement.",
-      "After a one second contraction, slowly go back down to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Raises_-_With_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Calf_Raises_-_With_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Calf_Stretch_Elbows_Against_Wall",
     "name": "Calf Stretch Elbows Against Wall",
     "originalName": "Calf Stretch Elbows Against Wall",
@@ -3822,32 +3285,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/2DxtqHL.gif"
   },
   {
-    "id": "Car_Drivers",
-    "name": "Car Drivers",
-    "originalName": "Car Drivers",
-    "category": "arms_shoulders",
-    "equipment": "barbell",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "instructions": [
-      "While standing upright, hold a barbell plate in both hands at the 3 and 9 o'clock positions. Your palms should be facing each other and your arms should be extended straight out in front of you. This will be your starting position.",
-      "Initiate the movement by rotating the plate as far to one side as possible. Use the same type of movement you would use to turn a steering wheel to one side.",
-      "Reverse the motion, turning it all the way to the opposite side.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Car_Drivers/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Carioca_Quick_Step",
     "name": "Carioca Quick Step",
     "originalName": "Carioca Quick Step",
@@ -3929,29 +3366,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Catch_and_Overhead_Throw/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/PsVS1QP.gif"
-  },
-  {
-    "id": "Chain_Handle_Extension",
-    "name": "Chain Handle Extension",
-    "originalName": "Chain Handle Extension",
-    "category": "arms_shoulders",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "You will need two cable handle attachments and a flat bench, as well as chains, for this exercise. Clip the middle of the chains to the handles, and position yourself on the flat bench. Your elbows should be pointing straight up.",
-      "Begin by extending through the elbow, keeping your upper arm still, with your wrists pronated.",
-      "Pause at the lockout, and reverse the motion to return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chain_Handle_Extension/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chain_Handle_Extension/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
   },
   {
     "id": "Chain_Press",
@@ -4320,37 +3734,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Chin_To_Chest_Stretch/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/2LQkNPW.gif"
-  },
-  {
-    "id": "Circus_Bell",
-    "name": "Circus Bell",
-    "originalName": "Circus Bell",
-    "category": "arms_shoulders",
-    "equipment": "other",
-    "level": "expert",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "traps",
-      "triceps"
-    ],
-    "instructions": [
-      "The circus bell is an oversized dumbbell with a thick handle. Begin with the dumbbell between your feet, and grip the handle with both hands.",
-      "Clean the dumbbell by extending through your hips and knees to deliver the implement to the desired shoulder, letting go with the extra hand.",
-      "Ensure that you get one of the dumbbell heads behind the shoulder to keep from being thrown off balance. To raise it overhead, dip by flexing the knees, and the drive upwards as you extend the dumbbell overhead, leaning slightly away from it as you do so.",
-      "Carefully guide the bell back to the floor, keeping it under control as much as possible. It is best to perform this event on a thick rubber mat to prevent damage to the floor."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Circus_Bell/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Circus_Bell/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Clean",
@@ -4958,35 +4341,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/Qyk5J3p.gif"
   },
   {
-    "id": "Cross_Over_-_With_Bands",
-    "name": "Cross Over - With Bands",
-    "originalName": "Cross Over - With Bands",
-    "category": "chest_push",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "shoulders"
-    ],
-    "instructions": [
-      "Secure an exercise band around a stationary post.",
-      "While facing away from the post, grab the handles on both ends of the band and step forward enough to create tension on the band.",
-      "Raise your arms to the sides, parallel to the floor, perpendicular to your torso (your torso and the arms should resemble the letter \"T\") and with the palms facing forward. Have them extended with a slight bend at the elbows. This will be your starting position.",
-      "While keeping your arms straight, bring them across your chest in a semicircular motion to the front as you exhale and flex your pecs. Hold the contraction for a second.",
-      "Slowly return to the starting position as you inhale.",
-      "Perform for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Over_-_With_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cross_Over_-_With_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Crossover_Reverse_Lunge",
     "name": "Crossover Reverse Lunge",
     "originalName": "Crossover Reverse Lunge",
@@ -5016,30 +4370,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/1VpF8db.gif"
   },
   {
-    "id": "Crucifix",
-    "name": "Crucifix",
-    "originalName": "Crucifix",
-    "category": "arms_shoulders",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "instructions": [
-      "In the crucifix, you statically hold weights out to the side for time. While the event can be practiced using dumbbells, it is best to practice with one of the various implements used, such as axes and hammers, as it feels different.",
-      "Begin standing, and raise your arms out to the side holding the implements. Your arms should be parallel to the ground. In competition, judges or sensors are used to let you know when you break parallel. Hold for as long as you can. Typically, the weights should be heavy enough that you fail in 30-60 seconds."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crucifix/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crucifix/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Crunch_-_Hands_Overhead",
     "name": "Crunch - Hands Overhead",
     "originalName": "Crunch - Hands Overhead",
@@ -5063,33 +4393,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch_-_Hands_Overhead/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/kjJ3VoQ.gif"
-  },
-  {
-    "id": "Crunch_-_Legs_On_Exercise_Ball",
-    "name": "Crunch - Legs On Exercise - Ball",
-    "originalName": "Crunch - Legs On Exercise Ball",
-    "category": "cardio_hiit",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "abdominals"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lie flat on your back with your feet resting on an exercise ball and your knees bent at a 90 degree angle.",
-      "Place your feet three to four inches apart and point your toes inward so they touch.",
-      "Place your hands lightly on either side of your head keeping your elbows in. Tip: Don't lock your fingers behind your head.",
-      "Push the small of your back down in the floor in order to better isolate your abdominal muscles. This will be your starting position.",
-      "Begin to roll your shoulders off the floor and continue to push down as hard as you can with your lower back. Your shoulders should come up off the floor only about four inches, and your lower back should remain on the floor. Breathe out as you execute this portion of the movement. Squeeze your abdominals hard at the top of the contraction and hold for a second. Tip: Focus on a slow, controlled movement. Refrain from using momentum at any time.",
-      "Slowly go back down to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch_-_Legs_On_Exercise_Ball/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch_-_Legs_On_Exercise_Ball/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1IFV9h3.gif"
   },
   {
     "id": "Crunches",
@@ -5197,67 +4500,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/iny3m5y.gif"
-  },
-  {
-    "id": "Deadlift_with_Bands",
-    "name": "Deadlift with Bands",
-    "originalName": "Deadlift with Bands",
-    "category": "stretching",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "middle back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "To deadlift with short bands, simply loop them over the bar before you start, and step into them to set up. For long bands, they will need to be anchored to a secure base, such as heavy dumbbells or a rack.",
-      "With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar. Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
-      "Lower the bar by bending at the hips and guiding it to the floor."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deadlift_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deadlift_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Deadlift_with_Chains",
-    "name": "Deadlift with Chains",
-    "originalName": "Deadlift with Chains",
-    "category": "stretching",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "middle back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "You can attach the chains to the sleeves of the bar, or just drape the middle over the bar so there is a greater weight increase as you lift.",
-      "Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets. With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar.",
-      "Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
-      "Lower the bar by bending at the hips and guiding it to the floor."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deadlift_with_Chains/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Deadlift_with_Chains/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Decline_Barbell_Bench_Press",
@@ -5668,33 +4910,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Chest_Version/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/4x5Okof.gif"
-  },
-  {
-    "id": "Dips_-_Triceps_Version",
-    "name": "Dips - Triceps Version",
-    "originalName": "Dips - Triceps Version",
-    "category": "chest_push",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "shoulders"
-    ],
-    "instructions": [
-      "To get into the starting position, hold your body at arm's length with your arms nearly locked above the bars.",
-      "Now, inhale and slowly lower yourself downward. Your torso should remain upright and your elbows should stay close to your body. This helps to better focus on tricep involvement. Lower yourself until there is a 90 degree angle formed between the upper arm and forearm.",
-      "Then, exhale and push your torso back up using your triceps to bring your body back to the starting position.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
   },
   {
     "id": "Donkey_Calf_Raises",
@@ -6929,36 +6144,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/1VpF8db.gif"
   },
   {
-    "id": "Elevated_Cable_Rows",
-    "name": "Elevated Cable Rows",
-    "originalName": "Elevated Cable Rows",
-    "category": "back_pull",
-    "equipment": "cable",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "middle back",
-      "traps"
-    ],
-    "instructions": [
-      "Get a platform of some sort (it can be an aerobics or calf raise platform) that is around 4-6 inches in height.",
-      "Place it on the seat of the cable row machine.",
-      "Sit down on the machine and place your feet on the front platform or crossbar provided making sure that your knees are slightly bent and not locked.",
-      "Lean over as you keep the natural alignment of your back and grab the V-bar handles.",
-      "With your arms extended pull back until your torso is at a 90-degree angle from your legs. Your back should be slightly arched and your chest should be sticking out. You should be feeling a nice stretch on your lats as you hold the bar in front of you. This is the starting position of the exercise.",
-      "Keeping the torso stationary, pull the handles back towards your torso while keeping the arms close to it until you touch the abdominals. Breathe out as you perform that movement. At that point you should be squeezing your back muscles hard. Hold that contraction for a second and slowly go back to the original position while breathing in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elevated_Cable_Rows/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elevated_Cable_Rows/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Elliptical_Trainer",
     "name": "Elliptical Trainer",
     "originalName": "Elliptical Trainer",
@@ -7033,31 +6218,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Exercise_Ball_Pull-In/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0rHfvy9.gif"
-  },
-  {
-    "id": "Extended_Range_One-Arm_Kettlebell_Floor_Press",
-    "name": "Extended Range Single - Arm Kettlebell Floor Press",
-    "originalName": "Extended Range One-Arm Kettlebell Floor Press",
-    "category": "chest_push",
-    "equipment": "kettlebells",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "shoulders",
-      "triceps"
-    ],
-    "instructions": [
-      "Lie on the floor and position a kettlebell for one arm to press. The kettlebell should be held by the handle. The leg on the same side that you are pressing should be bent, with the knee crossing over the midline of the body.",
-      "Press the kettlebell by extending the elbow and adducting the arm, pressing it above your body. Return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Extended_Range_One-Arm_Kettlebell_Floor_Press/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Extended_Range_One-Arm_Kettlebell_Floor_Press/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/j6uIfep.gif"
   },
   {
     "id": "External_Rotation",
@@ -7160,32 +6320,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/0IgNjSM.gif"
   },
   {
-    "id": "EZ-Bar_Skullcrusher",
-    "name": "EZ - Bar Skullcrusher",
-    "originalName": "EZ-Bar Skullcrusher",
-    "category": "arms_shoulders",
-    "equipment": "e-z curl bar",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "instructions": [
-      "Using a close grip, lift the EZ bar and hold it with your elbows in as you lie on the bench. Your arms should be perpendicular to the floor. This will be your starting position.",
-      "Keeping the upper arms stationary, lower the bar by allowing the elbows to flex. Inhale as you perform this portion of the movement. Pause once the bar is directly above the forehead.",
-      "Lift the bar back to the starting position by extending the elbow and exhaling.",
-      "Repeat."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Skullcrusher/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Face_Pull",
     "name": "Face Pull",
     "originalName": "Face Pull",
@@ -7239,35 +6373,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/qPEzJjA.gif"
   },
   {
-    "id": "Fast_Skipping",
-    "name": "Fast Skipping",
-    "originalName": "Fast Skipping",
-    "category": "cardio_hiit",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "Start in a relaxed position with one leg slightly forward. This will be your starting position.",
-      "Skip by executing a step-hop pattern of right-right-step to left-left-step, and so on, alternating back and forth.",
-      "Perform fast skips by maintaining close contact with the ground and reduce air time, moving as quickly as possible."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Fast_Skipping/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/b5uBMv2.gif"
-  },
-  {
     "id": "Finger_Curls",
     "name": "Finger Curls",
     "originalName": "Finger Curls",
@@ -7290,33 +6395,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Finger_Curls/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/awG04cF.gif"
-  },
-  {
-    "id": "Flat_Bench_Cable_Flyes",
-    "name": "Flat Bench Cable Flyes",
-    "originalName": "Flat Bench Cable Flyes",
-    "category": "chest_push",
-    "equipment": "cable",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Position a flat bench between two low pulleys so that when you are laying on it, your chest will be lined up with the cable pulleys.",
-      "Lay flat on the bench and keep your feet on the ground.",
-      "Have someone hand you the handles on each hand. You will grab each single handle attachment with a palms up grip.",
-      "Extend your arms by your side with a slight bend on your elbows. Tip: You will keep this bend constant through the whole movement. Your arms should be parallel to the floor. This is your starting position.",
-      "Now start lifting the arms in a semi-circle motion directly in front of you by pulling the cables together until both hands meet at the top of the movement. Squeeze your chest as you perform this motion and breathe out during this movement. Also, hold the contraction for a second at the top. Tip: When performed correctly, at the top position of this movement, your arms should be perpendicular to your torso and the floor touching above your chest.",
-      "Slowly come back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Cable_Flyes/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flat_Bench_Cable_Flyes/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
   },
   {
     "id": "Flat_Bench_Leg_Pull-In",
@@ -7499,28 +6577,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Flutter_Kicks/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/UVo2Qs2.gif"
-  },
-  {
-    "id": "Foot-SMR",
-    "name": "Foot - SMR",
-    "originalName": "Foot-SMR",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "This exercise stretches the fascia of the muscles in the feet. Start off seated with your shoes removed. Using a foot roller or a similar object, such as a small section of pvc pipe, place your foot against the roller across the arch of your foot. This will be your starting position.",
-      "Press down firmly, rolling across the arch of your foot. Hold for 10-30 seconds, and then switch feet."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Foot-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Foot-SMR/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Forward_Drag_with_Press",
@@ -8251,29 +7307,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/2Ryn564.gif"
   },
   {
-    "id": "Groiners",
-    "name": "Groiners",
-    "originalName": "Groiners",
-    "category": "legs_glutes",
-    "equipment": "bodyweight",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "adductors"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Begin in a pushup position on the floor. This will be your starting position.",
-      "Using both legs, jump forward landing with your feet next to your hands. Keep your head up as you do so.",
-      "Return to the starting position and immediately repeat the movement, continuing for 10-20 repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Groiners/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Groiners/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Hack_Squat",
     "name": "Hack Squat",
     "originalName": "Hack Squat",
@@ -8358,29 +7391,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Grip_Incline_DB_Bench_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0V2YQjW.gif"
-  },
-  {
-    "id": "Hamstring-SMR",
-    "name": "Hamstring - SMR",
-    "originalName": "Hamstring-SMR",
-    "category": "legs_glutes",
-    "equipment": "foam roll",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "In a seated position, extend your legs over a foam roll so that it is position on the back of the upper legs. Place your hands to the side or behind you to help support your weight. This will be your starting position.",
-      "Using your hands, lift your hips off of the floor and shift your weight on the foam roll to one leg. Relax the hamstrings of the leg you are stretching.",
-      "Roll over the foam from below the hip to above the back of the knee, pausing at points of tension for 10-30 seconds. Repeat for the other leg."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hamstring-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hamstring-SMR/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/fBnPpzd.gif"
   },
   {
     "id": "Hamstring_Stretch",
@@ -8562,34 +7572,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/4KJEpzb.gif"
   },
   {
-    "id": "Hanging_Bar_Good_Morning",
-    "name": "Hanging Bar Good Morning",
-    "originalName": "Hanging Bar Good Morning",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "glutes",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin with a bar on a rack at about the same height as your stomach. Suspend the bar using chains or suspension straps.",
-      "Bend over underneath the bar and rack the bar across the rear of your shoulders as you would a power squat, not on top of your traps. At the proper height, you should be near parallel to the floor when bent over. Keep your back tight, shoulder blades pinched together, and your knees slightly bent. Keep your back arched and your cervical spine in proper alignment.",
-      "Begin the motion by extending through the hips with your glutes and hamstrings, and you are standing with the weight.",
-      "Slowly lower the weight back to the starting position, where it is supported by the chains."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Bar_Good_Morning/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Bar_Good_Morning/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Hanging_Leg_Raise",
     "name": "Hanging Leg Raise",
     "originalName": "Hanging Leg Raise",
@@ -8669,33 +7651,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/76vfTdU.gif"
   },
   {
-    "id": "Heavy_Bag_Thrust",
-    "name": "Heavy Bag Thrust",
-    "originalName": "Heavy Bag Thrust",
-    "category": "cardio_hiit",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "shoulders",
-      "triceps"
-    ],
-    "instructions": [
-      "Utilize a heavy bag for this exercise. Assume an upright stance next to the bag, with your feet staggered, fairly wide apart. Place your hand on the bag at about chest height. This will be your starting position.",
-      "Begin by twisting at the waist, pushing the bag forward as hard as possible. Perform this move quickly, pushing the bag away from your body.",
-      "Receive the bag as it swings back by reversing these steps."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Heavy_Bag_Thrust/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Heavy_Bag_Thrust/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/Y8dOJlH.gif"
-  },
-  {
     "id": "High_Cable_Curls",
     "name": "High Cable Curls",
     "originalName": "High Cable Curls",
@@ -8743,56 +7698,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Circles_prone/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0xDpB4L.gif"
-  },
-  {
-    "id": "Hip_Extension_with_Bands",
-    "name": "Hip Extension with Bands",
-    "originalName": "Hip Extension with Bands",
-    "category": "legs_glutes",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "hamstrings"
-    ],
-    "instructions": [
-      "Secure one end of the band to the lower portion of a post and attach the other to one ankle.",
-      "Facing the attachment point of the band, hold on to the column to stabilize yourself.",
-      "Keeping your head and your chest up, move the resisted leg back as far as you can while keeping the knee straight.",
-      "Return the leg to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Extension_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Extension_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Hip_Flexion_with_Band",
-    "name": "Hip Flexion with Band",
-    "originalName": "Hip Flexion with Band",
-    "category": "legs_glutes",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Secure one end of the band to the lower portion of a post and attach the other to one ankle.",
-      "Face away from the attachment point of the band.",
-      "Keeping your head and your chest up, raise your knee up to 90 degrees and pause.",
-      "Return the leg to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Flexion_with_Band/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hip_Flexion_with_Band/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Hip_Lift_with_Band",
@@ -8873,36 +7778,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/znP9SIh.gif"
   },
   {
-    "id": "Hurdle_Hops",
-    "name": "Hurdle Hops",
-    "originalName": "Hurdle Hops",
-    "category": "cardio_hiit",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "Set up a row of hurdles or other small barriers, placing them a few feet apart.",
-      "Stand in front of the first hurdle with your feet shoulder width apart. This will be your starting position.",
-      "Begin by jumping with both feet over the first hurdle, swinging both arms as you jump.",
-      "Absorb the impact of landing by bending the knees, rebounding out of the first leap by jumping over the next hurdle. Continue until you have jumped over all of the hurdles."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hurdle_Hops/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hurdle_Hops/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Hyperextensions_Back_Extensions",
     "name": "Hyperextensions (Back Extensions)",
     "originalName": "Hyperextensions (Back Extensions)",
@@ -8958,29 +7833,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_With_No_Hyperextension_Bench/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/zhMwOwE.gif"
-  },
-  {
-    "id": "Iliotibial_Tract-SMR",
-    "name": "Iliotibial Tract - SMR",
-    "originalName": "Iliotibial Tract-SMR",
-    "category": "legs_glutes",
-    "equipment": "foam roll",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "abductors"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lay on your side, with the bottom leg placed onto a foam roller between the hip and the knee. The other leg can be crossed in front of you.",
-      "Place as much of your weight as is tolerable onto your bottom leg; there is no need to keep your bottom leg in contact with the ground. Be sure to relax the muscles of the leg you are stretching.",
-      "Roll your leg over the foam from you hip to your knee, pausing for 10-30 seconds at points of tension. Repeat with the opposite leg."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Iliotibial_Tract-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Iliotibial_Tract-SMR/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Inchworm",
@@ -9064,32 +7916,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Bench_Pull/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0rHfvy9.gif"
-  },
-  {
-    "id": "Incline_Cable_Chest_Press",
-    "name": "Incline Cable Chest Press",
-    "originalName": "Incline Cable Chest Press",
-    "category": "chest_push",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "shoulders",
-      "triceps"
-    ],
-    "instructions": [
-      "Adjust the weight to an appropriate amount and be seated, grasping the handles. Your upper arms should be about 45 degrees to the body, with your head and chest up. The elbows should be bent to about 90 degrees. This will be your starting position.",
-      "Begin by extending through the elbow, pressing the handles together straight in front of you. Keep your shoulder blades retracted as you execute the movement.",
-      "After pausing at full extension, return to the starting position, keeping tension on the cables."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Cable_Chest_Press/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Cable_Chest_Press/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
   },
   {
     "id": "Incline_Cable_Flye",
@@ -9599,32 +8425,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/jdiExfW.gif"
   },
   {
-    "id": "Iron_Cross",
-    "name": "Iron Cross",
-    "originalName": "Iron Cross",
-    "category": "arms_shoulders",
-    "equipment": "dumbbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Iron_Cross/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Iron_Cross/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1RIkUHT.gif"
-  },
-  {
     "id": "Iron_Crosses_stretch",
     "name": "Iron Crosses (stretch)",
     "originalName": "Iron Crosses (stretch)",
@@ -9961,41 +8761,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jogging_Treadmill/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/rjiM4L3.gif"
-  },
-  {
-    "id": "Keg_Load",
-    "name": "Keg Load",
-    "originalName": "Keg Load",
-    "category": "general_fitness",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "biceps",
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "middle back",
-      "quadriceps",
-      "shoulders",
-      "traps"
-    ],
-    "instructions": [
-      "To load kegs, place the desired number a distance from the loading platform, typically 30-50 feet.",
-      "Begin by grabbing the close handle of the first keg, tilting it onto its side to grab the opposite edge of the bottom of the keg. Lift the keg up to your chest.",
-      "The higher you can place the keg, the faster you should be able to move to the platform. Shouldering is usually not allowed. Be sure to keep a firm hold on the keg. Move as quickly as possible to the platform, and load it, extending through your hips, knees, and ankles to get it as high as possible.",
-      "Return to the starting position to retrieve the next keg, and repeat until the event is completed."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Keg_Load/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Keg_Load/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Kettlebell_Arnold_Press",
@@ -10725,32 +9490,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/0mB6wHO.gif"
   },
   {
-    "id": "Kneeling_High_Pulley_Row",
-    "name": "Kneeling High Pulley Row",
-    "originalName": "Kneeling High Pulley Row",
-    "category": "back_pull",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back"
-    ],
-    "instructions": [
-      "Select the appropriate weight using a pulley that is above your head. Attach a rope to the cable and kneel a couple of feet away, holding the rope out in front of you with both arms extended. This will be your starting position.",
-      "Initiate the movement by flexing the elbows and fully retracting your shoulders, pulling the rope toward your upper chest with your elbows out.",
-      "After pausing briefly, slowly return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_High_Pulley_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_High_Pulley_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1u36hhy.gif"
-  },
-  {
     "id": "Kneeling_Hip_Flexor",
     "name": "Kneeling Hip Flexor",
     "originalName": "Kneeling Hip Flexor",
@@ -11008,52 +9747,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Cone_Hops/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/4c9BhzB.gif"
-  },
-  {
-    "id": "Lateral_Raise_-_With_Bands",
-    "name": "Lateral Raise - With Bands",
-    "originalName": "Lateral Raise - With Bands",
-    "category": "back_pull",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "To begin, stand on an exercise band so that tension begins at arm's length. Grasp the handles using a pronated (palms facing your thighs) grip that is slightly less than shoulder width. The handles should be resting on the sides of your thighs. Your arms should be extended with a slight bend at the elbows and your back should be straight. This will be your starting position.",
-      "Use your side shoulders to lift the handles to the sides as you exhale. Continue to lift the handles until they are slightly above parallel. Tip: As you lift the handles, slightly tilt the hand as if you were pouring water and keep your arms extended. Also, keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the handles back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Raise_-_With_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lateral_Raise_-_With_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Latissimus_Dorsi-SMR",
-    "name": "Latissimus Dorsi - SMR",
-    "originalName": "Latissimus Dorsi-SMR",
-    "category": "back_pull",
-    "equipment": "foam roll",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "While lying on the floor, place a foam roll under your back and to one side, just behind your arm pit. This will be your starting position.",
-      "Keep the arm of the side being stretched behind and to the side of you as you shift your weight onto your lats, keeping your upper body off of the ground. Hold for 10-30 seconds, and switch sides."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Latissimus_Dorsi-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Latissimus_Dorsi-SMR/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Leg-Over_Floor_Press",
@@ -11339,32 +10032,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/jHAnWmT.gif"
   },
   {
-    "id": "Leverage_Iso_Row",
-    "name": "Leverage Iso Row",
-    "originalName": "Leverage Iso Row",
-    "category": "back_pull",
-    "equipment": "machine",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back"
-    ],
-    "instructions": [
-      "Load an appropriate weight onto the pins and adjust the seat height so that the handles are at chest level. Grasp the handles with either a neutral or pronated grip. This will be your starting position.",
-      "Pull the handles towards your torso, retracting your shoulder blades as you flex the elbow.",
-      "Pause at the bottom of the motion, and then slowly return the handles to the starting position. For multiple repetitions, avoid completely returning the weight to the stops to keep tension on the muscles being worked."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1oE78pm.gif"
-  },
-  {
     "id": "Leverage_Shoulder_Press",
     "name": "Leverage Shoulder Press",
     "originalName": "Leverage Shoulder Press",
@@ -11500,39 +10167,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/CB8WET1.gif"
   },
   {
-    "id": "Log_Lift",
-    "name": "Log Lift",
-    "originalName": "Log Lift",
-    "category": "arms_shoulders",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "chest",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "middle back",
-      "quadriceps",
-      "traps",
-      "triceps"
-    ],
-    "instructions": [
-      "Begin standing with the log in front of you. Grasp the handles, and begin to clean the log. As you are bent over to start the clean, attempt to get the log as high as possible, pulling it into your chest. Extend through the hips and knees to bring it up to complete the clean.",
-      "Push your head back and look up, creating a shelf on your chest to rest the log. Begin the press by dipping, flexing slightly through the knees and reversing the motion. This push press will generate momentum to start the log moving vertically. Continue by extending through the elbows to press the log above your head. There are no strict rules on form, so use whatever techniques you are most efficient with. As the log is pressed, ensure that you push your head through on each repetition, looking forward.",
-      "Repeat as many times as possible. Attempt to control the descent of the log as it is returned to the ground."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Log_Lift/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Log_Lift/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/8IbNZwc.gif"
-  },
-  {
     "id": "London_Bridges",
     "name": "London Bridges",
     "originalName": "London Bridges",
@@ -11561,54 +10195,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/bLyQokI.gif"
   },
   {
-    "id": "Looking_At_Ceiling",
-    "name": "Looking At Ceiling",
-    "originalName": "Looking At Ceiling",
-    "category": "legs_glutes",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Kneel on the floor, holding your heels with both hands.",
-      "Lift your buttocks up and forward while bringing your head back to look up at the ceiling, to give an arch in your back."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Looking_At_Ceiling/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Looking_At_Ceiling/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
-    "id": "Low_Cable_Crossover",
-    "name": "Low Cable Crossover",
-    "originalName": "Low Cable Crossover",
-    "category": "chest_push",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "shoulders"
-    ],
-    "instructions": [
-      "To move into the starting position, place the pulleys at the low position, select the resistance to be used and grasp a handle in each hand.",
-      "Step forward, gaining tension in the pulleys. Your palms should be facing forward, hands below the waist, and your arms straight. This will be your starting position.",
-      "With a slight bend in your arms, draw your hands upward and toward the midline of your body. Your hands should come together in front of your chest, palms facing up.",
-      "Return your arms back to the starting position after a brief pause."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Crossover/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Low_Cable_Triceps_Extension",
     "name": "Low Cable Triceps Extension",
     "originalName": "Low Cable Triceps Extension",
@@ -11633,57 +10219,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Cable_Triceps_Extension/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/Gchi5Tr.gif"
-  },
-  {
-    "id": "Low_Pulley_Row_To_Neck",
-    "name": "Low Pulley Row To Neck",
-    "originalName": "Low Pulley Row To Neck",
-    "category": "arms_shoulders",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back",
-      "traps"
-    ],
-    "instructions": [
-      "Sit on a low pulley row machine with a rope attachment.",
-      "Grab the ends of the rope using a palms-down grip and sit with your back straight and your knees slightly bent. Tip: Keep your back almost completely vertical and your arms fully extended in front of you. This will be your starting position.",
-      "While keeping your torso stationary, lift your elbows and start bending them as you pull the rope towards your neck while exhaling. Throughout the movement your upper arms should remain parallel to the floor. Tip: Continue this motion until your hands are almost next to your ears (the forearms will not be parallel to the floor at the end of the movement as they will be angled a bit upwards) and your elbows are out away from your sides.",
-      "After holding for a second or so at the contracted position, come back slowly to the starting position as you inhale. Tip: Again, during no part of the movement should the torso move.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Pulley_Row_To_Neck/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Low_Pulley_Row_To_Neck/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1u36hhy.gif"
-  },
-  {
-    "id": "Lower_Back-SMR",
-    "name": "Lower Back - SMR",
-    "originalName": "Lower Back-SMR",
-    "category": "stretching",
-    "equipment": "foam roll",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "In a seated position, place a foam roll under your lower back. Cross your arms in front of you and protract your shoulders. This will be your starting position.",
-      "Raise your hips off of the floor and lean back, keeping your weight on your lower back. Now shift your weight slightly to one side, keeping your weight off of the spine and on the muscles to the side of it. Roll over your lower back, holding points of tension for 10-30 seconds. Repeat on the other side."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lower_Back-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lower_Back-SMR/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1IFV9h3.gif"
   },
   {
     "id": "Lower_Back_Curl",
@@ -11919,30 +10454,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/fSrPP6B.gif"
   },
   {
-    "id": "Lying_Crossover",
-    "name": "Lying Crossover",
-    "originalName": "Lying Crossover",
-    "category": "legs_glutes",
-    "equipment": "bodyweight",
-    "level": "expert",
-    "force": "static",
-    "primaryMuscles": [
-      "abductors"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lie on your back with your legs extended.",
-      "Cross one leg over your body with the knee bent, attempting to touch the knee to the ground. Your partner should kneel beside you, holding your shoulder down with one hand and controlling the crossed leg with the other. this will be your starting position.",
-      "Attempt to raise the bent knee off of the ground as your partner prevents any actual movement.",
-      "After 10-20 seconds, relax the leg as your partner gently presses the knee towards the floor. Repeat with the other side."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Crossover/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Crossover/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
-  },
-  {
     "id": "Lying_Dumbbell_Tricep_Extension",
     "name": "Lying Dumbbell Tricep Extension",
     "originalName": "Lying Dumbbell Tricep Extension",
@@ -12042,31 +10553,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Glute/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/RQNVT10.gif"
-  },
-  {
-    "id": "Lying_Hamstring",
-    "name": "Lying Hamstring",
-    "originalName": "Lying Hamstring",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "expert",
-    "force": "static",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves"
-    ],
-    "instructions": [
-      "Lie on your back with your legs extended. Your partner should be kneeling beside you. Raise one leg up towards the ceiling and have your partner hold the ankle. Your partner can use their shoulder to brace your leg if necessary. This will be your starting position.",
-      "With your partner holding your leg in place, attempt to flex the knee, contracting the hamstrings for 10-20 seconds.",
-      "Then relax your leg, allowing your partner to gently push the leg towards your head. Be sure to inform your helper when the stretch is adequate to prevent injury or overstretching. Switch sides once complete."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Hamstring/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Hamstring/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
   },
   {
     "id": "Lying_High_Bench_Barbell_Curl",
@@ -12170,55 +10656,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_One-Arm_Lateral_Raise/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/2ORFMoR.gif"
-  },
-  {
-    "id": "Lying_Prone_Quadriceps",
-    "name": "Lying Prone Quadriceps",
-    "originalName": "Lying Prone Quadriceps",
-    "category": "legs_glutes",
-    "equipment": "bodyweight",
-    "level": "expert",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lay face down on the floor with your partner kneeling beside you. Flex one knee and raise that leg off the ground, attempting to touch your glutes with your foot. Your partner should hold the knee and ankle. This will be your starting position.",
-      "Attempt to extend your knee while your partner prevents any actual movement.",
-      "After 10-20 seconds, relax your muscles as your partner gently pushes the foot towards your glutes, further stretching the quadriceps and hip flexors.",
-      "After 10-20 seconds, switch sides."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Prone_Quadriceps/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Prone_Quadriceps/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
-  },
-  {
-    "id": "Lying_Rear_Delt_Raise",
-    "name": "Lying Rear Delt Raise",
-    "originalName": "Lying Rear Delt Raise",
-    "category": "arms_shoulders",
-    "equipment": "dumbbell",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "While holding a dumbbell in each hand, lay with your chest down on a flat bench.",
-      "Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent. This will be your starting position.",
-      "Now raise the arms to the side until your elbows are at shoulder height and your arms are roughly parallel to the floor as you exhale. Tip: Maintain your arms perpendicular to the torso while keeping them extended throughout the movement. Also, keep the contraction at the top for a second.",
-      "Slowly lower the dumbbells to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions and then switch to the other arm."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Rear_Delt_Raise/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Rear_Delt_Raise/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1TVoin7.gif"
   },
   {
     "id": "Lying_Supine_Dumbbell_Curl",
@@ -12638,32 +11075,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/RJgzwny.gif"
   },
   {
-    "id": "Moving_Claw_Series",
-    "name": "Moving Claw Series",
-    "originalName": "Moving Claw Series",
-    "category": "cardio_hiit",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": null,
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "quadriceps"
-    ],
-    "instructions": [
-      "This move helps prepare your running form to help you excel at sprinting. As you run, be sure to flex the knee, aiming to kick your glutes as the hip extends.",
-      "Reload the quad as the leg moves back forward, attacking the ground on the next step.",
-      "Ensure that as you run, you block with the arms, punching through in a rapid 1-2 motion."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Moving_Claw_Series/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Moving_Claw_Series/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Muscle_Snatch",
     "name": "Muscle Snatch",
     "originalName": "Muscle Snatch",
@@ -12725,37 +11136,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/yJUHKTn.gif"
   },
   {
-    "id": "Narrow_Stance_Hack_Squats",
-    "name": "Narrow Stance Hack Squats",
-    "originalName": "Narrow Stance Hack Squats",
-    "category": "legs_glutes",
-    "equipment": "machine",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "Place the back of your torso against the back pad of the machine and hook your shoulders under the shoulder pads provided.",
-      "Position your legs in the platform using a less than shoulder width narrow stance with the toes slightly pointed out. Your feet should be around 3 inches or less apart. Tip: Keep your head up at all times and also maintain the back on the pad at all times.",
-      "Place your arms on the side handles of the machine and disengage the safety bars (which on most designs is done by moving the side handles from a facing front position to a diagonal position).",
-      "Now straighten your legs without locking the knees. This will be your starting position.",
-      "Begin to slowly lower the unit by bending the knees as you maintain a straight posture with the head up (back on the pad at all times). Continue down until the angle between the upper leg and the calves becomes slightly less than 90-degrees (which is the point in which the upper legs are below parallel to the floor). Inhale as you perform this portion of the movement.",
-      "Begin to raise the unit as you exhale by pushing the floor with mainly with the heels of your feet as you straighten the legs again and go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Hack_Squats/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Hack_Squats/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1u36hhy.gif"
-  },
-  {
     "id": "Narrow_Stance_Leg_Press",
     "name": "Narrow Stance Leg Press",
     "originalName": "Narrow Stance Leg Press",
@@ -12783,37 +11163,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Leg_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0dCyly0.gif"
-  },
-  {
-    "id": "Narrow_Stance_Squats",
-    "name": "Narrow Stance Squats",
-    "originalName": "Narrow Stance Squats",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, step under the bar and place the back of your shoulders (slightly below the neck) across it.",
-      "Hold on to the bar using both arms at each side and lift it off the rack by first pushing with your legs and at the same time straightening your torso.",
-      "Step away from the rack and position your legs using a less-than-shoulder-width narrow stance with the toes slightly pointed out. Feet should be around 3-6 inches apart. Keep your head up at all times (looking down will get you off balance) and maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section).",
-      "Begin to slowly lower the bar by bending the knees as you maintain a straight posture with the head up. Continue down until the angle between the upper leg and the calves becomes slightly less than 90-degrees (which is the point in which the upper legs are below parallel to the floor). Inhale as you perform this portion of the movement. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly.",
-      "Begin to raise the bar as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Squats/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Narrow_Stance_Squats/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1u36hhy.gif"
   },
   {
     "id": "Natural_Glute_Ham_Raise",
@@ -13449,34 +11798,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/UHJlbu3.gif"
   },
   {
-    "id": "One-Arm_Long_Bar_Row",
-    "name": "One - Arm Long Bar Row",
-    "originalName": "One-Arm Long Bar Row",
-    "category": "back_pull",
-    "equipment": "barbell",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "instructions": [
-      "Position a bar into a landmine or in a corner to keep it from moving. Load an appropriate weight onto your end.",
-      "Stand next to the bar, and take a grip with one hand close to the collar. Using your hips and legs, rise to a standing position.",
-      "Assume a bent-knee stance with your hips back and your chest up. Your arm should be extended. This will be your starting position.",
-      "Pull the weight to your side by retracting the shoulder and flexing the elbow. Do not jerk the weight or cheat during the movement.",
-      "After a brief pause, return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Long_Bar_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Long_Bar_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "One-Arm_Medicine_Ball_Slam",
     "name": "One - Arm Medicine Ball Slam",
     "originalName": "One-Arm Medicine Ball Slam",
@@ -13785,33 +12106,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Floor_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/vtusOWT.gif"
-  },
-  {
-    "id": "One_Arm_Lat_Pulldown",
-    "name": "One Arm Lat Pulldown",
-    "originalName": "One Arm Lat Pulldown",
-    "category": "back_pull",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back"
-    ],
-    "instructions": [
-      "Select an appropriate weight and adjust the knee pad to help keep you down. Grasp the handle with a pronated grip. This will be your starting position.",
-      "Pull the handle down, squeezing your elbow to your side as you flex the elbow.",
-      "Pause at the bottom of the motion, and then slowly return the handle to the starting position.",
-      "For multiple repetitions, avoid completely returning the weight to keep tension on the muscles being worked."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Lat_Pulldown/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One_Arm_Lat_Pulldown/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "One_Arm_Pronated_Dumbbell_Triceps_Extension",
@@ -14364,33 +12658,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/D1xYJAU.gif"
   },
   {
-    "id": "Parallel_Bar_Dip",
-    "name": "Parallel Bar Dip",
-    "originalName": "Parallel Bar Dip",
-    "category": "chest_push",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "shoulders"
-    ],
-    "instructions": [
-      "Stand between a set of parallel bars. Place a hand on each bar, and then take a small jump to help you get into the starting position with your arms locked out.",
-      "Begin by flexing the elbow, lowering your body until your arms break 90 degrees. Avoid swinging, and maintain good posture throughout the descent.",
-      "Reverse the motion by extending the elbow, pushing yourself back up into the starting position.",
-      "Repeat for the desired number of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Parallel_Bar_Dip/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Parallel_Bar_Dip/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Pelvic_Tilt_Into_Bridge",
     "name": "Pelvic Tilt Into Bridge",
     "originalName": "Pelvic Tilt Into Bridge",
@@ -14557,31 +12824,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/5VXmnV5.gif"
-  },
-  {
-    "id": "Plate_Pinch",
-    "name": "Plate Pinch",
-    "originalName": "Plate Pinch",
-    "category": "back_pull",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "forearms"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Grab two wide-rimmed plates and put them together with the smooth sides facing outward",
-      "Use your fingers to grip the outside part of the plate and your thumb for the other side thus holding both plates together. This is the starting position.",
-      "Squeeze the plate with your fingers and thumb. Hold this position for as long as you can.",
-      "Repeat for the recommended amount of sets prescribed in your program.",
-      "Switch arms and repeat the movements."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Pinch/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plate_Pinch/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Plate_Twist",
@@ -14855,31 +13097,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/hCjGsRQ.gif"
   },
   {
-    "id": "Power_Partials",
-    "name": "Power Partials",
-    "originalName": "Power Partials",
-    "category": "arms_shoulders",
-    "equipment": "dumbbell",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
-      "The palms of the hands should be facing your torso. Your feet should be about shoulder width apart. This will be your starting position.",
-      "Keeping your arms straight and the torso stationary, lift the weights out to your sides until they are about shoulder level height while exhaling.",
-      "Feel the contraction for a second and begin to lower the weights back down to the starting position while inhaling. Tip: Keep the palms facing down with the little finger slightly higher while lifting and lowering the weights as it will concentrate the stress on your shoulders mainly.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Partials/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Partials/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Power_Snatch",
     "name": "Power Snatch",
     "originalName": "Power Snatch",
@@ -14945,38 +13162,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Snatch_from_Blocks/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/4KJEpzb.gif"
-  },
-  {
-    "id": "Power_Stairs",
-    "name": "Power Stairs",
-    "originalName": "Power Stairs",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "calves",
-      "glutes",
-      "lower back",
-      "quadriceps",
-      "shoulders",
-      "traps"
-    ],
-    "instructions": [
-      "In the power stairs, implements are moved up a staircase. For training purposes, these can be performed with a tire or box.",
-      "Begin by taking the implement with both hands. Set your feet wide, with your head and chest up. Drive through the ground with your heels, extending your knees and hips to raise the weight from the ground.",
-      "As you lean back, attempt to swing the weight onto the stairs, which are usually around 16-18\" high. You can use your legs to help push the weight onto the stair.",
-      "Repeat for 3-5 repetitions, and continue with a heavier weight, moving as fast as possible."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Stairs/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Power_Stairs/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Preacher_Curl",
@@ -15079,35 +13264,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Prone_Manual_Hamstring/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/2Ryn564.gif"
-  },
-  {
-    "id": "Prowler_Sprint",
-    "name": "Prowler Sprint",
-    "originalName": "Prowler Sprint",
-    "category": "cardio_hiit",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "chest",
-      "glutes",
-      "quadriceps",
-      "shoulders"
-    ],
-    "instructions": [
-      "Place your sled on an appropriate surface, loaded to a suitable weight. The sled should provide enough resistance to require effort, but not so heavy that you are significantly slowed down.",
-      "You may use the upright or the low handles for this exercise. Place your hands on the handles with your arms extended, leaning into the implement.",
-      "With good posture, drive through the ground with alternating, short steps. Move as fast as you can for a short distance."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Prowler_Sprint/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Prowler_Sprint/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Pull_Through",
@@ -15430,28 +13586,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/yU7w7CA.gif"
   },
   {
-    "id": "Quad_Stretch",
-    "name": "Quad Stretch",
-    "originalName": "Quad Stretch",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Lay on your side. Loop a belt, rope, or band around your top foot. Flex the knee and extend your hip, attempting to touch your glutes with your foot, and holding the belt with your hands. This will be your starting position.",
-      "With the belt being held over the shoulder or overhead, gently pull to increase the stretch in the quadriceps. Hold for 10-20 seconds, and then switch sides."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Quad_Stretch/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Quad_Stretch/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/LzX8YEz.gif"
-  },
-  {
     "id": "Quadriceps-SMR",
     "name": "Quadriceps - SMR",
     "originalName": "Quadriceps-SMR",
@@ -15472,88 +13606,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Quadriceps-SMR/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/6YUfHPL.gif"
-  },
-  {
-    "id": "Quick_Leap",
-    "name": "Quick Leap",
-    "originalName": "Quick Leap",
-    "category": "cardio_hiit",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "hamstrings"
-    ],
-    "instructions": [
-      "You will need a box for this exerise.",
-      "Begin facing the box standing 1-2 feet from its edge.",
-      "By utilizing your hips, hop onto the box, landing on both legs. Ensure that you land with your legs bent and your feet flat.",
-      "Immediately upon landing, fully extend through the entire body and swing your arms overhead to explode off of the box. Use your legs to absorb the impact of landing."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Quick_Leap/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Quick_Leap/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/IBj3nsn.gif"
-  },
-  {
-    "id": "Rack_Delivery",
-    "name": "Rack Delivery",
-    "originalName": "Rack Delivery",
-    "category": "arms_shoulders",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "traps"
-    ],
-    "instructions": [
-      "This drill teaches the delivery of the barbell to the rack position on the shoulders. Begin holding a bar in the scarecrow position, with the upper arms parallel to the floor, and the forearms hanging down. Use a hook grip, with your fingers wrapped over your thumbs.",
-      "Begin by rotating the elbows around the bar, delivering the bar to the shoulders. As your elbows come forward, relax your grip. The shoulders should be protracted, providing a shelf for the bar, which should lightly contact the throat.",
-      "It is important that the bar stay close to the body at all times, as with a heavier load any distance will result in an unwanted collision. As the movement becomes smoother, speed and load can be increased before progressing further."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rack_Delivery/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rack_Delivery/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
-    "id": "Rack_Pull_with_Bands",
-    "name": "Rack Pull with Bands",
-    "originalName": "Rack Pull with Bands",
-    "category": "stretching",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "Set up in a power rack with the bar on the pins. The pins should be set to the desired point; just below the knees, just above, or in the mid thigh position. Attach bands to the base of the rack, or secure them with dumbbells. Attach the other end to the bar. You may need to choke the bands to provide tension.",
-      "Position yourself against the bar in proper deadlifting position. Your feet should be under your hips, your grip shoulder width, back arched, and hips back to engage the hamstrings. Since the weight is typically heavy, you may use a mixed grip, a hook grip, or use straps to aid in holding the weight.",
-      "With your head looking forward, extend through the hips and knees, pulling the weight up and back until lockout. Be sure to pull your shoulders back as you complete the movement. Return the weight to the pins and repeat."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rack_Pull_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rack_Pull_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Rack_Pulls",
@@ -15633,34 +13685,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/1ZFqTDN.gif"
   },
   {
-    "id": "Return_Push_from_Stance",
-    "name": "Return Push from Stance",
-    "originalName": "Return Push from Stance",
-    "category": "cardio_hiit",
-    "equipment": "medicine ball",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "triceps"
-    ],
-    "instructions": [
-      "You will need a partner for this drill.",
-      "Begin in an athletic 2 or 3 point stance.",
-      "At the signal, move into a position to receive the pass from your partner.",
-      "Catch the medicine ball with both hands and immediately throw it back to your partner.",
-      "You can modify this drill by running different routes."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Return_Push_from_Stance/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Return_Push_from_Stance/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1IFV9h3.gif"
-  },
-  {
     "id": "Reverse_Band_Bench_Press",
     "name": "Reverse Band Bench Press",
     "originalName": "Reverse Band Bench Press",
@@ -15689,134 +13713,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Bench_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/khlHMqs.gif"
-  },
-  {
-    "id": "Reverse_Band_Box_Squat",
-    "name": "Reverse Band Box Squat",
-    "originalName": "Reverse Band Box Squat",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin in a power rack with a box at the appropriate height behind you. Set up the bands either on band pegs or attached to the top of the rack, ensuring they will be directly above the bar during the squat. Attach the other end to the bar.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wider for more emphasis on the back, glutes, adductors, and hamstrings, or closer together for more quad development. Keep your head facing forward.",
-      "With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips until you are seated on the box. Ideally, your shins should be perpendicular to the ground. Pause when you reach the box, and relax the hip flexors. Never bounce off of a box.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward off of the box as you lead the movement with your head. Continue upward, maintaining tightness head to toe. Use care to return the barbell to the rack."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Box_Squat/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Box_Squat/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Reverse_Band_Deadlift",
-    "name": "Reverse Band Deadlift",
-    "originalName": "Reverse Band Deadlift",
-    "category": "stretching",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "pull",
-    "primaryMuscles": [
-      "lower back"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "quadriceps"
-    ],
-    "instructions": [
-      "Set the bar up in a power rack. Attach bands to the top of the rack, using either bands pegs or the frame itself. Attach the other end of the bands to the bar.",
-      "Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets.",
-      "With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar. Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward.",
-      "After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
-      "Lower the bar by bending at the hips and guiding it to the floor."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Deadlift/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Deadlift/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Reverse_Band_Power_Squat",
-    "name": "Reverse Band Power Squat",
-    "originalName": "Reverse Band Power Squat",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin in a power rack with the pins and bar set at the appropriate height. After loading the bar, attach bands to the top of the rack, using either pegs or the frame itself. Attach the other end of the bands to the bar.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wide for more emphasis on the back, glutes, adductors, and hamstrings.",
-      "Keep your head facing forward. With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips as much as possible. Ideally, your shins should be perpendicular to the ground. Lower bar position necessitates a greater torso lean to keep the bar over the heels. Continue until you break parallel, which is defined as the crease of the hip being in line with the top of the knee.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward as you lead the movement with your head. Continue upward, maintaining tightness head to toe, until you have returned to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Power_Squat/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Power_Squat/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Reverse_Band_Sumo_Deadlift",
-    "name": "Reverse Band Sumo Deadlift",
-    "originalName": "Reverse Band Sumo Deadlift",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "expert",
-    "force": "pull",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "Begin with a bar loaded on the floor inside of a power rack. Attach bands to the top of the rack, using either pegs or the frame itself. Attach the other end to the barbell.",
-      "Approach the bar so that the bar intersects the middle of the feet. The feet should be set very wide, near the collars. Bend at the hips to grip the bar. The arms should be directly below the shoulders, inside the legs, and you can use a pronated grip, a mixed grip, or hook grip. Relax the shoulders, which in effect lengthens your arms.",
-      "Take a breath, and then lower your hips, looking forward with your head with your chest up. Drive through the floor, spreading your feet apart, with your weight on the back half of your feet. Extend through the hips and knees.",
-      "As the bar passes through the knees, lean back and drive the hips into the bar, pulling your shoulder blades together.",
-      "Return the weight to the ground by bending at the hips and controlling the weight on the way down."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Sumo_Deadlift/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Band_Sumo_Deadlift/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/3QgteDK.gif"
   },
   {
     "id": "Reverse_Barbell_Curl",
@@ -16135,30 +14031,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Triceps_Bench_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/10Z2DXU.gif"
-  },
-  {
-    "id": "Rhomboids-SMR",
-    "name": "Rhomboids - SMR",
-    "originalName": "Rhomboids-SMR",
-    "category": "back_pull",
-    "equipment": "foam roll",
-    "level": "intermediate",
-    "force": "static",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "traps"
-    ],
-    "instructions": [
-      "Lay down with your back on the floor. Place a foam roll underneath your upper back, and cross your arms in front of you, protracting your shoulders. This will be your starting position.",
-      "Raise your hips off of the ground, placing your weight onto the foam roll. Shift your weight to one side at a time, rolling over your middle and upper back. Pause at points of tension for 10-30 seconds."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rhomboids-SMR/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rhomboids-SMR/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Rickshaw_Carry",
@@ -16518,36 +14390,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/0mB6wHO.gif"
   },
   {
-    "id": "Rowing_Stationary",
-    "name": "Rowing, Stationary",
-    "originalName": "Rowing, Stationary",
-    "category": "cardio_hiit",
-    "equipment": "machine",
-    "level": "intermediate",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "middle back"
-    ],
-    "instructions": [
-      "To begin, seat yourself on the rower. Make sure that your heels are resting comfortably against the base of the foot pedals and that the straps are secured. Select the program that you wish to use, if applicable. Sit up straight and bend forward at the hips.",
-      "There are three phases of movement when using a rower. The first phase is when you come forward on the rower. Your knees are bent and against your chest. Your upper body is leaning slightly forward while still maintaining good posture. Next, push against the foot pedals and extend your legs while bringing your hands to your upper abdominal area, squeezing your shoulders back as you do so. To avoid straining your back, use primarily your leg and hip muscles.",
-      "The recovery phase simply involves straightening your arms, bending the knees, and bringing your body forward again as you transition back into the first phase."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rowing_Stationary/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rowing_Stationary/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Runners_Stretch",
     "name": "Runner's Stretch",
     "originalName": "Runner's Stretch",
@@ -16624,41 +14466,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Russian_Twist/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/XVDdcoj.gif"
-  },
-  {
-    "id": "Sandbag_Load",
-    "name": "Sandbag Load",
-    "originalName": "Sandbag Load",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abdominals",
-      "biceps",
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "middle back",
-      "shoulders",
-      "traps"
-    ],
-    "instructions": [
-      "To load sandbags or other objects, begin with the implements placed a distance from the loading platform, typically 50 feet.",
-      "Begin by lifting the sandbag. Sandbags are extremely awkward, and the manner of lifting them can vary depending on the particular sandbag used. Reach as far around it as possible, extending through the hips and knees to pull it up high. Shouldering is usually not allowed.",
-      "Move as quickly as possible to the platform, and load it, extending through your hips, knees, and ankles to get it as high as possible. Place it onto the platform, ensuring it doesn't fall off.",
-      "Return to the starting position to retrieve the next sandbag, and repeat until the event is completed."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sandbag_Load/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sandbag_Load/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Scapular_Pull-Up",
@@ -17591,30 +15398,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/82LxxkW.gif"
   },
   {
-    "id": "Seated_Side_Lateral_Raise",
-    "name": "Seated Side Lateral Raise",
-    "originalName": "Seated Side Lateral Raise",
-    "category": "back_pull",
-    "equipment": "dumbbell",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Pick a couple of dumbbells and sit at the end of a flat bench with your feet firmly on the floor. Hold the dumbbells with your palms facing in and your arms straight down at your sides at arms' length. This will be your starting position.",
-      "While maintaining the torso stationary (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top.",
-      "Lower the dumbbells back down slowly to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1u36hhy.gif"
-  },
-  {
     "id": "Seated_Triceps_Press",
     "name": "Seated Triceps Press",
     "originalName": "Seated Triceps Press",
@@ -17793,27 +15576,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Shoulder_Raise/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/6e2DcYX.gif"
-  },
-  {
-    "id": "Shoulder_Stretch",
-    "name": "Shoulder Stretch",
-    "originalName": "Shoulder Stretch",
-    "category": "arms_shoulders",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Reach your left arm across your body and hold it straight."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Shoulder_Stretch/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Shoulder_Stretch/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/iDGtjyi.gif"
   },
   {
     "id": "Side-Lying_Floor_Stretch",
@@ -18138,31 +15900,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Wrist_Pull/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/UtmIqcI.gif"
-  },
-  {
-    "id": "Single-Arm_Cable_Crossover",
-    "name": "Single - Arm Cable Crossover",
-    "originalName": "Single-Arm Cable Crossover",
-    "category": "chest_push",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Begin by moving the pulleys to the high position, select the resistance to be used, and take a handle in each hand.",
-      "Step forward in front of both pulleys with your arms extended in front of you, bringing your hands together. Your head and chest should be up as you lean forward, while your feet should be staggered. This will be your starting position.",
-      "Keeping your left arm in place, allow your right arm to extend out to the side, maintaining a slight bend at the elbow. The right arm should be perpendicular to the body at approximately shoulder level.",
-      "Return your arm back to the starting position by pulling your hand back to the midline of the body.",
-      "Hold for a second at the starting position and repeat the movement on the opposite side. Continue alternating back and forth for the prescribed number of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Cable_Crossover/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Arm_Cable_Crossover/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
   },
   {
     "id": "Single-Arm_Linear_Jammer",
@@ -18539,34 +16276,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/9E25EOx.gif"
   },
   {
-    "id": "Skating",
-    "name": "Skating",
-    "originalName": "Skating",
-    "category": "legs_glutes",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "Roller skating is a fun activity which can be effective in improving cardiorespiratory fitness and muscular endurance. It requires relatively good balance and coordination. It is necessary to learn the basics of skating including turning and stopping and to wear protective gear to avoid possible injury.",
-      "You can skate at a comfortable pace for 30 minutes straight. If you want a cardio challenge, do interval skating \u2014 speed skate two minutes of every five minutes, using the remaining three minutes to recover. A 150 lb person will typically burn about 175 calories in 30 minutes skating at a comfortable pace, similar to brisk walking."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Skating/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Skating/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Sled_Drag_-_Harness",
     "name": "Sled Drag - Harness",
     "originalName": "Sled Drag - Harness",
@@ -18721,36 +16430,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sled_Row/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/10Z2DXU.gif"
-  },
-  {
-    "id": "Sledgehammer_Swings",
-    "name": "Sledgehammer Swings",
-    "originalName": "Sledgehammer Swings",
-    "category": "cardio_hiit",
-    "equipment": "other",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "abdominals"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "forearms",
-      "lats",
-      "middle back",
-      "shoulders"
-    ],
-    "instructions": [
-      "You will need a tire and a sledgehammer for this exercise. Stand in front of the tire about two feet away from it with a staggered stance. Grip the sledgehammer.",
-      "If you are right handed, your left hand should be at the bottom of the handle, and your right hand should be choking up closer to the head.",
-      "As you bring the sledge up, your right hand slides toward the head; as you swing down, your right hand will slide down to join your left hand. Slam it down as hard as you can against the tire. Control the bounce of the hammer off of the tire.",
-      "Repeat on the other side."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sledgehammer_Swings/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sledgehammer_Swings/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Smith_Incline_Shoulder_Raise",
@@ -19875,100 +17554,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/IMRsOCn.gif"
   },
   {
-    "id": "Squat_with_Bands",
-    "name": "Squat with Bands",
-    "originalName": "Squat with Bands",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "Set up the bands on the sleeves, secured to either band pegs, the rack, or dumbbells so that there is appropriate tension.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wide for more emphasis on the back, glutes, adductors, and hamstrings. Keep your head facing forward.",
-      "With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips as much as possible. Ideally, your shins should be perpendicular to the ground. Lower bar position necessitates a greater torso lean to keep the bar over the heels. Continue until you break parallel, which is defined as the crease of the hip being in line with the top of the knee.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward as you lead the movement with your head. Continue upward, maintaining tightness head to toe, until you have returned to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Squat_with_Chains",
-    "name": "Squat with Chains",
-    "originalName": "Squat with Chains",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings",
-      "lower back"
-    ],
-    "instructions": [
-      "To set up the chains, begin by looping the leader chain over the sleeves of the bar. The heavy chain should be attached using a snap hook. Adjust the length of the lead chain so that a few links are still on the floor at the top of the movement.",
-      "Begin by stepping under the bar and placing it across the back of the shoulders. Squeeze your shoulder blades together and rotate your elbows forward, attempting to bend the bar across your shoulders. Remove the bar from the rack, creating a tight arch in your lower back, and step back into position. Place your feet wide for more emphasis on the back, glutes, adductors, and hamstrings. Keep your head facing forward.",
-      "With your back, shoulders, and core tight, push your knees and butt out and you begin your descent. Sit back with your hips as much as possible. Ideally, your shins should be perpendicular to the ground. Lower bar position necessitates a greater torso lean to keep the bar over the heels. Continue until you break parallel, which is defined as the crease of the hip being in line with the top of the knee.",
-      "Keeping the weight on your heels and pushing your feet and knees out, drive upward as you lead the movement with your head. Continue upward, maintaining tightness head to toe, until you have returned to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Chains/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Chains/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
-    "id": "Squat_with_Plate_Movers",
-    "name": "Squat with Plate Movers",
-    "originalName": "Squat with Plate Movers",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "push",
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "To begin, first set the bar on a rack to just below shoulder level. Position a weight plate on the ground a couple feet back from the rack. Once the bar is loaded, step under it and place the back of your shoulders across it.",
-      "Hold on to the bar with both hands and lift it off the rack by first pushing with your legs and at the same time straighten your torso.",
-      "Step away from the rack and adopt a wide stance with the toes slightly pointed out, with one foot on the weight plate. Keep your head up at all times. This will be your starting position.",
-      "Begin to slowly lower the bar by bending the knees and hips. Continue down until the angle between the upper leg and the calves becomes slightly less than 90-degrees.",
-      "Raise the bar as you exhale by pushing the floor with the heels of your feet as you extend the hips and knees.",
-      "At the top of the movement, side step, bringing your feet together on the opposite side of the plate.",
-      "Using your inside foot, push the weight plate, sliding it across the floor to where you were just standing.",
-      "Place your inside foot on the weight plate, adopting a wide stance for the next repetition."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Plate_Movers/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat_with_Plate_Movers/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Squats_-_With_Bands",
     "name": "Band Squat",
     "originalName": "Squats - With Bands",
@@ -19997,33 +17582,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squats_-_With_Bands/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/TUZLh71.gif"
-  },
-  {
-    "id": "Stairmaster",
-    "name": "Stairmaster",
-    "originalName": "Stairmaster",
-    "category": "cardio_hiit",
-    "equipment": "machine",
-    "level": "intermediate",
-    "force": null,
-    "primaryMuscles": [
-      "quadriceps"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "hamstrings"
-    ],
-    "instructions": [
-      "To begin, step onto the stairmaster and select the desired option from the menu. You can choose a manual setting, or you can select a program to run. Typically, you can enter your age and weight to estimate the amount of calories burned during exercise.",
-      "Pump your legs up and down in an established rhythm, driving the pedals down but not all the way to the floor. It is recommended that you maintain your grip on the handles so that you don't fall. The handles can be used to monitor your heart rate to help you stay at an appropriate intensity.",
-      "Stairmasters offer convenience, cardiovascular benefits, and usually have less impact than running outside. They are typically much harder than other cardio equipment. A 150 lb person will typically burn over 300 calories in 30 minutes, compared to about 175 calories walking."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stairmaster/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stairmaster/1.jpg"
-    ],
-    "gifUrl": null
   },
   {
     "id": "Standing_Alternating_Dumbbell_Press",
@@ -20235,33 +17793,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/dCPESfR.gif"
   },
   {
-    "id": "Standing_Cable_Chest_Press",
-    "name": "Standing Cable Chest Press",
-    "originalName": "Standing Cable Chest Press",
-    "category": "chest_push",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "shoulders",
-      "triceps"
-    ],
-    "instructions": [
-      "Position dual pulleys to chest height and select an appropriate weight. Stand a foot or two in front of the cables, holding one in each hand. You can stagger your stance for better stability.",
-      "Position the upper arm at a 90 degree angle with the shoulder blades together. This will be your starting position.",
-      "Keeping the rest of the body stationary, extend through the elbows to press the handles forward, drawing them together in front of you.",
-      "Pause at the top of the motion, and return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Chest_Press/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Chest_Press/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
-  },
-  {
     "id": "Standing_Cable_Lift",
     "name": "Standing Cable Lift",
     "originalName": "Standing Cable Lift",
@@ -20290,36 +17821,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Lift/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/qFpAkpP.gif"
-  },
-  {
-    "id": "Standing_Cable_Wood_Chop",
-    "name": "Standing Cable Wood Chop",
-    "originalName": "Standing Cable Wood Chop",
-    "category": "abs_core",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "abdominals"
-    ],
-    "secondaryMuscles": [
-      "shoulders"
-    ],
-    "instructions": [
-      "Connect a standard handle to a tower, and move the cable to the highest pulley position.",
-      "With your side to the cable, grab the handle with one hand and step away from the tower. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable. Your outstretched arm should be aligned with the cable.",
-      "With your feet positioned shoulder width apart, reach upward with your other hand and grab the handle with both hands. Your arms should still be fully extended.",
-      "In one motion, pull the handle down and across your body to your front knee while rotating your torso.",
-      "Keep your back and arms straight and core tight while you pivot your back foot and bend your knees to get a full range of motion.",
-      "Maintain your stance and straight arms. Return to the neutral position in a slow and controlled manner.",
-      "Repeat to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Wood_Chop/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Cable_Wood_Chop/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0MlxeMn.gif"
   },
   {
     "id": "Standing_Calf_Raises",
@@ -21245,32 +18746,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/HtfCpfi.gif"
   },
   {
-    "id": "Step-up_with_Knee_Raise",
-    "name": "Step - up with Knee Raise",
-    "originalName": "Step-up with Knee Raise",
-    "category": "arms_shoulders",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "hamstrings",
-      "quadriceps"
-    ],
-    "instructions": [
-      "Stand facing a box or bench of an appropriate height with your feet together. This will be your starting position.",
-      "Begin the movement by stepping up, putting your left foot on the top of the bench. Extend through the hip and knee of your front leg to stand up on the box. As you stand on the box with your left leg, flex your right knee and hip, bringing your knee as high as you can.",
-      "Reverse this motion to step down off the box, and then repeat the sequence on the opposite leg."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Step-up_with_Knee_Raise/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Step-up_with_Knee_Raise/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Step_Mill",
     "name": "Step Mill",
     "originalName": "Step Mill",
@@ -21382,31 +18857,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/JrOHAZc.gif"
   },
   {
-    "id": "Stomach_Vacuum",
-    "name": "Stomach Vacuum",
-    "originalName": "Stomach Vacuum",
-    "category": "abs_core",
-    "equipment": "bodyweight",
-    "level": "beginner",
-    "force": "static",
-    "primaryMuscles": [
-      "abdominals"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "To begin, stand straight with your feet shoulder width apart from each other. Place your hands on your hips. This is the starting position.",
-      "Now slowly inhale as much air as possible and then start to exhale as much as possible while bringing your stomach in as much as possible and hold this position. Try to visualize your navel touching your backbone.",
-      "One isometric contraction is around 20 seconds. During the 20 second hold, try to breathe normally. Then inhale and bring your stomach back to the starting position.",
-      "Once you have practiced this exercise, try to perform this exercise for longer than 20 seconds. Tip: You can work your way up to 40-60 seconds.",
-      "Repeat for the recommended amount of sets."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stomach_Vacuum/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stomach_Vacuum/1.jpg"
-    ],
-    "gifUrl": null
-  },
-  {
     "id": "Straight-Arm_Dumbbell_Pullover",
     "name": "Straight - Arm Dumbbell Pullover",
     "originalName": "Straight-Arm Dumbbell Pullover",
@@ -21460,32 +18910,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight-Arm_Pulldown/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/x69MAlq.gif"
-  },
-  {
-    "id": "Straight_Bar_Bench_Mid_Rows",
-    "name": "Straight Bar Bench Mid Rows",
-    "originalName": "Straight Bar Bench Mid Rows",
-    "category": "back_pull",
-    "equipment": "barbell",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "instructions": [
-      "Place a loaded barbell on the end of a bench. Standing on the bench behind the bar, take a medium, pronated grip. Stand with your hips back and chest up, maintaining a neutral spine. This will be your starting position.",
-      "Row the bar to your torso by retracting the shoulder blades and flexing the elbows. Use a controlled movement with no jerking.",
-      "After a brief pause, slowly return the bar to the starting position, ensuring to go all the way down."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight_Bar_Bench_Mid_Rows/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight_Bar_Bench_Mid_Rows/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/3QgteDK.gif"
   },
   {
     "id": "Straight_Raises_on_Incline_Bench",
@@ -21573,39 +18997,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sumo_Deadlift/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/KgI0tqW.gif"
-  },
-  {
-    "id": "Sumo_Deadlift_with_Bands",
-    "name": "Sumo Deadlift with Bands",
-    "originalName": "Sumo Deadlift with Bands",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "forearms",
-      "glutes",
-      "lower back",
-      "middle back",
-      "quadriceps",
-      "traps"
-    ],
-    "instructions": [
-      "To deadlift with short bands, simply loop them over the bar before you start, and step into them to set up. Ensure that they under the back half of your foot, directly where you are driving into the floor.",
-      "Begin with a bar loaded on the ground. Approach the bar so that the bar intersects the middle of the feet. The feet should be set very wide, near the collars. Bend at the hips to grip the bar. The arms should be directly below the shoulders, inside the legs, and you can use a pronated grip, a mixed grip, or hook grip.",
-      "Take a breath, and then lower your hips, looking forward with your head with your chest up. Drive through the floor, spreading your feet apart, with your weight on the back half of your feet. Extend through the hips and knees.",
-      "As the bar passes through the knees, lean back and drive the hips into the bar, pulling your shoulder blades together.",
-      "Return the weight to the ground by bending at the hips and controlling the weight on the way down."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sumo_Deadlift_with_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Sumo_Deadlift_with_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Sumo_Deadlift_with_Chains",
@@ -21751,35 +19142,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/2IxROQ1.gif"
   },
   {
-    "id": "Suspended_Fallout",
-    "name": "Suspended Fallout",
-    "originalName": "Suspended Fallout",
-    "category": "abs_core",
-    "equipment": "other",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "abdominals"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "lower back",
-      "shoulders"
-    ],
-    "instructions": [
-      "Adjust the straps so the handles are at an appropriate height, below waist level.",
-      "Begin standing and grasping the handles. Lean into the straps, moving to an incline push-up position. This will be your starting position.",
-      "Keeping your arms straight, lean further into the suspension straps, bringing your body closer to the ground, allowing your shoulders to extend, raising your arms up and over your head.",
-      "Maintain a neutral spine and keep the rest of your body straight, your shoulders being the only joints allowed to move.",
-      "Pause during the peak contraction, and then return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Suspended_Fallout/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Suspended_Fallout/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/HZgQPxh.gif"
-  },
-  {
     "id": "Suspended_Push-Up",
     "name": "Suspension Push-Up",
     "originalName": "Suspended Push-Up",
@@ -21913,34 +19275,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Svend_Press/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/I1OBLnn.gif"
-  },
-  {
-    "id": "T-Bar_Row_with_Handle",
-    "name": "T - Bar Row with Handle",
-    "originalName": "T-Bar Row with Handle",
-    "category": "back_pull",
-    "equipment": "barbell",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "instructions": [
-      "Position a bar into a landmine or in a corner to keep it from moving. Load an appropriate weight onto your end.",
-      "Stand over the bar, and position a Double D row handle around the bar next to the collar. Using your hips and legs, rise to a standing position.",
-      "Assume a wide stance with your hips back and your chest up. Your arms should be extended. This will be your starting position.",
-      "Pull the weight to your upper abdomen by retracting the shoulder blades and flexing the elbows. Do not jerk the weight or cheat during the movement.",
-      "After a brief pause, return to the starting position."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row_with_Handle/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row_with_Handle/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "Tate_Press",
@@ -22254,31 +19588,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/2IxROQ1.gif"
   },
   {
-    "id": "Triceps_Pushdown",
-    "name": "Triceps Pushdown",
-    "originalName": "Triceps Pushdown",
-    "category": "arms_shoulders",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "push",
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "instructions": [
-      "Attach a straight or angled bar to a high pulley and grab with an overhand grip (palms facing down) at shoulder width.",
-      "Standing upright with the torso straight and a very small inclination forward, bring the upper arms close to your body and perpendicular to the floor. The forearms should be pointing up towards the pulley as they hold the bar. This is your starting position.",
-      "Using the triceps, bring the bar down until it touches the front of your thighs and the arms are fully extended perpendicular to the floor. The upper arms should always remain stationary next to your torso and only the forearms should move. Exhale as you perform this movement.",
-      "After a second hold at the contracted position, bring the bar slowly up to the starting point. Breathe in as you perform this step.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/9tvVVM9.gif"
-  },
-  {
     "id": "Triceps_Pushdown_-_Rope_Attachment",
     "name": "Triceps Pushdown - Rope Attachment",
     "originalName": "Triceps Pushdown - Rope Attachment",
@@ -22480,31 +19789,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/blBXysN.gif"
   },
   {
-    "id": "Two-Arm_Kettlebell_Row",
-    "name": "Two - Arm Kettlebell Row",
-    "originalName": "Two-Arm Kettlebell Row",
-    "category": "back_pull",
-    "equipment": "kettlebells",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "middle back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "instructions": [
-      "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position.",
-      "Grab both kettlebells and pull them to your stomach, retracting your shoulder blades and flexing the elbows. Keep your back straight. Lower and repeat."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Kettlebell_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Two-Arm_Kettlebell_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/u3UuCZu.gif"
-  },
-  {
     "id": "Underhand_Cable_Pulldowns",
     "name": "Underhand Cable Pulldowns",
     "originalName": "Underhand Cable Pulldowns",
@@ -22583,32 +19867,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/GSDioYu.gif"
   },
   {
-    "id": "Upright_Barbell_Row",
-    "name": "Upright Barbell Row",
-    "originalName": "Upright Barbell Row",
-    "category": "arms_shoulders",
-    "equipment": "barbell",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "shoulders"
-    ],
-    "secondaryMuscles": [
-      "traps"
-    ],
-    "instructions": [
-      "Grasp a barbell with an overhand grip that is slightly less than shoulder width. The bar should be resting on the top of your thighs with your arms extended and a slight bend in your elbows. Your back should also be straight. This will be your starting position.",
-      "Now exhale and use the sides of your shoulders to lift the bar, raising your elbows up and to the side. Keep the bar close to your body as you raise it. Continue to lift the bar until it nearly touches your chin. Tip: Your elbows should drive the motion, and should always be higher than your forearms. Remember to keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the bar back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Barbell_Row/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Barbell_Row/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/1oE78pm.gif"
-  },
-  {
     "id": "Upright_Cable_Row",
     "name": "Upright Cable Row",
     "originalName": "Upright Cable Row",
@@ -22635,32 +19893,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/cALKspW.gif"
   },
   {
-    "id": "Upright_Row_-_With_Bands",
-    "name": "Upright Row - With Bands",
-    "originalName": "Upright Row - With Bands",
-    "category": "back_pull",
-    "equipment": "bands",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "traps"
-    ],
-    "secondaryMuscles": [
-      "shoulders"
-    ],
-    "instructions": [
-      "To begin, stand on an exercise band so that tension begins at arm's length. Grasp the handles using a pronated (palms facing your thighs) grip that is slightly less than shoulder width. The handles should be resting on top of your thighs. Your arms should be extended with a slight bend at the elbows and your back should be straight. This will be your starting position.",
-      "Use your side shoulders to lift the handles as you exhale. The handles should be close to the body as you move them up. Continue to lift the handles until they nearly touches your chin. Tip: Your elbows should drive the motion. As you lift the handles, your elbows should always be higher than your forearms. Also, keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the handles back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Row_-_With_Bands/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upright_Row_-_With_Bands/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Upward_Stretch",
     "name": "Upward Stretch",
     "originalName": "Upward Stretch",
@@ -22684,36 +19916,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Upward_Stretch/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/0L2KwtI.gif"
-  },
-  {
-    "id": "V-Bar_Pulldown",
-    "name": "V - Bar Pulldown",
-    "originalName": "V-Bar Pulldown",
-    "category": "back_pull",
-    "equipment": "cable",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back",
-      "shoulders"
-    ],
-    "instructions": [
-      "Sit down on a pull-down machine with a V-Bar attached to the top pulley.",
-      "Adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the V-bar with the palms facing each other (a neutral grip). Stick your chest out and lean yourself back slightly (around 30-degrees) in order to better engage the lats. This will be your starting position.",
-      "Using your lats, pull the bar down as you squeeze your shoulder blades. Continue until your chest nearly touches the V-bar. Exhale as you execute this motion. Tip: Keep the torso stationary throughout the movement.",
-      "After a second hold on the contracted position, slowly bring the bar back to the starting position as you breathe in.",
-      "Repeat for the prescribed number of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/V-Bar_Pulldown/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/V-Bar_Pulldown/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
   },
   {
     "id": "V-Bar_Pullup",
@@ -23127,36 +20329,6 @@
     "gifUrl": "https://static.exercisedb.dev/media/9sgNE2O.gif"
   },
   {
-    "id": "Wide-Grip_Lat_Pulldown",
-    "name": "Wide - Grip Lat Pulldown",
-    "originalName": "Wide-Grip Lat Pulldown",
-    "category": "back_pull",
-    "equipment": "cable",
-    "level": "beginner",
-    "force": "pull",
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "middle back",
-      "shoulders"
-    ],
-    "instructions": [
-      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width.",
-      "As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
-      "As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary and only the arms should move. The forearms should do no other work except for holding the bar; therefore do not try to pull down the bar using the forearms.",
-      "After a second at the contracted position squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
-      "Repeat this motion for the prescribed amount of repetitions."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/0I5fUyn.gif"
-  },
-  {
     "id": "Wide-Grip_Pulldown_Behind_The_Neck",
     "name": "Wide - Grip Pulldown Behind The Neck",
     "originalName": "Wide-Grip Pulldown Behind The Neck",
@@ -23270,32 +20442,6 @@
       "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide_Stance_Barbell_Squat/1.jpg"
     ],
     "gifUrl": "https://static.exercisedb.dev/media/s7HX1BY.gif"
-  },
-  {
-    "id": "Wide_Stance_Stiff_Legs",
-    "name": "Wide Stance Stiff Legs",
-    "originalName": "Wide Stance Stiff Legs",
-    "category": "legs_glutes",
-    "equipment": "barbell",
-    "level": "intermediate",
-    "force": "pull",
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "glutes",
-      "lower back"
-    ],
-    "instructions": [
-      "Begin with a barbell loaded on the floor. Adopt a wide stance, and then bend at the hips to grab the bar. Your hips should be as far back as possible, and your legs nearly straight. Keep your back straight, and your head and chest up. This will be your starting position.",
-      "Begin the movement be engaging the hips, driving them forward as you allow the arms to hang straight. Continue until you are standing straight up, and then slowly return the weight to the starting position. For successive reps, the weight need not touch the floor."
-    ],
-    "imageUrls": [
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide_Stance_Stiff_Legs/0.jpg",
-      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide_Stance_Stiff_Legs/1.jpg"
-    ],
-    "gifUrl": "https://static.exercisedb.dev/media/2Ty4idJ.gif"
   },
   {
     "id": "Wind_Sprints",
