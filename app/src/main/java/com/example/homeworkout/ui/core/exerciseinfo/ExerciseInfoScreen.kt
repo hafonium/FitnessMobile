@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,25 +16,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import com.example.homeworkout.domain.models.ExerciseDetail
-import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.theme.BrandBlue
 import com.example.homeworkout.ui.theme.CloudGray
@@ -49,38 +54,70 @@ fun ExerciseInfoScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ScreenWrapper {
-        Scaffold(topBar = { BackTopBar(title = "Exercise Information", onNavigateBack = onClose) }) { padding ->
+        Scaffold(
+            bottomBar = {
+                Surface(
+                    color = MaterialTheme.colorScheme.surface,
+                    shadowElevation = 8.dp
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        AppButton(
+                            text = "CLOSE",
+                            onClick = onClose,
+                            modifier = Modifier.fillMaxWidth().height(56.dp)
+                        )
+                    }
+                }
+            }
+        ) { padding ->
             when (val state = uiState) {
                 is ExerciseInfoUiState.Loading -> Box(
                     modifier = Modifier.fillMaxSize().padding(padding),
                     contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) }
+                ) { CircularProgressIndicator(color = BrandBlue) }
 
                 is ExerciseInfoUiState.Error -> Box(
                     modifier = Modifier.fillMaxSize().padding(padding),
                     contentAlignment = Alignment.Center
                 ) { Text(state.message, color = MaterialTheme.colorScheme.error) }
 
-                is ExerciseInfoUiState.Success -> ExerciseInfoContent(state.detail, padding, onClose)
+                is ExerciseInfoUiState.Success -> ExerciseInfoContent(state.detail, padding)
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ExerciseInfoContent(detail: ExerciseDetail, contentPadding: PaddingValues, onClose: () -> Unit) {
+private fun ExerciseInfoContent(detail: ExerciseDetail, contentPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
-            start = 16.dp, end = 16.dp, bottom = 24.dp,
-            top = contentPadding.calculateTopPadding() + 8.dp
+            start = 24.dp,
+            end = 24.dp,
+            top = 32.dp,
+            bottom = contentPadding.calculateBottomPadding() + 24.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
+        // Title
         item {
-            // Prefer the animated demo GIF as the hero; fall back to the first reference photo,
-            // then to the plain icon tile when the exercise has no artwork at all. Any photos not
-            // used as the hero show underneath as a small strip.
+            Text(
+                text = detail.exercise.title.uppercase(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        // Hero Image placeholder
+        item {
             val heroFromGif = !detail.exercise.gifUrl.isNullOrBlank()
             val heroUrl = detail.exercise.gifUrl?.takeIf { it.isNotBlank() } ?: detail.imageUrls.firstOrNull()
             val strip = if (heroFromGif) detail.imageUrls else detail.imageUrls.drop(1)
@@ -91,43 +128,100 @@ private fun ExerciseInfoContent(detail: ExerciseDetail, contentPadding: PaddingV
                 }
             }
         }
-        item { Text(detail.exercise.title, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold) }
 
+        // Repeats / Duration
         item {
-            InfoSection(label = "DURATION") {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Adjustable from the plan editor", style = MaterialTheme.typography.bodyMedium)
-                    Text("30s", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SectionHeader("DURATION")
+                Text(
+                    text = "30s", // Placeholder for actual duration
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
+        // Instructions
         item {
-            InfoSection(label = "INSTRUCTIONS") {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                SectionHeader("INSTRUCTIONS")
                 if (detail.instructions.isEmpty()) {
-                    Text("No instructions provided for this exercise.", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = "No instructions provided for this exercise.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        detail.instructions.forEach { step ->
-                            Text(step, style = MaterialTheme.typography.bodyMedium, color = InkBlack)
+                    detail.instructions.forEachIndexed { index, step ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(Color(0xFFE8F0FE), CircleShape), // Light blue background for badge
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${index + 1}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = BrandBlue, // Use BrandBlue for number
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Text(
+                                text = step,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.2f
+                            )
                         }
                     }
                 }
             }
         }
 
+        // Focus Area
         item {
-            InfoSection(label = "FOCUS AREA") {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    (detail.primaryMuscles + detail.secondaryMuscles).distinct().forEach { muscle ->
-                        MuscleChip(muscle.replaceFirstChar { it.uppercase() })
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                SectionHeader("FOCUS AREA")
+                
+                val allMuscles = (detail.primaryMuscles + detail.secondaryMuscles).distinct()
+                if (allMuscles.isEmpty()) {
+                    Text("Full Body", style = MaterialTheme.typography.bodyLarge)
+                } else {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        allMuscles.forEach { muscle ->
+                            MuscleChip(muscle.replaceFirstChar { it.uppercase() })
+                        }
                     }
                 }
             }
         }
-
-        item { AppButton(text = "Close", onClick = onClose, modifier = Modifier.fillMaxWidth()) }
+        
+        // Add a bit of spacing at the bottom
+        item { Spacer(modifier = Modifier.height(16.dp)) }
     }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.ExtraBold,
+        color = BrandBlue
+    )
 }
 
 @Composable
@@ -135,8 +229,8 @@ private fun ExerciseHero(imageUrl: String?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .clip(TileShape)
+            .height(260.dp) // Updated to match the requested layout size
+            .clip(RoundedCornerShape(16.dp)) // Modern rounding
             .background(CloudGray),
         contentAlignment = Alignment.Center
     ) {
@@ -170,7 +264,7 @@ private fun ImageStrip(urls: List<String>) {
             SubcomposeAsyncImage(
                 model = url,
                 contentDescription = null,
-                modifier = Modifier.size(72.dp).clip(TileShape).background(CloudGray),
+                modifier = Modifier.size(72.dp).clip(RoundedCornerShape(8.dp)).background(CloudGray),
                 contentScale = ContentScale.Crop,
                 loading = {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -188,26 +282,18 @@ private fun ImageStrip(urls: List<String>) {
 }
 
 @Composable
-private fun InfoSection(label: String, content: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
-        )
-        content()
-    }
-}
-
-@Composable
 private fun MuscleChip(text: String) {
     Row(
-        modifier = Modifier.clip(PillShape).background(CloudGray).padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier = Modifier.clip(PillShape).background(CloudGray).padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(BrandBlue))
-        Text(text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = InkBlack)
+        Icon(
+            imageVector = Icons.Filled.Circle,
+            contentDescription = null,
+            tint = BrandBlue,
+            modifier = Modifier.size(10.dp)
+        )
+        Text(text, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = InkBlack)
     }
 }
