@@ -52,7 +52,9 @@ import com.example.homeworkout.ui.core.planedit.AlterExerciseScreen
 import com.example.homeworkout.ui.core.planedit.EditPlanExercisesScreen
 import com.example.homeworkout.ui.core.planedit.ExerciseBrowserViewModel
 import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
+import com.example.homeworkout.ui.core.player.WorkoutPlayerViewModel
 import com.example.homeworkout.ui.core.report.ReportScreen
+import com.example.homeworkout.ui.core.report.ReportViewModel
 import com.example.homeworkout.ui.core.settings.GeneralSettingsScreen
 import com.example.homeworkout.ui.core.settings.SettingsScreen
 import com.example.homeworkout.ui.core.settings.SettingsViewModel
@@ -123,7 +125,8 @@ fun ScreenNavigator() {
                             appInstance.getWorkoutsUseCase,
                             appInstance.getFitnessProfileUseCase,
                             appInstance.recommendPlanUseCase,
-                            appInstance.getWeeklyGoalProgressUseCase
+                            appInstance.getWeeklyGoalProgressUseCase,
+                            appInstance.getStreakUseCase
                         )
                     }
                 })
@@ -138,7 +141,10 @@ fun ScreenNavigator() {
             }
 
             composable(Screen.Report.route) {
-                ReportScreen(onOpenHistory = { navController.navigate(Screen.History.route) })
+                val vm: ReportViewModel = viewModel(factory = viewModelFactory {
+                    initializer { ReportViewModel(appInstance.getStreakUseCase) }
+                })
+                ReportScreen(viewModel = vm, onOpenHistory = { navController.navigate(Screen.History.route) })
             }
 
             composable(Screen.SettingsHome.route) {
@@ -178,12 +184,12 @@ fun ScreenNavigator() {
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
                 val vm: DetailViewModel = viewModel(key = "detail-$planId", factory = viewModelFactory {
-                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase) }
+                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase, appInstance.resolveNextPlanDayUseCase) }
                 })
                 DetailScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
-                    onStartWorkout = { navController.navigate(Screen.Player.createRoute(planId)) },
+                    onStartWorkout = { pId, planDayId -> navController.navigate(Screen.Player.createRoute(pId, planDayId)) },
                     onEditExercises = { navController.navigate(Screen.EditPlanExercises.createRoute(planId)) },
                     onOpenExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onOpenWorkoutSettings = { navController.navigate(Screen.WorkoutSettingsSheet.route) }
@@ -196,7 +202,7 @@ fun ScreenNavigator() {
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
                 val vm: DetailViewModel = viewModel(key = "edit-detail-$planId", factory = viewModelFactory {
-                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase) }
+                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase, appInstance.resolveNextPlanDayUseCase) }
                 })
                 
                 val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
@@ -279,11 +285,28 @@ fun ScreenNavigator() {
             // --- During Workout ---
             composable(
                 route = Screen.Player.route,
-                arguments = listOf(navArgument("planId") { type = NavType.LongType })
+                arguments = listOf(
+                    navArgument("planId") { type = NavType.LongType },
+                    navArgument("planDayId") {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    }
+                )
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
-                val vm: DetailViewModel = viewModel(key = "player-detail-$planId", factory = viewModelFactory {
-                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase) }
+                val requestedPlanDayId = entry.arguments?.getLong("planDayId", -1L)?.takeIf { it != -1L }
+                val vm: WorkoutPlayerViewModel = viewModel(key = "player-$planId", factory = viewModelFactory {
+                    initializer {
+                        WorkoutPlayerViewModel(
+                            planId,
+                            requestedPlanDayId,
+                            appInstance.startWorkoutSessionUseCase,
+                            appInstance.startSpecificWorkoutDayUseCase,
+                            appInstance.restartWorkoutDayUseCase,
+                            appInstance.completeWorkoutSessionUseCase,
+                            appInstance.abandonWorkoutSessionUseCase
+                        )
+                    }
                 })
                 WorkoutPlayerScreen(
                     viewModel = vm,

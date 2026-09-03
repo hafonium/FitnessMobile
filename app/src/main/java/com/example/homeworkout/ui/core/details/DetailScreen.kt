@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
@@ -33,19 +34,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import coil.compose.SubcomposeAsyncImage
 import com.example.homeworkout.domain.models.PlanExerciseSummary
+import com.example.homeworkout.domain.models.WorkoutPlanDayDetail
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
+import com.example.homeworkout.domain.usecases.player.ResolvedPlanDay
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.planThemeDrawableRes
 import com.example.homeworkout.ui.components.ExerciseRow
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.theme.AppGradients
+import com.example.homeworkout.ui.theme.BrandBlue
+import com.example.homeworkout.ui.theme.BrandBlueTint
 import com.example.homeworkout.ui.theme.CardShape
+import com.example.homeworkout.ui.theme.CardWhite
+import com.example.homeworkout.ui.theme.CloudGray
+import com.example.homeworkout.ui.theme.InkBlack
+import com.example.homeworkout.ui.theme.PillShape
 import com.example.homeworkout.ui.theme.SlateGray
 import com.example.homeworkout.utils.ScreenWrapper
 
@@ -53,12 +63,13 @@ import com.example.homeworkout.utils.ScreenWrapper
 fun DetailScreen(
     viewModel: DetailViewModel,
     onNavigateBack: () -> Unit,
-    onStartWorkout: (Long) -> Unit,
+    onStartWorkout: (planId: Long, planDayId: Long?) -> Unit,
     onEditExercises: (Long) -> Unit,
     onOpenExerciseInfo: (Long) -> Unit,
     onOpenWorkoutSettings: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val nextDay by viewModel.nextDay.collectAsStateWithLifecycle()
     val topBarTitle = (uiState as? DetailUiState.Success)?.detail?.plan?.title ?: "Workout"
 
     ScreenWrapper {
@@ -89,8 +100,9 @@ fun DetailScreen(
 
                 is DetailUiState.Success -> PlanDetailContent(
                     detail = state.detail,
+                    nextDay = nextDay,
                     contentPadding = padding,
-                    onStartWorkout = { onStartWorkout(state.detail.plan.id) },
+                    onStartWorkout = { planDayId -> onStartWorkout(state.detail.plan.id, planDayId) },
                     onEditExercises = { onEditExercises(state.detail.plan.id) },
                     onOpenExerciseInfo = onOpenExerciseInfo
                 )
@@ -102,13 +114,16 @@ fun DetailScreen(
 @Composable
 private fun PlanDetailContent(
     detail: WorkoutPlanDetail,
+    nextDay: ResolvedPlanDay?,
     contentPadding: PaddingValues,
-    onStartWorkout: () -> Unit,
+    onStartWorkout: (planDayId: Long?) -> Unit,
     onEditExercises: () -> Unit,
     onOpenExerciseInfo: (Long) -> Unit
 ) {
     val allExercises = detail.days.flatMap { it.exercises }
     val estimatedMinutes = (allExercises.sumOf { (it.targetDurationSec ?: 30) } / 60).coerceAtLeast(1)
+    val isMultiDay = detail.days.size > 1
+    val nextDayNumber = nextDay?.day?.dayNumber
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -129,17 +144,105 @@ private fun PlanDetailContent(
             }
         }
         item {
-            AppButton(text = "Start", onClick = onStartWorkout, modifier = Modifier.fillMaxWidth())
+            AppButton(
+                text = if (isMultiDay && nextDayNumber != null) "Start · Day $nextDayNumber" else "Start",
+                onClick = { onStartWorkout(null) },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
         item {
             SectionHeader(title = "Exercises", actionText = "Edit", onActionClick = onEditExercises)
         }
-        items(allExercises, key = { it.planExerciseId }) { exercise ->
+
+        if (isMultiDay) {
+            detail.days.forEachIndexed { dayIndex, day ->
+                item(key = "day-${day.planDayId}") {
+                    val isNext = day.dayNumber == nextDayNumber
+                    val panelColor = if (isNext) BrandBlueTint else if (dayIndex % 2 == 1) CloudGray else CardWhite
+                    DayGroupPanel(
+                        day = day,
+                        isNext = isNext,
+                        panelColor = panelColor,
+                        onStartDay = { onStartWorkout(day.planDayId) },
+                        onOpenExerciseInfo = onOpenExerciseInfo
+                    )
+                }
+            }
+        } else {
+            items(allExercises, key = { it.planExerciseId }) { exercise ->
+                ExerciseRow(
+                    title = exercise.title,
+                    subtitle = exercise.subtitleText(),
+                    imageUrl = exercise.imageUrl,
+                    onClick = { onOpenExerciseInfo(exercise.exerciseId) }
+                )
+            }
+        }
+    }
+}
+
+/** One day's exercises grouped into a single tinted panel, so a long multi-day plan's exercise
+ * list reads as clearly separated days instead of one long flat list. [panelColor] alternates
+ * between plain days so consecutive groups stay visually distinct; the day "Start" would actually
+ * play next gets [BrandBlueTint] plus a "NEXT" badge regardless of the alternation. */
+@Composable
+private fun DayGroupPanel(
+    day: WorkoutPlanDayDetail,
+    isNext: Boolean,
+    panelColor: Color,
+    onStartDay: () -> Unit,
+    onOpenExerciseInfo: (Long) -> Unit
+) {
+    AppCard(modifier = Modifier.fillMaxWidth(), containerColor = panelColor) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    buildString {
+                        append("DAY ${day.dayNumber}")
+                        if (!day.title.isNullOrBlank()) append(" · ${day.title}")
+                    },
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = InkBlack
+                )
+                if (isNext) {
+                    Box(
+                        modifier = Modifier
+                            .clip(PillShape)
+                            .background(BrandBlue)
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text("NEXT", style = MaterialTheme.typography.labelSmall, color = Color.White, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable(onClick = onStartDay)
+            ) {
+                Text("Start", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = BrandBlue)
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Start day ${day.dayNumber}",
+                    tint = BrandBlue,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+        day.exercises.forEachIndexed { index, exercise ->
             ExerciseRow(
                 title = exercise.title,
                 subtitle = exercise.subtitleText(),
                 imageUrl = exercise.imageUrl,
-                onClick = { onOpenExerciseInfo(exercise.exerciseId) }
+                onClick = { onOpenExerciseInfo(exercise.exerciseId) },
+                modifier = Modifier.padding(horizontal = 8.dp),
+                showDivider = index != day.exercises.lastIndex
             )
         }
     }

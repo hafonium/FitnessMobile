@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -92,6 +91,7 @@ fun HomeScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val challenge by viewModel.challenge.collectAsStateWithLifecycle()
     val weeklyGoalProgress by viewModel.weeklyGoalProgress.collectAsStateWithLifecycle()
+    val streak by viewModel.streak.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         LazyColumn(
@@ -99,7 +99,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            item { HomeHeader() }
+            item { HomeHeader(streakCount = streak) }
 
             item {
                 AppTextField(value = "", onValueChange = {}, placeholderText = "Search workouts, plans...")
@@ -168,37 +168,29 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeHeader() {
+private fun HomeHeader(streakCount: Int) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text("HOME WORKOUT", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Icon(
                 Icons.Default.LocalFireDepartment,
                 contentDescription = "Streak",
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(26.dp)
             )
-            ProBadge()
+            if (streakCount > 0) {
+                Text(
+                    "$streakCount",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
-    }
-}
-
-@Composable
-private fun ProBadge() {
-    Row(
-        modifier = Modifier
-            .clip(PillShape)
-            .background(AppGradients.ProBadge)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(Icons.Default.WorkspacePremium, contentDescription = null, tint = InkBlack, modifier = Modifier.size(14.dp))
-        Text("PRO", style = MaterialTheme.typography.labelSmall, color = InkBlack, fontWeight = FontWeight.Bold)
     }
 }
 
