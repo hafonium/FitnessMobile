@@ -27,6 +27,9 @@ import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUse
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
+import com.example.homeworkout.domain.usecases.planedit.AddExercisesToPlanDayUseCase
+import com.example.homeworkout.domain.usecases.planedit.ReplacePlanExerciseUseCase
+import com.example.homeworkout.domain.usecases.planedit.UpdatePlanExerciseRepsUseCase
 import com.example.homeworkout.domain.usecases.planselection.GetFitnessProfileUseCase
 import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCase
 import com.example.homeworkout.domain.usecases.planselection.SaveFitnessProfileUseCase
@@ -54,10 +57,8 @@ class App : Application(), ImageLoaderFactory {
     // Room database
     private val database: AppDatabase by lazy { AppDatabase.getInstance(this, applicationScope) }
 
-    val workoutPlanDao by lazy { database.workoutPlanDao() }
-
     // Repositories
-    val workoutRepository: WorkoutRepository by lazy { WorkoutRepositoryImpl(database.workoutPlanDao()) }
+    val workoutRepository: WorkoutRepository by lazy { WorkoutRepositoryImpl(database.workoutPlanDao(), database.userDao()) }
     val exerciseRepository: ExerciseRepository by lazy { ExerciseRepositoryImpl(database.exerciseDao()) }
     val planCatalogRepository: PlanCatalogRepository by lazy { WorkoutPlanCatalogSource(this) }
     val fitnessProfileRepository: FitnessProfileRepository by lazy { FitnessProfileRepositoryImpl(database.userDao()) }
@@ -88,8 +89,11 @@ class App : Application(), ImageLoaderFactory {
     val completeWorkoutSessionUseCase by lazy { CompleteWorkoutSessionUseCase(workoutSessionRepository) }
     val abandonWorkoutSessionUseCase by lazy { AbandonWorkoutSessionUseCase(workoutSessionRepository) }
     val getExercisesByIdsUseCase by lazy { GetExercisesByIdsUseCase(exerciseRepository) }
-    val createCustomWorkoutPlanUseCase by lazy { CreateCustomWorkoutPlanUseCase(workoutPlanDao, database.userDao()) }
-    val deleteCustomWorkoutPlanUseCase by lazy { DeleteCustomWorkoutPlanUseCase(workoutPlanDao) }
+    val createCustomWorkoutPlanUseCase by lazy { CreateCustomWorkoutPlanUseCase(workoutRepository) }
+    val deleteCustomWorkoutPlanUseCase by lazy { DeleteCustomWorkoutPlanUseCase(workoutRepository) }
+    val addExercisesToPlanDayUseCase by lazy { AddExercisesToPlanDayUseCase(workoutRepository) }
+    val replacePlanExerciseUseCase by lazy { ReplacePlanExerciseUseCase(workoutRepository) }
+    val updatePlanExerciseRepsUseCase by lazy { UpdatePlanExerciseRepsUseCase(workoutRepository) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.

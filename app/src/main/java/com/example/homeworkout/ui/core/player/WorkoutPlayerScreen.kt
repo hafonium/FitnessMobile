@@ -123,6 +123,7 @@ private fun PlayerContent(
     val isTimed = current.targetDurationSec != null
 
     fun finishCurrentExercise() {
+        paused = false
         completedCount = (index + 1).coerceAtMost(exercises.size)
         if (index >= exercises.lastIndex) {
             phase = Phase.COMPLETED
@@ -382,6 +383,8 @@ private fun RestView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (next != null) {
+                ExerciseThumbnail(size = 140.dp, imageUrl = next.gifUrl)
+                Spacer(Modifier.height(16.dp))
                 Text("NEXT $nextNumber/$total", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.labelLarge)
                 Text(
                     next.title.uppercase(),

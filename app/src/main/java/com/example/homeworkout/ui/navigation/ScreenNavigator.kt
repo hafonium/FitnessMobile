@@ -14,9 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,7 +30,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
-import com.example.homeworkout.domain.usecases.details.EditWorkoutPlanUseCase
 import com.example.homeworkout.ui.App
 import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanScreen
 import com.example.homeworkout.ui.core.customworkout.CreateCustomPlanViewModel
@@ -54,6 +50,7 @@ import com.example.homeworkout.ui.core.planedit.AddExercisesScreen
 import com.example.homeworkout.ui.core.planedit.AlterExerciseScreen
 import com.example.homeworkout.ui.core.planedit.EditPlanExercisesScreen
 import com.example.homeworkout.ui.core.planedit.ExerciseBrowserViewModel
+import com.example.homeworkout.ui.core.planedit.PlanExerciseEditViewModel
 import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
 import com.example.homeworkout.ui.core.player.WorkoutPlayerViewModel
 import com.example.homeworkout.ui.core.report.ReportScreen
@@ -207,18 +204,22 @@ fun ScreenNavigator() {
                 val vm: DetailViewModel = viewModel(key = "edit-detail-$planId", factory = viewModelFactory {
                     initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase, appInstance.resolveNextPlanDayUseCase) }
                 })
-                
-                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
-                val coroutineScope = rememberCoroutineScope()
-                
+                val editVm: PlanExerciseEditViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        PlanExerciseEditViewModel(
+                            appInstance.addExercisesToPlanDayUseCase,
+                            appInstance.replacePlanExerciseUseCase,
+                            appInstance.updatePlanExerciseRepsUseCase
+                        )
+                    }
+                })
+
                 EditPlanExercisesScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onAlterExercise = { planExerciseId -> navController.navigate(Screen.AlterExercise.createRoute(planExerciseId)) },
                     onAddExercises = { planDayId -> navController.navigate(Screen.AddExercises.createRoute(planDayId)) },
-                    onUpdateReps = { planExerciseId, reps ->
-                        coroutineScope.launch { editUseCase.updateReps(planExerciseId, reps) }
-                    }
+                    onUpdateReps = { planExerciseId, reps -> editVm.updateReps(planExerciseId, reps) }
                 )
             }
 
@@ -230,18 +231,22 @@ fun ScreenNavigator() {
                 val vm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
                 })
-                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
-                val coroutineScope = rememberCoroutineScope()
-                
+                val editVm: PlanExerciseEditViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        PlanExerciseEditViewModel(
+                            appInstance.addExercisesToPlanDayUseCase,
+                            appInstance.replacePlanExerciseUseCase,
+                            appInstance.updatePlanExerciseRepsUseCase
+                        )
+                    }
+                })
+
                 AlterExerciseScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onReplaceExercise = { newExerciseId ->
-                        coroutineScope.launch {
-                            editUseCase.replaceExercise(planExerciseId, newExerciseId)
-                            navController.popBackStack()
-                        }
+                        editVm.replaceExercise(planExerciseId, newExerciseId) { navController.popBackStack() }
                     }
                 )
             }
@@ -254,18 +259,22 @@ fun ScreenNavigator() {
                 val vm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
                 })
-                val editUseCase = remember { EditWorkoutPlanUseCase(appInstance.workoutPlanDao) }
-                val coroutineScope = rememberCoroutineScope()
-                
+                val editVm: PlanExerciseEditViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        PlanExerciseEditViewModel(
+                            appInstance.addExercisesToPlanDayUseCase,
+                            appInstance.replacePlanExerciseUseCase,
+                            appInstance.updatePlanExerciseRepsUseCase
+                        )
+                    }
+                })
+
                 AddExercisesScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onAddExercises = { exerciseIds ->
-                        coroutineScope.launch {
-                            editUseCase.addExercises(planDayId, exerciseIds)
-                            navController.popBackStack()
-                        }
+                        editVm.addExercises(planDayId, exerciseIds) { navController.popBackStack() }
                     }
                 )
             }
