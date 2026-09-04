@@ -356,7 +356,10 @@ fun ScreenNavigator() {
                             appInstance.restartWorkoutDayUseCase,
                             appInstance.completeWorkoutSessionUseCase,
                             appInstance.abandonWorkoutSessionUseCase,
-                            appInstance.markBadgesSeenUseCase
+                            appInstance.markBadgesSeenUseCase,
+                            appInstance.getSettingsUseCase,
+                            appInstance.ttsService,
+                            appInstance.tickSoundPlayer
                         )
                     }
                 })

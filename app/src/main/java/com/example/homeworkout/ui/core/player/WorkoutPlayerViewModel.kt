@@ -4,15 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.BadgeProgress
+import com.example.homeworkout.domain.models.SettingsPreferences
 import com.example.homeworkout.domain.usecases.badges.MarkBadgesSeenUseCase
 import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.CompleteWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
+import com.example.homeworkout.ui.services.TickSoundPlayer
+import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class PlayerUiState {
@@ -43,7 +49,10 @@ class WorkoutPlayerViewModel(
     private val restartWorkoutDayUseCase: RestartWorkoutDayUseCase,
     private val completeWorkoutSessionUseCase: CompleteWorkoutSessionUseCase,
     private val abandonWorkoutSessionUseCase: AbandonWorkoutSessionUseCase,
-    private val markBadgesSeenUseCase: MarkBadgesSeenUseCase
+    private val markBadgesSeenUseCase: MarkBadgesSeenUseCase,
+    private val getSettingsUseCase: GetSettingsUseCase,
+    private val ttsService: TtsService,
+    private val tickSoundPlayer: TickSoundPlayer
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
@@ -52,8 +61,38 @@ class WorkoutPlayerViewModel(
     private val _newlyUnlockedBadges = MutableStateFlow<List<BadgeProgress>>(emptyList())
     val newlyUnlockedBadges: StateFlow<List<BadgeProgress>> = _newlyUnlockedBadges.asStateFlow()
 
+    private val settings: StateFlow<SettingsPreferences> = getSettingsUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsPreferences())
+
     init {
         viewModelScope.launch { beginDay() }
+    }
+
+    /** Speaks a coaching cue (get ready / rest time / next exercise / finished) in the user's chosen voice. */
+    fun speak(text: String) {
+        val current = settings.value
+        if (!current.soundEnabled) return
+        ttsService.speak(text, current.ttsVoiceType, current.customVoiceName)
+    }
+
+    /** Plays one countdown tick — called for each of a timer's last 5 seconds. */
+    fun tick() {
+        val current = settings.value
+        if (!current.soundEnabled) return
+        tickSoundPlayer.tick(current.soundVolume)
+    }
+
+    /** Long tick + vibration — called once when a new exercise starts. */
+    fun signalExerciseStart() {
+        val current = settings.value
+        if (!current.soundEnabled) return
+        tickSoundPlayer.exerciseStartSignal(current.soundVolume)
+    }
+
+    override fun onCleared() {
+        ttsService.stop()
+        tickSoundPlayer.release()
+        super.onCleared()
     }
 
     private suspend fun beginDay() {
