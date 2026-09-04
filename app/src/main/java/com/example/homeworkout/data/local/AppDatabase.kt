@@ -8,10 +8,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.homeworkout.data.local.dao.ExerciseDao
 import com.example.homeworkout.data.local.dao.BadgeDao
+import com.example.homeworkout.data.local.dao.ChatDao
 import com.example.homeworkout.data.local.dao.UserDao
 import com.example.homeworkout.data.local.dao.WeightLogDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
+import com.example.homeworkout.data.local.entities.ChatMessageEntity
+import com.example.homeworkout.data.local.entities.ChatSessionEntity
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
 import com.example.homeworkout.data.local.entities.ExerciseEntity
 import com.example.homeworkout.data.local.entities.ExerciseImageEntity
@@ -54,10 +57,14 @@ import kotlinx.coroutines.launch
         WorkoutSessionExerciseEntity::class,
         UserWeightLogEntity::class,
         UserFitnessProfileEntity::class,
-        UserBadgeEntity::class
+        UserBadgeEntity::class,
+        ChatSessionEntity::class,
+        ChatMessageEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
-    version = 5,
+    // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
+    // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -67,6 +74,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workoutSessionDao(): WorkoutSessionDao
     abstract fun weightLogDao(): WeightLogDao
     abstract fun badgeDao(): BadgeDao
+    abstract fun chatDao(): ChatDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"
