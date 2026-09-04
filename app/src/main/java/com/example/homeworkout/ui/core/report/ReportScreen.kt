@@ -35,29 +35,31 @@ import com.example.homeworkout.ui.components.BadgeMedallion
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
+import com.example.homeworkout.ui.components.WeightLineChart
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
-import com.example.homeworkout.ui.theme.CloudGray
 import com.example.homeworkout.ui.theme.InkBlack
 import com.example.homeworkout.ui.theme.SlateGray
 import com.example.homeworkout.ui.theme.SuccessGreen
-import com.example.homeworkout.ui.theme.TileShape
 import com.example.homeworkout.utils.ScreenWrapper
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
- * Report tab. "Day Streak" / "Personal Best" are real, from [ReportViewModel] /
- * [com.example.homeworkout.domain.usecases.report.GetStreakUseCase]. Everything else (Workouts/Kcal/Minute,
- * the weekly calendar row, Weight, BMI) is still static sample figures matching the storyboard —
- * wiring those to `workout_sessions` / `user_weight_logs` remains out of scope for this pass.
+ * Report tab. Streaks, weight/BMI, and achievements are backed by Room. The top
+ * Workouts/Kcal/Minute summary and weekly calendar remain storyboard sample data.
  */
 @Composable
 fun ReportScreen(
     viewModel: ReportViewModel,
     onOpenHistory: () -> Unit,
-    onOpenAchievements: () -> Unit
+    onOpenAchievements: () -> Unit,
+    onOpenWeight: () -> Unit
 ) {
     val streak by viewModel.streak.collectAsStateWithLifecycle()
     val badges by viewModel.badges.collectAsStateWithLifecycle()
+    val weightDashboard by viewModel.weightDashboard.collectAsStateWithLifecycle()
     val unseenBadge = badges.firstOrNull { it.isUnlocked && !it.isSeen }
 
     ScreenWrapper {
@@ -114,7 +116,7 @@ fun ReportScreen(
             }
 
             item {
-                AppCard(modifier = Modifier.fillMaxWidth()) {
+                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenWeight)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -122,28 +124,40 @@ fun ReportScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("Weight", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Log", onClick = {}, variant = AppButtonVariant.Tonal)
+                            Text("View details", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                         }
-                        Text("142.2 kg", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text(
-                            "Heaviest 142.2 · Lightest 142.2",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SlateGray
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp)
-                                .clip(TileShape)
-                                .background(CloudGray),
-                            contentAlignment = Alignment.Center
-                        ) { Text("weight trend", style = MaterialTheme.typography.bodySmall, color = SlateGray) }
+                        val weight = weightDashboard
+                        if (weight == null) {
+                            Text("Loading weight…", color = SlateGray)
+                        } else if (weight.currentWeightKg == null) {
+                            Text("No weight recorded yet", color = SlateGray)
+                            Text("Tap to record your first measurement.", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        } else {
+                            Text("${formatDecimal(weight.currentWeightKg)} kg", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                            weight.currentLoggedAt?.let {
+                                Text(
+                                    "Updated ${SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(it))}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SlateGray
+                                )
+                            }
+                            Text(
+                                "Heaviest ${formatDecimal(weight.heaviestWeightKg)} · Lightest ${formatDecimal(weight.lightestWeightKg)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SlateGray
+                            )
+                            WeightLineChart(
+                                records = weight.chartRecords,
+                                modifier = Modifier.fillMaxWidth().height(96.dp),
+                                showGrid = false
+                            )
+                        }
                     }
                 }
             }
 
             item {
-                AppCard(modifier = Modifier.fillMaxWidth()) {
+                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenWeight)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -151,11 +165,18 @@ fun ReportScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("BMI", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Edit", onClick = {}, variant = AppButtonVariant.Tonal)
+                            AppButton(text = "Details", onClick = onOpenWeight, variant = AppButtonVariant.Tonal)
                         }
-                        Text("22.8", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text("Healthy weight", color = SuccessGreen, fontWeight = FontWeight.SemiBold)
-                        Text("Height 250 cm", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        val bmi = weightDashboard?.bmi
+                        Text(bmi?.let { "%.1f".format(it) } ?: "—", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                        Text(
+                            weightDashboard?.bmiCategory?.label ?: "Add weight and height to calculate BMI",
+                            color = if (weightDashboard?.bmiCategory == com.example.homeworkout.domain.models.BmiCategory.HEALTHY) SuccessGreen else SlateGray,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        weightDashboard?.heightCm?.let {
+                            Text("Height ${formatDecimal(it)} cm", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        }
                     }
                 }
             }
@@ -246,3 +267,5 @@ private fun LabeledValue(label: String, value: String) {
         Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
 }
+
+private fun formatDecimal(value: Double?): String = value?.let { "%.1f".format(it) } ?: "—"

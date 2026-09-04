@@ -45,6 +45,7 @@ sealed class Screen(val route: String) {
     // Report tab
     object History : Screen("history")
     object Achievements : Screen("achievements")
+    object Weight : Screen("weight")
 
     // Settings tab
     object SettingsWorkout : Screen("settings_workout")

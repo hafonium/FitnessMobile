@@ -14,6 +14,7 @@ import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
+import com.example.homeworkout.data.repositories.WeightRepositoryImpl
 import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
@@ -21,6 +22,7 @@ import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
+import com.example.homeworkout.domain.repositories.WeightRepository
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
 import com.example.homeworkout.domain.usecases.badges.EvaluateBadgesUseCase
 import com.example.homeworkout.domain.usecases.badges.GetBadgesUseCase
@@ -47,6 +49,9 @@ import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
+import com.example.homeworkout.domain.usecases.report.GetWeightDashboardUseCase
+import com.example.homeworkout.domain.usecases.report.RecordWeightUseCase
+import com.example.homeworkout.domain.usecases.report.UpdateHeightUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
@@ -74,6 +79,9 @@ class App : Application(), ImageLoaderFactory {
         SettingsRepositoryImpl(database.userDao(), database.workoutSessionDao(), database.badgeDao())
     }
     val workoutSessionRepository: WorkoutSessionRepository by lazy { WorkoutSessionRepositoryImpl(database.userDao(), database.workoutSessionDao()) }
+    val weightRepository: WeightRepository by lazy {
+        WeightRepositoryImpl(database, database.userDao(), database.weightLogDao())
+    }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
@@ -92,6 +100,9 @@ class App : Application(), ImageLoaderFactory {
     val resetWorkoutProgressUseCase by lazy { ResetWorkoutProgressUseCase(settingsRepository) }
     val getWeeklyGoalProgressUseCase by lazy { GetWeeklyGoalProgressUseCase(settingsRepository, workoutSessionRepository) }
     val getStreakUseCase by lazy { GetStreakUseCase(workoutSessionRepository) }
+    val getWeightDashboardUseCase by lazy { GetWeightDashboardUseCase(weightRepository) }
+    val recordWeightUseCase by lazy { RecordWeightUseCase(weightRepository) }
+    val updateHeightUseCase by lazy { UpdateHeightUseCase(weightRepository) }
     val getBadgesUseCase by lazy { GetBadgesUseCase(badgeRepository, workoutSessionRepository, getStreakUseCase) }
     val evaluateBadgesUseCase by lazy { EvaluateBadgesUseCase(getBadgesUseCase, badgeRepository) }
     val markBadgesSeenUseCase by lazy { MarkBadgesSeenUseCase(badgeRepository) }

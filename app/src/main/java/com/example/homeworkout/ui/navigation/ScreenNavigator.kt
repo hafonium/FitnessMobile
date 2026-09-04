@@ -65,6 +65,8 @@ import com.example.homeworkout.ui.core.settings.WorkoutSettingsScreen
 import com.example.homeworkout.ui.core.workoutlist.WorkoutListScreen
 import com.example.homeworkout.ui.core.workoutlist.WorkoutListViewModel
 import com.example.homeworkout.ui.core.workoutsettings.WorkoutSettingsSheetScreen
+import com.example.homeworkout.ui.core.weight.WeightScreen
+import com.example.homeworkout.ui.core.weight.WeightViewModel
 
 private data class BottomTab(val screen: Screen, val label: String, val icon: ImageVector)
 
@@ -147,6 +149,7 @@ fun ScreenNavigator() {
                     initializer {
                         ReportViewModel(
                             appInstance.getStreakUseCase,
+                            appInstance.getWeightDashboardUseCase,
                             appInstance.getBadgesUseCase,
                             appInstance.evaluateBadgesUseCase,
                             appInstance.markBadgesSeenUseCase
@@ -156,7 +159,8 @@ fun ScreenNavigator() {
                 ReportScreen(
                     viewModel = vm,
                     onOpenHistory = { navController.navigate(Screen.History.route) },
-                    onOpenAchievements = { navController.navigate(Screen.Achievements.route) }
+                    onOpenAchievements = { navController.navigate(Screen.Achievements.route) },
+                    onOpenWeight = { navController.navigate(Screen.Weight.route) }
                 )
             }
 
@@ -427,6 +431,19 @@ fun ScreenNavigator() {
                     }
                 })
                 AchievementsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.Weight.route) {
+                val vm: WeightViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        WeightViewModel(
+                            appInstance.getWeightDashboardUseCase,
+                            appInstance.recordWeightUseCase,
+                            appInstance.updateHeightUseCase
+                        )
+                    }
+                })
+                WeightScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             // --- Settings tab ---
