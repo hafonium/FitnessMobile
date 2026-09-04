@@ -9,7 +9,6 @@ import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
 import com.example.homeworkout.domain.models.WorkoutHistoryRecord
 import com.example.homeworkout.domain.models.AchievementTotals
-import com.example.homeworkout.domain.models.ExerciseSessionRecord
 import com.example.homeworkout.domain.models.ResumableSession
 import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
@@ -18,7 +17,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class WorkoutSessionRepositoryImpl(
@@ -130,7 +128,7 @@ class WorkoutSessionRepositoryImpl(
             workoutSessionDao.observeLatestActiveSession(userId, WorkoutSessionStatus.IN_PROGRESS, WorkoutSessionStatus.PAUSED)
         }.map { session -> session?.let { resolveResumable(it) } }
 
-    /** Shared by [getResumableSession] and [getActiveSession]: not-actually-active/stale sessions map to null, auto-abandoning stale ones as a side effect. */
+    /** Shared by [getResumableSession] and [observeActiveSession]: not-actually-active/stale sessions map to null, auto-abandoning stale ones as a side effect. */
     private suspend fun resolveResumable(session: WorkoutSessionEntity): ResumableSession? {
         if (session.status != WorkoutSessionStatus.IN_PROGRESS && session.status != WorkoutSessionStatus.PAUSED) {
             return null
@@ -155,24 +153,6 @@ class WorkoutSessionRepositoryImpl(
 
     override suspend fun saveAndExit(sessionId: Long, phase: WorkoutPhase, orderIndex: Int, remainingSec: Int?) {
         workoutSessionDao.updateProgress(sessionId, phase, orderIndex, remainingSec, WorkoutSessionStatus.PAUSED)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun observeExerciseHistory(exerciseIds: List<Long>): Flow<List<ExerciseSessionRecord>> {
-        if (exerciseIds.isEmpty()) return flowOf(emptyList())
-        return flow { emit(currentUserId()) }.flatMapLatest { userId ->
-            workoutSessionDao.observeExerciseHistory(userId, WorkoutSessionStatus.COMPLETED, exerciseIds)
-                .map { rows ->
-                    rows.map { row ->
-                        ExerciseSessionRecord(
-                            exerciseId = row.exerciseId,
-                            actualReps = row.actualReps,
-                            actualDurationSec = row.actualDurationSec,
-                            completedAt = row.completedAt
-                        )
-                    }
-                }
-        }
     }
 
     private companion object {

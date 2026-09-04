@@ -2,7 +2,6 @@ package com.example.homeworkout.domain.repositories
 
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
 import com.example.homeworkout.domain.models.AchievementTotals
-import com.example.homeworkout.domain.models.ExerciseSessionRecord
 import com.example.homeworkout.domain.models.ResumableSession
 import com.example.homeworkout.domain.models.WorkoutHistoryRecord
 import com.example.homeworkout.domain.models.enums.WorkoutPhase
@@ -52,7 +51,4 @@ interface WorkoutSessionRepository {
 
     /** "Save & Exit" from the mid-workout guard dialog — saves progress and marks the session PAUSED. */
     suspend fun saveAndExit(sessionId: Long, phase: WorkoutPhase, orderIndex: Int, remainingSec: Int?)
-
-    /** Completed-session records for [exerciseIds] — backs progression/skill-tree mastery detection. */
-    fun observeExerciseHistory(exerciseIds: List<Long>): Flow<List<ExerciseSessionRecord>>
 }

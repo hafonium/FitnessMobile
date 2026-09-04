@@ -17,13 +17,6 @@ data class AchievementTotalsRow(
     val completedPlans: Long
 )
 
-data class ExerciseHistoryRow(
-    val exerciseId: Long,
-    val actualReps: Int?,
-    val actualDurationSec: Int?,
-    val completedAt: Long?
-)
-
 data class WorkoutHistoryRow(
     val sessionId: Long,
     val planId: Long,
@@ -116,21 +109,6 @@ interface WorkoutSessionDao {
     /** Backs "Restart progress" — cascades to workout_session_exercises via FK. */
     @Query("DELETE FROM workout_sessions WHERE userId = :userId")
     suspend fun deleteAllSessionsForUser(userId: Long)
-
-    /** Completed-session history for a set of exercises — backs progression/skill-tree mastery detection. */
-    @Query(
-        """
-        SELECT wse.exerciseId, wse.actualReps, wse.actualDurationSec, wse.completedAt
-        FROM workout_session_exercises wse
-        INNER JOIN workout_sessions ws ON ws.sessionId = wse.sessionId
-        WHERE ws.userId = :userId AND ws.status = :status AND wse.exerciseId IN (:exerciseIds)
-        """
-    )
-    fun observeExerciseHistory(
-        userId: Long,
-        status: WorkoutSessionStatus,
-        exerciseIds: List<Long>
-    ): Flow<List<ExerciseHistoryRow>>
 
     /**
      * `AND status IN (IN_PROGRESS, PAUSED)` guards against a stray/late auto-save reviving a
