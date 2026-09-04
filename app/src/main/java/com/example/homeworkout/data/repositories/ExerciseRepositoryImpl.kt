@@ -34,9 +34,6 @@ class ExerciseRepositoryImpl(
         return exerciseDao.getExerciseRowsByIds(exerciseIds).map { it.toDomain() }
     }
 
-    override suspend fun findExerciseByTitle(title: String): Exercise? =
-        exerciseDao.getExerciseRowByTitle(title)?.toDomain()
-
     override suspend fun getExerciseDetail(exerciseId: Long): ExerciseDetail? {
         val row = exerciseDao.getExerciseRowById(exerciseId) ?: return null
         val primaryMuscles = exerciseDao.getMuscleNamesForExercise(exerciseId, MuscleRole.PRIMARY)
