@@ -6,24 +6,30 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import com.example.homeworkout.BuildConfig
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.remote.groq.GroqClient
 import com.example.homeworkout.data.repositories.ChatRepositoryImpl
+import com.example.homeworkout.data.remote.SpoonacularFoodApi
 import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
 import com.example.homeworkout.data.repositories.BadgeRepositoryImpl
 import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
+import com.example.homeworkout.data.repositories.FoodAnalysisRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
 import com.example.homeworkout.domain.repositories.ChatRepository
+import com.example.homeworkout.data.repositories.WeightRepositoryImpl
 import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
+import com.example.homeworkout.domain.repositories.FoodAnalysisRepository
 import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
+import com.example.homeworkout.domain.repositories.WeightRepository
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
 import com.example.homeworkout.domain.usecases.badges.EvaluateBadgesUseCase
 import com.example.homeworkout.domain.usecases.chat.CreateChatSessionUseCase
@@ -38,8 +44,10 @@ import com.example.homeworkout.domain.usecases.customworkout.GetExercisesByIdsUs
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
+import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
+import com.example.homeworkout.domain.usecases.history.GetWorkoutHistoryUseCase
 import com.example.homeworkout.domain.usecases.planedit.AddExercisesToPlanDayUseCase
 import com.example.homeworkout.domain.usecases.planedit.DeletePlanExerciseUseCase
 import com.example.homeworkout.domain.usecases.planedit.ReplacePlanExerciseUseCase
@@ -55,11 +63,15 @@ import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
+import com.example.homeworkout.domain.usecases.report.GetWeightDashboardUseCase
+import com.example.homeworkout.domain.usecases.report.RecordWeightUseCase
+import com.example.homeworkout.domain.usecases.report.UpdateHeightUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
 import com.example.homeworkout.ui.core.chat.ChatPanelController
 import com.example.homeworkout.ui.services.ReminderScheduler
+import com.example.homeworkout.ui.services.TickSoundPlayer
 import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,13 +101,21 @@ class App : Application(), ImageLoaderFactory {
     // Bridges the floating chat overlay (no nav-graph reference) and ScreenNavigator (no chat
     // reference) - see ChatPanelController's own KDoc and docs/chatbot-feature.md.
     val chatPanelController: ChatPanelController by lazy { ChatPanelController() }
+    val weightRepository: WeightRepository by lazy {
+        WeightRepositoryImpl(database, database.userDao(), database.weightLogDao())
+    }
+    val foodAnalysisRepository: FoodAnalysisRepository by lazy {
+        FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
+    }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
+    val tickSoundPlayer: TickSoundPlayer by lazy { TickSoundPlayer(this) }
     val reminderScheduler: ReminderScheduler by lazy { ReminderScheduler(this) }
 
     // Use Cases
     val getWorkoutsUseCase by lazy { GetWorkoutsUseCase(workoutRepository) }
+    val analyzeFoodImageUseCase by lazy { AnalyzeFoodImageUseCase(foodAnalysisRepository) }
     val getWorkoutDetailsUseCase by lazy { GetWorkoutDetailsUseCase(workoutRepository) }
     val getExerciseDetailUseCase by lazy { GetExerciseDetailUseCase(exerciseRepository) }
     val searchExercisesUseCase by lazy { SearchExercisesUseCase(exerciseRepository) }
@@ -106,7 +126,11 @@ class App : Application(), ImageLoaderFactory {
     val updateSettingsUseCase by lazy { UpdateSettingsUseCase(settingsRepository) }
     val resetWorkoutProgressUseCase by lazy { ResetWorkoutProgressUseCase(settingsRepository) }
     val getWeeklyGoalProgressUseCase by lazy { GetWeeklyGoalProgressUseCase(settingsRepository, workoutSessionRepository) }
+    val getWorkoutHistoryUseCase by lazy { GetWorkoutHistoryUseCase(workoutSessionRepository) }
     val getStreakUseCase by lazy { GetStreakUseCase(workoutSessionRepository) }
+    val getWeightDashboardUseCase by lazy { GetWeightDashboardUseCase(weightRepository) }
+    val recordWeightUseCase by lazy { RecordWeightUseCase(weightRepository) }
+    val updateHeightUseCase by lazy { UpdateHeightUseCase(weightRepository) }
     val getBadgesUseCase by lazy { GetBadgesUseCase(badgeRepository, workoutSessionRepository, getStreakUseCase) }
     val evaluateBadgesUseCase by lazy { EvaluateBadgesUseCase(getBadgesUseCase, badgeRepository) }
     val markBadgesSeenUseCase by lazy { MarkBadgesSeenUseCase(badgeRepository) }

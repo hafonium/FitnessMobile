@@ -8,7 +8,8 @@
 - `data/local/AppDatabase.kt` is the single `RoomDatabase` — register every new entity/DAO here.
 - `data/repositories/` is where you implement the domain repository contracts and map
   Entity <-> domain Model. This is the ONLY place that layer boundary crossing happens.
-- There is no `data/remote/` layer in this project — everything is local (Room).
+- `data/remote/` holds remote API clients and transport DTOs. Remote DTOs must not escape the
+  data layer; repository implementations map them to domain models.
 
 ### 2. Domain Layer (`domain/`)
 - Pure Kotlin only (no Android SDK, Room, or Compose imports).

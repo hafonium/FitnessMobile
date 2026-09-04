@@ -1,6 +1,7 @@
 package com.example.homeworkout.ui.core.report
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,31 +34,33 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BadgeMedallion
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
-import com.example.homeworkout.ui.components.SectionHeader
+import com.example.homeworkout.ui.components.BmiCard
 import com.example.homeworkout.ui.components.StatTile
+import com.example.homeworkout.ui.components.WeightLineChart
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
-import com.example.homeworkout.ui.theme.CloudGray
 import com.example.homeworkout.ui.theme.InkBlack
 import com.example.homeworkout.ui.theme.SlateGray
-import com.example.homeworkout.ui.theme.SuccessGreen
-import com.example.homeworkout.ui.theme.TileShape
 import com.example.homeworkout.utils.ScreenWrapper
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
- * Report tab. "Day Streak" / "Personal Best" are real, from [ReportViewModel] /
- * [com.example.homeworkout.domain.usecases.report.GetStreakUseCase]. Everything else (Workouts/Kcal/Minute,
- * the weekly calendar row, Weight, BMI) is still static sample figures matching the storyboard —
- * wiring those to `workout_sessions` / `user_weight_logs` remains out of scope for this pass.
+ * Report tab backed by Room: completed-workout totals/calendar, streaks, weight/BMI, and badges.
  */
 @Composable
 fun ReportScreen(
     viewModel: ReportViewModel,
     onOpenHistory: () -> Unit,
-    onOpenAchievements: () -> Unit
+    onOpenAchievements: () -> Unit,
+    onOpenWeight: () -> Unit
 ) {
     val streak by viewModel.streak.collectAsStateWithLifecycle()
     val badges by viewModel.badges.collectAsStateWithLifecycle()
+    val weightDashboard by viewModel.weightDashboard.collectAsStateWithLifecycle()
+    val workoutSummary by viewModel.workoutSummary.collectAsStateWithLifecycle()
+    val weeklyProgress by viewModel.weeklyProgress.collectAsStateWithLifecycle()
     val unseenBadge = badges.firstOrNull { it.isUnlocked && !it.isSeen }
 
     ScreenWrapper {
@@ -73,34 +76,60 @@ fun ReportScreen(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        StatTile(Icons.Default.FitnessCenter, "3", "Workouts")
-                        StatTile(Icons.Default.LocalFireDepartment, "1", "Kcal")
-                        StatTile(Icons.Default.Timer, "0", "Minute")
+                        StatTile(Icons.Default.FitnessCenter, workoutSummary.completedWorkouts.toString(), "Workouts")
+                        StatTile(
+                            Icons.Default.LocalFireDepartment,
+                            workoutSummary.totalCalories?.let(::formatCompactDecimal) ?: "—",
+                            "Kcal"
+                        )
+                        StatTile(Icons.Default.Timer, formatMinutes(workoutSummary.totalDurationSeconds), "Minutes")
                     }
                 }
             }
 
-            item { SectionHeader(title = "History", actionText = "All records", onActionClick = onOpenHistory) }
-
             item {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text(day, style = MaterialTheme.typography.bodySmall, color = SlateGray)
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(if (index == 3) MaterialTheme.colorScheme.primary else Color.Transparent),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    "${30 + index}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (index == 3) Color.White else InkBlack
-                                )
+                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenHistory)) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("History", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text("All records", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            weeklyProgress.days.forEach { day ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Text(
+                                        SimpleDateFormat("EEEEE", Locale.ENGLISH).format(Date(day.dayStartMillis)),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = SlateGray
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .clip(CircleShape)
+                                            .background(if (day.isCompleted) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                            .then(
+                                                if (day.isToday && !day.isCompleted) {
+                                                    Modifier.border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                                } else Modifier
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            "${day.dayOfMonth}",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (day.isCompleted) Color.White else InkBlack
+                                        )
+                                    }
+                                }
                             }
+                        }
+                        if (weeklyProgress.days.isEmpty()) {
+                            Text("Loading workout history…", style = MaterialTheme.typography.bodySmall, color = SlateGray)
                         }
                     }
                 }
@@ -114,7 +143,7 @@ fun ReportScreen(
             }
 
             item {
-                AppCard(modifier = Modifier.fillMaxWidth()) {
+                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenWeight)) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -122,41 +151,56 @@ fun ReportScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("Weight", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Log", onClick = {}, variant = AppButtonVariant.Tonal)
+                            Text("View details", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                         }
-                        Text("142.2 kg", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text(
-                            "Heaviest 142.2 · Lightest 142.2",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SlateGray
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp)
-                                .clip(TileShape)
-                                .background(CloudGray),
-                            contentAlignment = Alignment.Center
-                        ) { Text("weight trend", style = MaterialTheme.typography.bodySmall, color = SlateGray) }
+                        val weight = weightDashboard
+                        if (weight == null) {
+                            Text("Loading weight…", color = SlateGray)
+                        } else if (weight.currentWeightKg == null) {
+                            Text("No weight recorded yet", color = SlateGray)
+                            Text("Tap to record your first measurement.", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        } else {
+                            Text("${formatDecimal(weight.currentWeightKg)} kg", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                            weight.currentLoggedAt?.let {
+                                Text(
+                                    "Updated ${SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(it))}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SlateGray
+                                )
+                            }
+                            Text(
+                                "Heaviest ${formatDecimal(weight.heaviestWeightKg)} · Lightest ${formatDecimal(weight.lightestWeightKg)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SlateGray
+                            )
+                            WeightLineChart(
+                                records = weight.chartRecords,
+                                modifier = Modifier.fillMaxWidth().height(96.dp),
+                                showGrid = false
+                            )
+                        }
                     }
                 }
             }
 
             item {
-                AppCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("BMI", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Edit", onClick = {}, variant = AppButtonVariant.Tonal)
+                val weight = weightDashboard
+                if (weight == null) {
+                    AppCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(22.dp)) {
+                            Text("BMI", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.height(8.dp))
+                            Text("Loading BMI…", color = SlateGray)
                         }
-                        Text("22.8", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text("Healthy weight", color = SuccessGreen, fontWeight = FontWeight.SemiBold)
-                        Text("Height 250 cm", style = MaterialTheme.typography.bodySmall, color = SlateGray)
                     }
+                } else {
+                    BmiCard(
+                        data = weight,
+                        actionLabel = "Details",
+                        onActionClick = onOpenWeight,
+                        modifier = Modifier.clickable(onClick = onOpenWeight),
+                        showBmiValue = true
+                    )
                 }
             }
 
@@ -245,4 +289,15 @@ private fun LabeledValue(label: String, value: String) {
         Text(label, style = MaterialTheme.typography.bodySmall, color = SlateGray)
         Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
+}
+
+private fun formatDecimal(value: Double?): String = value?.let { "%.1f".format(it) } ?: "—"
+
+private fun formatCompactDecimal(value: Double): String =
+    if (value % 1.0 == 0.0) "%.0f".format(value) else "%.1f".format(value)
+
+private fun formatMinutes(totalSeconds: Long): String = when {
+    totalSeconds <= 0 -> "0"
+    totalSeconds < 60 -> "<1"
+    else -> (totalSeconds / 60).toString()
 }

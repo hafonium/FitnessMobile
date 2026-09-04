@@ -91,7 +91,10 @@ fun WorkoutPlayerScreen(
                 onAbandon = { viewModel.abandonSession(state.sessionId) },
                 onRestartSession = { viewModel.restartDay() },
                 onClose = onClose,
-                onExerciseInfo = onExerciseInfo
+                onExerciseInfo = onExerciseInfo,
+                onSpeak = viewModel::speak,
+                onTick = viewModel::tick,
+                onExerciseStart = viewModel::signalExerciseStart
             )
 
             is PlayerUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -119,7 +122,10 @@ private fun PlayerContent(
     onAbandon: () -> Unit,
     onRestartSession: () -> Unit,
     onClose: () -> Unit,
-    onExerciseInfo: (Long) -> Unit
+    onExerciseInfo: (Long) -> Unit,
+    onSpeak: (String) -> Unit,
+    onTick: () -> Unit,
+    onExerciseStart: () -> Unit
 ) {
     var phase by remember { mutableStateOf(Phase.PREP) }
     var index by remember { mutableIntStateOf(0) }
@@ -130,6 +136,20 @@ private fun PlayerContent(
 
     val current = exercises.getOrNull(index) ?: exercises.first()
     val isTimed = current.targetDurationSec != null
+
+    // Voice cue fired once per phase entry — keyed on (phase, index) rather than `remaining` so it
+    // doesn't refire every second while a timer counts down.
+    LaunchedEffect(phase, index) {
+        when (phase) {
+            Phase.PREP -> onSpeak("Get ready! First up: ${current.title}")
+            Phase.REST -> {
+                val next = exercises.getOrNull(index + 1)
+                if (next != null) onSpeak("Rest time. Next up: ${next.title}")
+            }
+            Phase.COMPLETED -> onSpeak("Workout finished! Great job.")
+            Phase.EXERCISE -> onExerciseStart()
+        }
+    }
 
     fun finishCurrentExercise() {
         paused = false
@@ -149,6 +169,7 @@ private fun PlayerContent(
         while (remaining > 0) {
             delay(1_000)
             remaining -= 1
+            if (remaining in 1..5) onTick()
         }
         when (phase) {
             Phase.PREP -> {

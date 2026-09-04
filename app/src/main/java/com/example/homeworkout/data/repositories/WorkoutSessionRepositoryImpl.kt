@@ -7,6 +7,7 @@ import com.example.homeworkout.data.local.entities.UserSettingsEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
+import com.example.homeworkout.domain.models.WorkoutHistoryRecord
 import com.example.homeworkout.domain.models.AchievementTotals
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
@@ -20,6 +21,27 @@ class WorkoutSessionRepositoryImpl(
     private val userDao: UserDao,
     private val workoutSessionDao: WorkoutSessionDao
 ) : WorkoutSessionRepository {
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeCompletedSessions(): Flow<List<WorkoutHistoryRecord>> =
+        flow { emit(currentUserId()) }.flatMapLatest { userId ->
+            workoutSessionDao.observeCompletedSessions(userId, WorkoutSessionStatus.COMPLETED)
+                .map { rows ->
+                    rows.map { row ->
+                        WorkoutHistoryRecord(
+                            sessionId = row.sessionId,
+                            planId = row.planId,
+                            endedAt = row.endedAt,
+                            durationSeconds = row.durationSeconds ?: 0,
+                            caloriesBurned = row.caloriesBurned,
+                            planTitle = row.planTitle,
+                            dayNumber = row.dayNumber,
+                            dayTitle = row.dayTitle,
+                            coverImageUrl = row.coverImageUrl
+                        )
+                    }
+                }
+        }
 
     /** This app has a single local user; resolve (or lazily create) it by its seeded email. */
     private suspend fun currentUserId(): Long {

@@ -204,7 +204,10 @@ class TtsService(context: Context) {
 
     fun stop() {
         engine?.stop()
-        player?.stop()
+        // player may still be in the Preparing state (prepareAsync() hasn't completed yet), where
+        // MediaPlayer.stop() throws IllegalStateException — safe to ignore, releasePlayer() below
+        // tears it down either way.
+        runCatching { player?.stop() }
         releasePlayer()
     }
 

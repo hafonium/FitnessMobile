@@ -8,6 +8,7 @@ data class WeeklyGoalProgress(
 )
 
 data class WeeklyGoalDay(
+    val dayStartMillis: Long,
     val dayOfMonth: Int,
     val isToday: Boolean,
     val isCompleted: Boolean
