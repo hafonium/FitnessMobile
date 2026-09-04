@@ -34,6 +34,7 @@ import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUse
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
+import com.example.homeworkout.domain.usecases.history.GetWorkoutHistoryUseCase
 import com.example.homeworkout.domain.usecases.planedit.AddExercisesToPlanDayUseCase
 import com.example.homeworkout.domain.usecases.planedit.DeletePlanExerciseUseCase
 import com.example.homeworkout.domain.usecases.planedit.ReplacePlanExerciseUseCase
@@ -78,7 +79,14 @@ class App : Application(), ImageLoaderFactory {
     val settingsRepository: SettingsRepository by lazy {
         SettingsRepositoryImpl(database.userDao(), database.workoutSessionDao(), database.badgeDao())
     }
-    val workoutSessionRepository: WorkoutSessionRepository by lazy { WorkoutSessionRepositoryImpl(database.userDao(), database.workoutSessionDao()) }
+    val workoutSessionRepository: WorkoutSessionRepository by lazy {
+        WorkoutSessionRepositoryImpl(
+            database,
+            database.userDao(),
+            database.workoutPlanDao(),
+            database.workoutSessionDao()
+        )
+    }
     val weightRepository: WeightRepository by lazy {
         WeightRepositoryImpl(database, database.userDao(), database.weightLogDao())
     }
@@ -100,6 +108,7 @@ class App : Application(), ImageLoaderFactory {
     val resetWorkoutProgressUseCase by lazy { ResetWorkoutProgressUseCase(settingsRepository) }
     val getWeeklyGoalProgressUseCase by lazy { GetWeeklyGoalProgressUseCase(settingsRepository, workoutSessionRepository) }
     val getStreakUseCase by lazy { GetStreakUseCase(workoutSessionRepository) }
+    val getWorkoutHistoryUseCase by lazy { GetWorkoutHistoryUseCase(workoutSessionRepository) }
     val getWeightDashboardUseCase by lazy { GetWeightDashboardUseCase(weightRepository) }
     val recordWeightUseCase by lazy { RecordWeightUseCase(weightRepository) }
     val updateHeightUseCase by lazy { UpdateHeightUseCase(weightRepository) }

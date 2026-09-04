@@ -1,11 +1,16 @@
 package com.example.homeworkout.data.repositories
 
+import androidx.room.withTransaction
+import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.local.dao.UserDao
+import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.entities.UserEntity
 import com.example.homeworkout.data.local.entities.UserSettingsEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
+import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
+import com.example.homeworkout.domain.models.WorkoutHistoryEntry
 import com.example.homeworkout.domain.models.WorkoutSessionSummary
 import com.example.homeworkout.domain.models.AchievementTotals
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
@@ -17,7 +22,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class WorkoutSessionRepositoryImpl(
+    private val database: AppDatabase,
     private val userDao: UserDao,
+    private val workoutPlanDao: WorkoutPlanDao,
     private val workoutSessionDao: WorkoutSessionDao
 ) : WorkoutSessionRepository {
 
@@ -51,6 +58,39 @@ class WorkoutSessionRepositoryImpl(
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeCompletedHistory(
+        fromMillis: Long,
+        toMillis: Long
+    ): Flow<List<WorkoutHistoryEntry>> =
+        flow { emit(currentUserId()) }.flatMapLatest { userId ->
+            workoutSessionDao.observeCompletedHistory(
+                userId = userId,
+                status = WorkoutSessionStatus.COMPLETED,
+                fromMillis = fromMillis,
+                toMillis = toMillis
+            ).map { rows ->
+                rows.map { row ->
+                    val planTitle = row.planTitleSnapshot?.takeIf { it.isNotBlank() }
+                    val title = row.planDayTitleSnapshot?.takeIf { it.isNotBlank() }
+                        ?: if (row.planDayNumberSnapshot != null && planTitle != null) {
+                            "Day ${row.planDayNumberSnapshot} – $planTitle"
+                        } else {
+                            planTitle ?: "Workout"
+                        }
+                    WorkoutHistoryEntry(
+                        sessionId = row.sessionId,
+                        title = title,
+                        imageUrl = row.planCoverImageSnapshot,
+                        startedAt = row.startedAt,
+                        completedAt = row.endedAt,
+                        durationSeconds = row.durationSeconds,
+                        caloriesBurned = row.caloriesBurned
+                    )
+                }
+            }
+        }
+
     override suspend fun getLatestSessionForPlan(planId: Long): WorkoutSessionSummary? {
         val session = workoutSessionDao.getLatestSessionForPlan(currentUserId(), planId) ?: return null
         return WorkoutSessionSummary(sessionId = session.sessionId, planDayId = session.planDayId, status = session.status)
@@ -58,20 +98,45 @@ class WorkoutSessionRepositoryImpl(
 
     override suspend fun createSession(planId: Long, planDayId: Long): Long {
         val userId = currentUserId()
-        // Snapshot the settings in effect right now, so a later settings change never rewrites this session's history.
-        val settings = userDao.getUserSettings(userId) ?: UserSettingsEntity(userId = userId)
-        val session = WorkoutSessionEntity(
-            userId = userId,
-            planId = planId,
-            planDayId = planDayId,
-            restTimerSec = settings.restTimerSec,
-            prepTimerSec = settings.prepTimerSec,
-            musicEnabled = settings.musicEnabled,
-            soundEnabled = settings.soundEnabled,
-            coachVideoEnabled = settings.coachVideoEnabled,
-            ttsVoiceType = settings.ttsVoiceType
-        )
-        return workoutSessionDao.insertSession(session)
+        return database.withTransaction {
+            val settings = userDao.getUserSettings(userId) ?: UserSettingsEntity(userId = userId)
+            val plan = requireNotNull(
+                workoutPlanDao.getSessionPlanSnapshotSource(planId, planDayId)
+            ) { "Plan day $planDayId does not belong to plan $planId" }
+            val exercises = workoutPlanDao.getSessionExerciseSnapshotSources(planDayId)
+            require(exercises.isNotEmpty()) { "Cannot start an empty workout day" }
+
+            val sessionId = workoutSessionDao.insertSession(
+                WorkoutSessionEntity(
+                    userId = userId,
+                    planId = planId,
+                    planDayId = planDayId,
+                    planTitleSnapshot = plan.planTitle,
+                    planCoverImageSnapshot = plan.planCoverImageUrl,
+                    planDayNumberSnapshot = plan.dayNumber,
+                    planDayTitleSnapshot = plan.dayTitle,
+                    restTimerSec = settings.restTimerSec,
+                    prepTimerSec = settings.prepTimerSec,
+                    musicEnabled = settings.musicEnabled,
+                    soundEnabled = settings.soundEnabled,
+                    coachVideoEnabled = settings.coachVideoEnabled,
+                    ttsVoiceType = settings.ttsVoiceType
+                )
+            )
+            workoutSessionDao.insertSessionExercises(
+                exercises.map { exercise ->
+                    WorkoutSessionExerciseEntity(
+                        sessionId = sessionId,
+                        exerciseId = exercise.exerciseId,
+                        orderIndex = exercise.orderIndex,
+                        exerciseTitleSnapshot = exercise.exerciseTitle,
+                        plannedReps = exercise.targetReps,
+                        plannedDurationSec = exercise.targetDurationSec
+                    )
+                }
+            )
+            sessionId
+        }
     }
 
     override suspend fun completeSession(sessionId: Long) {

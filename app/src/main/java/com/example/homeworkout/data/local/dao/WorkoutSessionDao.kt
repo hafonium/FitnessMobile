@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
+import com.example.homeworkout.data.local.dao.relations.WorkoutHistoryRow
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -72,6 +73,27 @@ interface WorkoutSessionDao {
         "SELECT endedAt FROM workout_sessions WHERE userId = :userId AND status = :status AND endedAt IS NOT NULL ORDER BY endedAt DESC"
     )
     fun observeAllCompletedSessionEndTimes(userId: Long, status: WorkoutSessionStatus): Flow<List<Long>>
+
+    @Query(
+        """
+        SELECT sessionId, planTitleSnapshot, planCoverImageSnapshot,
+               planDayNumberSnapshot, planDayTitleSnapshot,
+               startedAt, endedAt, durationSeconds, caloriesBurned
+        FROM workout_sessions
+        WHERE userId = :userId
+          AND status = :status
+          AND endedAt IS NOT NULL
+          AND endedAt >= :fromMillis
+          AND endedAt < :toMillis
+        ORDER BY endedAt DESC
+        """
+    )
+    fun observeCompletedHistory(
+        userId: Long,
+        status: WorkoutSessionStatus,
+        fromMillis: Long,
+        toMillis: Long
+    ): Flow<List<WorkoutHistoryRow>>
 
     @Query(
         """

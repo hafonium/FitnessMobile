@@ -56,8 +56,8 @@ import kotlinx.coroutines.launch
         UserFitnessProfileEntity::class,
         UserBadgeEntity::class
     ],
-    // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
-    version = 5,
+    // Version 6 snapshots plan/day metadata so completed history survives later plan edits.
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -71,7 +71,7 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "home_workout.db"
 
-        private val MIGRATION_4_5 = object : Migration(4, 5) {
+        internal val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """
@@ -85,6 +85,41 @@ abstract class AppDatabase : RoomDatabase() {
                         FOREIGN KEY(`userId`) REFERENCES `users`(`userId`)
                             ON UPDATE NO ACTION ON DELETE CASCADE
                     )
+                    """.trimIndent()
+                )
+            }
+        }
+
+        internal val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `workout_sessions` ADD COLUMN `planTitleSnapshot` TEXT")
+                db.execSQL("ALTER TABLE `workout_sessions` ADD COLUMN `planCoverImageSnapshot` TEXT")
+                db.execSQL("ALTER TABLE `workout_sessions` ADD COLUMN `planDayNumberSnapshot` INTEGER")
+                db.execSQL("ALTER TABLE `workout_sessions` ADD COLUMN `planDayTitleSnapshot` TEXT")
+                db.execSQL(
+                    """
+                    UPDATE `workout_sessions`
+                    SET
+                        `planTitleSnapshot` = (
+                            SELECT p.`title`
+                            FROM `workout_plans` p
+                            WHERE p.`planId` = `workout_sessions`.`planId`
+                        ),
+                        `planCoverImageSnapshot` = (
+                            SELECT p.`coverImageUrl`
+                            FROM `workout_plans` p
+                            WHERE p.`planId` = `workout_sessions`.`planId`
+                        ),
+                        `planDayNumberSnapshot` = (
+                            SELECT d.`dayNumber`
+                            FROM `workout_plan_days` d
+                            WHERE d.`planDayId` = `workout_sessions`.`planDayId`
+                        ),
+                        `planDayTitleSnapshot` = (
+                            SELECT d.`title`
+                            FROM `workout_plan_days` d
+                            WHERE d.`planDayId` = `workout_sessions`.`planDayId`
+                        )
                     """.trimIndent()
                 )
             }
@@ -105,7 +140,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
                 // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {

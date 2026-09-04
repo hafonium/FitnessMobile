@@ -58,6 +58,12 @@ data class WorkoutSessionEntity(
     val durationSeconds: Int? = null,
     val caloriesBurned: Double? = null,
 
+    // Snapshot of plan metadata. History must not change when the source plan is edited later.
+    val planTitleSnapshot: String? = null,
+    val planCoverImageSnapshot: String? = null,
+    val planDayNumberSnapshot: Int? = null,
+    val planDayTitleSnapshot: String? = null,
+
     // Snapshot of the settings used by this particular session.
     val restTimerSec: Int,
     val prepTimerSec: Int,

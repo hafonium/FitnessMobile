@@ -8,6 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.homeworkout.data.local.dao.relations.PlanDayExerciseRow
+import com.example.homeworkout.data.local.dao.relations.SessionExerciseSnapshotSourceRow
+import com.example.homeworkout.data.local.dao.relations.SessionPlanSnapshotRow
 import com.example.homeworkout.data.local.dao.relations.WorkoutPlanSummaryRow
 import com.example.homeworkout.data.local.entities.WorkoutPlanDayEntity
 import com.example.homeworkout.data.local.entities.WorkoutPlanEntity
@@ -48,6 +50,21 @@ interface WorkoutPlanDao {
 
     @Query(
         """
+        SELECT p.planId, p.title AS planTitle, p.coverImageUrl AS planCoverImageUrl,
+               d.planDayId, d.dayNumber, d.title AS dayTitle
+        FROM workout_plans p
+        INNER JOIN workout_plan_days d ON d.planId = p.planId
+        WHERE p.planId = :planId AND d.planDayId = :planDayId
+        LIMIT 1
+        """
+    )
+    suspend fun getSessionPlanSnapshotSource(
+        planId: Long,
+        planDayId: Long
+    ): SessionPlanSnapshotRow?
+
+    @Query(
+        """
         SELECT p.*,
                (SELECT COUNT(*) FROM workout_plan_days d WHERE d.planId = p.planId) AS totalDays,
                (SELECT COUNT(*) FROM workout_plan_exercises pe
@@ -81,6 +98,38 @@ interface WorkoutPlanDao {
         """
     )
     suspend fun countExercisesForPlan(planId: Long): Int
+
+    @Query(
+        """
+        SELECT pe.exerciseId, pe.orderIndex, e.title AS exerciseTitle,
+               pe.targetReps, pe.targetDurationSec
+        FROM workout_plan_exercises pe
+        INNER JOIN exercises e ON e.exerciseId = pe.exerciseId
+        WHERE pe.planDayId = :planDayId
+        ORDER BY pe.orderIndex
+        """
+    )
+    suspend fun getSessionExerciseSnapshotSources(
+        planDayId: Long
+    ): List<SessionExerciseSnapshotSourceRow>
+
+    @Query("SELECT COUNT(*) FROM workout_sessions WHERE planId = :planId")
+    suspend fun countSessionsForPlan(planId: Long): Int
+
+    @Query("UPDATE workout_plans SET isActive = 0, updatedAt = :updatedAt WHERE planId = :planId")
+    suspend fun archivePlan(planId: Long, updatedAt: Long)
+
+    /** Hard-deletes an unused custom plan, but archives one referenced by session history. */
+    @Transaction
+    suspend fun deleteOrArchiveCustomPlan(planId: Long) {
+        val plan = getPlanById(planId) ?: return
+        if (plan.source != WorkoutPlanSource.CUSTOM) return
+        if (countSessionsForPlan(planId) == 0) {
+            deletePlan(plan)
+        } else {
+            archivePlan(planId, System.currentTimeMillis())
+        }
+    }
 
     // --- Plan exercises ---
 

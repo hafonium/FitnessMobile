@@ -148,9 +148,7 @@ class WorkoutRepositoryImpl(
     }
 
     override suspend fun deleteCustomPlan(planId: Long) {
-        val plan = workoutPlanDao.getPlanById(planId) ?: return
-        if (plan.source != WorkoutPlanSource.CUSTOM) return
-        workoutPlanDao.deletePlan(plan)
+        workoutPlanDao.deleteOrArchiveCustomPlan(planId)
     }
 
     /** This app has a single local user; resolve (or lazily create) it by its seeded email. */

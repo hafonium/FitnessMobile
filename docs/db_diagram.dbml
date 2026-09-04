@@ -276,6 +276,12 @@ Table workout_sessions {
   duration_seconds int
   calories_burned decimal(8,2)
 
+  // Snapshot plan/day metadata so completed history is immutable after plan edits.
+  plan_title_snapshot varchar
+  plan_cover_image_snapshot varchar
+  plan_day_number_snapshot int
+  plan_day_title_snapshot varchar
+
   // Snapshot the settings used by this particular session.
   rest_timer_sec int [not null]
   prep_timer_sec int [not null]
@@ -289,7 +295,7 @@ Table workout_sessions {
     (user_id, status)
   }
 
-  Note: 'Supports Resume, Restart, rest screens and completed-workout history.'
+  Note: 'Supports Resume, Restart, rest screens and completed-workout history. Snapshot fields are nullable only for migrated legacy sessions; new sessions populate plan title and day number.'
 }
 
 Table workout_session_exercises {
