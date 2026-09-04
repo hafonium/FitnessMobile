@@ -1,0 +1,33 @@
+\section{Project Overview}
+
+\subsection{Problem}
+
+People who exercise at home often face three practical problems. First, they may not know which exercises match their goal, experience, available time, and equipment. Second, a fixed plan becomes inconvenient when the user wants to replace an exercise, change repetitions, or create a personal schedule. Third, motivation is difficult to maintain when progress is not visible and the application provides no reminders or feedback.
+
+Many fitness applications solve only one part of this process. A video library can demonstrate movements but may not organize them into a plan. A workout timer can guide a session but may not explain the exercises. A generic chatbot can answer questions but may not preserve the user's training records. HomeWorkout was designed as one connected flow: choose a suitable plan, inspect and edit it, complete one workout day at a time, and review progress afterward.
+
+\subsection{Project Goal}
+
+The goal is to provide a usable mobile workout companion for general fitness. The application should reduce the effort required to start a routine while still allowing personal control. Its main objectives are:
+
+\begin{itemize}
+    \item recommend a plan from a structured fitness profile;
+    \item provide searchable exercise information with images, animated demonstrations, muscles, equipment, and instructions;
+    \item allow users to add, replace, reorder, or remove exercises and create custom multi-day plans;
+    \item guide a workout through preparation, exercise, rest, and completion phases;
+    \item save completed sessions and calculate weekly goals, streaks, achievements, history, and weight indicators;
+    \item persist settings and schedule daily workout reminders;
+    \item provide a small AI assistant for fitness questions while keeping conversation history locally.
+\end{itemize}
+
+\subsection{Project Scope}
+
+HomeWorkout is a single-user Android prototype. The user account is created locally during database seeding, and there is no sign-in server or cloud synchronization. Exercise data, plan templates, settings, workout sessions, badges, weight records, and chat history are stored on the device. Network access is used for remote exercise media and the AI assistant.
+
+The application focuses on planning, guidance, and personal tracking. It does not diagnose injuries, replace medical advice, verify exercise form through the camera, process payments, connect to wearable devices, or provide a social network. These boundaries keep the project feasible for a university mobile-development course and make the implemented behavior easier to verify.
+
+\subsection{Repository Snapshot}
+
+The inspected repository contains 166 Kotlin source files, 23 UI feature files with Compose content, 34 focused use-case files, 18 Room entity classes on the chatbot branch, 771 filtered exercises, 16 plan templates, and 12 profile questions. The application uses one Gradle module named \texttt{app}. Three persistent bottom-level destinations organize the product into Training, Report, and Settings, while feature screens are opened through the Navigation Compose graph.
+
+Development is distributed across several Git branches. The current \texttt{chatbot} branch contains the AI assistant, while \texttt{origin/main} contains newer weight and workout-history work. This report covers the completed work found across the repository and identifies the remaining integration work in the self-assessment section.

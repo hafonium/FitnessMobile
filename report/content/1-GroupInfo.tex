@@ -1,0 +1,26 @@
+\section{Work Division}
+
+The following division is based on the member list and observable Git history. Each row lists the primary responsibility rather than claiming that features were developed without review or integration by other members.
+
+\selectlanguage{vietnamese}
+\renewcommand{\tablename}{Table}
+\begin{table}[ht]
+\centering
+\caption{Team work division}
+\label{tab:work-division}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth} p{0.17\textwidth} X}
+\toprule
+\textbf{Member} & \textbf{Student ID} & \textbf{Primary contributions} \\
+\midrule
+Nguyễn Gia Hào & 24125008 & Initial project setup and architecture; Room and data-layer direction; Settings screens and persistence; notifications, exact-alarm scheduling, boot restoration, and related debugging; exercise asset cleanup; branch integration and pull-request management. \\
+Cao Quảng Hưng & 24125010 & Weight-tracking screen and dashboard components; weight repository and domain calculations; database-backed workout history, calendar, weekly summary, and session snapshot migration; migration and history tests; implementation analysis documents. \\
+Huỳnh Chí Tôn & 24125020 & Main Compose UI and navigation development; workout plan presentation and player updates; custom workout-plan flow; streak and report UI revisions; floating AI chatbot, conversation UI, Groq integration, and chat persistence. \\
+Bùi Nguyễn Đức Trọng & 24125021 & Exercise search and filter flow; add and replace exercise screens; plan exercise editing and drag reordering; achievements and badge evaluation; custom-plan management; conflict resolution and integration for plan-management work. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\selectlanguage{english}
+
+\subsection{Shared Responsibilities}
+
+All members contributed to integration, UI review, manual testing, and conflict resolution as features crossed module boundaries. The project uses shared architecture rules and common UI components so that work from different feature branches can be connected through the same repository and use-case interfaces. Final responsibilities still include merging the history/weight and chatbot development lines, resolving the Room schema version, and completing an end-to-end regression pass.

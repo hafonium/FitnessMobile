@@ -1,0 +1,51 @@
+\section{Target Users and Main Use Cases}
+
+\subsection{Target Users}
+
+The primary target is a beginner or intermediate user who wants to exercise at home and needs more structure than a list of videos. This user may have limited equipment, limited time, or uncertainty about how to arrange exercises into a weekly routine. The application also supports experienced users who prefer to modify an existing plan or build a custom one.
+
+\begin{table}[ht]
+\centering
+\caption{Target user groups}
+\label{tab:target-users}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash\bfseries}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedright\arraybackslash}X}
+\toprule
+User group & Main need & Application support \\
+\midrule
+New exerciser & A safe and understandable starting point & Beginner filtering, profile questions, recommended plans, exercise instructions, and guided timers \\
+Busy user & A plan that fits a limited schedule & Plan matching by days per week and session duration, plus short or bodyweight plans \\
+Home trainee & Exercises compatible with available equipment & Equipment-aware plan generation and exercise filters \\
+Returning user & Motivation and visible continuity & Weekly goal, streak, achievements, reminders, history, and weight trends \\
+Independent trainee & Control over the routine & Custom plans and add, replace, delete, reorder, or repetition editing \\
+User needing quick guidance & Short answers about exercise and recovery & Floating AI fitness assistant with saved conversations \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Profile and Recommendation Use Case}
+
+The onboarding flow collects the user's main goal, experience level, available days, expected session duration, equipment, preferred training areas, and recorded limitations. The supported goals are general fitness, muscle building, fat loss, mobility, and a focused body area. Experience is divided into beginner, intermediate, and expert levels.
+
+The recommendation logic first applies hard constraints. For example, a beginner receives beginner exercises, selected exercises must match available equipment, and explicit exclusions should not be relaxed. It then ranks templates using goal, level, weekly schedule, duration, equipment coverage, and focus preferences. A deterministic tie-break keeps the result stable for the same inputs. The selected catalog template is materialized into Room as a normal editable workout plan.
+
+\subsection{Typical End-to-End Flow}
+
+A normal user journey is:
+
+\begin{enumerate}
+    \item Open Training and complete the fitness-profile questions.
+    \item Review the recommended plans and select one.
+    \item Open a plan to see its days, exercises, targets, images, and level.
+    \item Inspect an exercise or edit the plan when equipment or preference changes.
+    \item Start the next planned day. The app creates a workout-session record.
+    \item Follow the preparation, active exercise, and rest phases. The user can pause, skip, move backward, or finish the current exercise.
+    \item Complete or abandon the session. Completion updates progress and triggers badge evaluation.
+    \item Review the weekly goal, streak, achievements, history, or weight dashboard.
+    \item Adjust timers, audio, units, voice, and reminder settings when needed.
+\end{enumerate}
+
+\subsection{Alternative Flows}
+
+The user is not forced to accept the recommendation. They can browse workouts by category, create a custom multi-day plan, choose exercises from the full library, or modify a system plan. If a session was abandoned, starting the same plan resolves to the same day. If the latest session was completed, the next day is selected, and the sequence wraps to day one after the last day.
+
+The AI assistant is available as a draggable overlay above the navigation graph. A user can create multiple conversations, ask a question in Vietnamese or English, close the panel without losing history, and delete sessions that are no longer needed. The model is instructed to remain within fitness, recovery, exercise, and basic nutrition topics.

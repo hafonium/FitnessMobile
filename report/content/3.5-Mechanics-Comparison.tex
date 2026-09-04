@@ -1,0 +1,131 @@
+\section{Implemented Features}
+
+\subsection{Training Home}
+
+The Training screen is the main starting point. It loads workout plans and progress through \texttt{HomeViewModel}. The screen presents the current streak, coach tips, recommended challenges, a weekly-goal card, workout categories, existing plans, and a route to custom plan creation. Data is exposed as \texttt{StateFlow}, so changes in Room can update the visible list without manual refresh logic.
+
+The weekly-goal card compares the configured target with completed workout days in the active week. It marks today, completed days, and the number of days still required. A separate Edit Goal screen changes the weekly target and the first day of the week.
+
+\subsection{Exercise Library}
+
+The local JSON asset originally represents a larger exercise source, but the current seed contains 771 usable records after entries with unavailable media were removed. Every exercise can contain:
+
+\begin{itemize}
+    \item a title and category;
+    \item a difficulty level and force type;
+    \item required equipment;
+    \item primary and secondary muscles;
+    \item ordered instruction steps;
+    \item one GIF demonstration and optional images.
+\end{itemize}
+
+Users can search by text and filter by category, level, and equipment. The same browser is reused for adding exercises to a plan and replacing an existing exercise. The Exercise Information screen shows the movement media, muscles, equipment, level, and numbered instructions. Coil loads normal images and animated GIF files; a placeholder is displayed when media cannot be loaded.
+
+\subsection{Plan Recommendation}
+
+The application ships with 16 catalog plans. They cover general fitness, muscle building, fat loss, body-area focus, mobility, and travel-oriented bodyweight training. Plans range from beginner to expert or use an adaptive level for focused programs. Examples include Beginner Full Body Starter, Intermediate Upper Lower Builder, Expert Conditioning, Back and Posture Focus, and Travel Bodyweight Plan.
+
+The recommendation algorithm is rule-based instead of AI-generated. This choice makes the result repeatable and prevents the model from inventing exercise identifiers. Template scoring gives the highest weight to goal match, followed by level, weekly availability, duration, equipment, and focus. For each required slot, exercise selection progressively relaxes muscle and force preferences when the candidate pool is too small, but it keeps safety and equipment constraints.
+
+When the user accepts a recommendation, the selected template is converted into a normal Room plan with days and exercise targets. The saved fitness profile records the catalog identifier and catalog version so the origin of the recommendation remains available.
+
+\subsection{Plan Details and Editing}
+
+The Plan Detail screen displays plan metadata and groups exercises by workout day. A preview use case identifies which day will start next without opening a session. This keeps display logic separate from the operation that writes the session record.
+
+Editing supports the following operations:
+
+\begin{itemize}
+    \item add one or more exercises to a selected day;
+    \item replace a plan exercise with an exercise selected from the browser;
+    \item update a repetition target;
+    \item delete an exercise from a day;
+    \item reorder exercises through drag-and-drop.
+\end{itemize}
+
+Each operation is represented by a focused use case and coordinated by a dedicated plan-editing ViewModel. The UI does not call a DAO directly. This makes the same rules reusable and prevents Compose code from depending on Room entities.
+
+\subsection{Custom Workout Plans}
+
+Users can create plans instead of modifying only the bundled plans. The custom-plan builder collects a title, optional description, category, level, and one or more workout days. Every non-empty day contains selected exercises and their targets. The repository writes the plan, days, and plan exercises as one domain operation. Custom plans appear in a separate list and can be opened through the same detail, editing, and player flows as system plans.
+
+Deletion is limited to custom plans. This protects the bundled catalog content while allowing a user to manage personally created routines.
+
+\subsection{Guided Workout Player}
+
+Starting a plan creates a session associated with one plan day. The player uses four phases:
+
+\begin{enumerate}
+    \item \textbf{Preparation}: show the next exercise and count down before work starts.
+    \item \textbf{Exercise}: display the GIF, exercise title, repetitions or remaining time, and transport controls.
+    \item \textbf{Rest}: show the next exercise, count down, allow an additional 20 seconds, or skip.
+    \item \textbf{Completed}: report the number of completed exercises and offer exit or restart actions.
+\end{enumerate}
+
+The user can pause a timed exercise, return to the previous item, skip forward, open exercise information, finish a repetition-based item manually, or quit the session. A completed session receives an end timestamp and measured duration. A quit session is marked abandoned. Restarting after completion creates a new session for the same plan day rather than advancing automatically.
+
+At session creation, the repository snapshots timer, music, sound, coach-video, and voice preferences. This protects session history from later settings changes. However, the current player UI still uses fixed preparation and rest constants rather than the saved values. This is listed as incomplete integration rather than described as finished behavior.
+
+\subsection{Progress, Streaks, and Achievements}
+
+Completed session timestamps are the source for weekly-goal and streak calculations. The streak use case groups completed workouts by calendar day, calculates consecutive days, and exposes current and personal-best values. Abandoned and in-progress sessions do not count.
+
+The achievement system contains ten badges across four metrics:
+
+\begin{itemize}
+    \item total completed sessions;
+    \item best streak length;
+    \item total completed workout duration;
+    \item number of completed plans.
+\end{itemize}
+
+Thresholds include the first completed workout, five, ten, twenty-five, and one hundred workouts; three, seven, and thirty-day streaks; ten total workout hours; and one fully completed plan. Badge progress is calculated from live session totals. Newly eligible badges are inserted once and can trigger an unlock dialog after a workout. The Report and Achievements screens show unlocked state, tier, and progress.
+
+\subsection{Workout History and Weight Tracking}
+
+The \texttt{origin/main} development line replaces the earlier static history sample with database-backed history. It adds session snapshots for the plan title, plan cover, day number, and day title so an old record remains meaningful after the user edits or deletes a plan. History displays only completed sessions with an end time, marks workout days in a calendar, and calculates a weekly summary of workouts, duration, and calories when available.
+
+The same development line adds a weight dashboard. Weight is stored in kilograms with a height snapshot. Domain logic calculates the current, heaviest, lightest, and seven-day average weight, seven-day change, BMI, BMI category, and up to seven recent chart records. The report card links to a dedicated screen where the user can record weight and update height.
+
+These functions are implemented and tested on \texttt{origin/main}, but the current chatbot branch predates them. They must be merged before one APK contains both the newer history and the AI assistant.
+
+\subsection{Settings, Reminders, and Voice}
+
+Settings are divided into workout, general, and voice sections. Stored preferences include the weekly goal, first day of week, metric or imperial units, preparation and rest timers, music and sound toggles and volumes, keep-screen-on behavior, reminder status and time, and the preferred text-to-speech voice.
+
+Daily reminders use \texttt{AlarmManager}. When the alarm fires, a receiver creates a high-priority notification and schedules the next occurrence. A boot receiver restores the reminder because Android removes scheduled alarms after device restart. Android 13 and later require notification permission. Exact alarms and aggressive vendor battery management may require additional device settings, so the UI provides permission and diagnostic guidance.
+
+The TTS service lists voices reported by the installed Android speech engine, prefers offline voices, supports preview, and falls back to pitch shaping when distinct male and female voices are unavailable. Keep-screen-on is connected to the activity window. Music and sound values are persisted, but the repository contains no complete audio playback engine, so these controls currently represent saved configuration rather than a finished media feature.
+
+\subsection{AI Fitness Assistant}
+
+The chatbot branch adds a draggable bubble that is mounted above the whole navigation graph. Tapping it opens a compact panel with a session list or an active message thread. Users can create, open, and delete conversations. Markdown replies support headings, emphasis, lists, links, and code-style formatting without using a WebView.
+
+Each message is saved locally before the network request. The Groq client sends a system instruction, a rolling context summary, and the newest user message to the OpenAI-compatible chat-completions endpoint. The selected \texttt{openai/gpt-oss-20b} model is requested to produce strict JSON containing two fields: the visible reply and an updated summary. Storing the summary avoids resending the full transcript on every turn. Groq structured output provides schema-constrained JSON for supported models \cite{groqstructured}.
+
+Failures are caught in the repository. A friendly assistant message is stored in the conversation, while the technical error is written to Logcat. Coroutine cancellation is rethrown so closing the screen can cancel active work correctly.
+
+The current assistant is a general fitness chatbot. It does not yet receive the active exercise, plan, fitness profile, or recent history automatically. The API key is read from \texttt{local.properties} and compiled into \texttt{BuildConfig}; this is convenient for a course prototype but is not secure for public distribution because an APK can be inspected. A production design should place the provider key behind a controlled backend or use a mobile-focused authorization mechanism.
+
+\subsection{Feature Coverage Summary}
+
+\begin{table}[ht]
+\centering
+\caption{Feature implementation status}
+\label{tab:feature-status}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash\bfseries}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}X}
+\toprule
+Area & Status & Evidence in repository \\
+\midrule
+Exercise library and detail & Completed & Room entities and DAOs, 771 seeded exercises, search filters, images, GIFs, muscles, and instructions \\
+Recommendation and onboarding & Completed & 12 profile questions, 16 plan templates, deterministic scoring and materialization \\
+Plan editing and custom plans & Completed & Add, replace, reorder, delete, repetition editing, create and delete custom plans \\
+Workout player and sessions & Mostly completed & Four phases, session completion and abandonment; configured timer values are not yet consumed by the player \\
+Goals, streaks, badges & Completed & Database-derived weekly progress, streak calculation, ten-badge catalog, unlock workflow \\
+Settings and reminders & Mostly completed & Persistence, exact alarms, boot restore, notification and TTS; music playback is not implemented \\
+History and weight & Completed on main branch & Database-backed history, migration test, weight records, chart, BMI and dedicated screen \\
+AI chatbot & Prototype completed on chatbot branch & Global overlay, Room history, Groq call, rolling summary, structured reply and fallback handling \\
+Integrated release & Not completed & Main and chatbot independently use database version 6 with incompatible schemas \\
+\bottomrule
+\end{tabularx}
+\end{table}

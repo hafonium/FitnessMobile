@@ -1,0 +1,116 @@
+\section{Technologies Used}
+
+\begin{longtable}{>{\bfseries}p{0.25\textwidth} p{0.20\textwidth} p{0.45\textwidth}}
+\caption{Main technologies and their roles}\label{tab:technologies}\\
+\toprule
+Technology & Version or configuration & Role \\
+\midrule
+\endfirsthead
+\toprule
+Technology & Version or configuration & Role \\
+\midrule
+\endhead
+Kotlin & 2.2.10 & Main programming language for UI, domain logic, repositories, services, and tests \\
+Android Gradle Plugin & 9.2.1 & Android build, packaging, resource processing, lint, and variants \\
+Gradle Wrapper & 9.4.1 & Reproducible command-line build environment \\
+Android SDK & compile 37, target 36, minimum 24 & Compilation API, declared behavior target, and device compatibility boundary \\
+Jetpack Compose & BOM 2026.02.01 & Declarative UI, state-driven rendering, layouts, animations, and Material components \\
+Material 3 & 1.4.0 & Design system, controls, navigation bars, sheets, dialogs, and theming \\
+Navigation Compose & 2.9.8 & Single-activity destination graph and typed route arguments \\
+Lifecycle and ViewModel & 2.10.0 & Screen state, coroutine lifecycle, and lifecycle-aware Flow collection \\
+Room & 2.8.4 & Local SQLite persistence, entity mapping, DAO validation, migrations, and reactive queries \\
+KSP & 2.3.9 & Room code generation at compile time \\
+Kotlin Coroutines and Flow & Via AndroidX dependencies & Asynchronous database work, network work, timers, and observable state \\
+Coil & 2.7.0 & Loading exercise images and animated GIF demonstrations \\
+OkHttp & 4.12.0 & HTTPS client for the Groq chat-completions request \\
+Markdown Renderer & 0.45.0 & Material 3 rendering of formatted AI replies in Compose \\
+Compose Reorderable & 0.9.6 & Drag-and-drop order editing for plan exercises \\
+Android platform services & AlarmManager, notifications, TTS, MediaPlayer & Daily reminders, boot restore, voice preview, and screen behavior \\
+\bottomrule
+\end{longtable}
+
+Jetpack Compose is a declarative toolkit in which composable functions describe UI from state \cite{compose}. Room represents database tables as annotated entities and validates their relationships and queries during compilation \cite{room}. These technologies match the application's need for many stateful screens and a local-first data model.
+
+\section{Setup and Installation}
+
+\subsection{Requirements}
+
+To build the project, a developer needs:
+
+\begin{itemize}
+    \item Android Studio with a compatible JDK, preferably the bundled JDK 17 or later;
+    \item Android SDK Platform 37 and the build tools requested by Gradle;
+    \item an emulator or physical Android device running API 24 or later;
+    \item internet access for the first dependency sync and for chatbot requests;
+    \item a Groq API key if the chatbot should return live answers.
+\end{itemize}
+
+\subsection{Clone and Open}
+
+\begin{lstlisting}[language=bash]
+git clone https://github.com/hafonium/HomeWorkout.git
+cd HomeWorkout
+\end{lstlisting}
+
+Open the repository root in Android Studio and allow Gradle synchronization to finish. The repository contains one application module, so no additional module selection is required.
+
+\subsection{Configure Local Properties}
+
+The root \texttt{local.properties} file must contain the Android SDK path. To enable the chatbot, add a personal Groq token:
+
+\begin{lstlisting}
+sdk.dir=C\:\\path\\to\\Android\\Sdk
+GROQ_API_KEY=your_personal_groq_key
+\end{lstlisting}
+
+\texttt{local.properties} is ignored by Git and must never be committed. Without \texttt{GROQ\_API\_KEY}, the main local features can still build, but live chat requests will return the stored fallback error message.
+
+\subsection{Build from the Command Line}
+
+On Windows:
+
+\begin{lstlisting}
+.\gradlew.bat assembleDebug
+\end{lstlisting}
+
+On macOS or Linux:
+
+\begin{lstlisting}
+./gradlew assembleDebug
+\end{lstlisting}
+
+The debug APK is generated under:
+
+\begin{lstlisting}
+app/build/outputs/apk/debug/app-debug.apk
+\end{lstlisting}
+
+Install it with Android Studio's Run action or Android Debug Bridge:
+
+\begin{lstlisting}
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+\end{lstlisting}
+
+\subsection{Runtime Permissions}
+
+The application declares internet, notification, boot-completed, exact-alarm, and battery-optimization permissions. On Android 13 or later, grant notification permission if reminders are needed. Depending on the Android version and device manufacturer, the user may also need to permit exact alarms and remove battery restrictions.
+
+Exercise records and plan templates are bundled in the APK and seeded on first launch. The first database creation may take longer than later launches because hundreds of exercises and related rows are inserted.
+
+\subsection{Important Branch Setup}
+
+The current repository has separate \texttt{main} and \texttt{chatbot} development lines. For a clean chatbot-only test, a fresh installation can create the chatbot schema. Switching an installed app between the latest main build and the chatbot build is unsafe because both declare database version 6 with different schemas.
+
+The correct development setup is to merge the two lines and add a version 6-to-7 Room migration before testing upgrades. Clearing application data can bypass the identity mismatch for a temporary demonstration, but it deletes local plans, settings, progress, weight records, and conversations and is not an acceptable release solution.
+
+\subsection{Verification Commands}
+
+The normal verification set is:
+
+\begin{lstlisting}
+.\gradlew.bat testDebugUnitTest
+.\gradlew.bat lintDebug
+.\gradlew.bat assembleDebug
+\end{lstlisting}
+
+The current chatbot checkout assembles successfully. Its unit-test task reports \texttt{NO-SOURCE}, because test sources are not present on that branch. Lint currently stops on one API-level error: \texttt{android:windowLightNavigationBar} is declared in the base values resource even though it requires API 27 and the application supports API 24. The resource should be moved to a \texttt{values-v27} file or guarded with an appropriate resource qualifier.

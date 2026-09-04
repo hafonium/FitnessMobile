@@ -1,0 +1,124 @@
+\section{Application Architecture}
+
+\subsection{Architectural Style}
+
+HomeWorkout uses a layered architecture with a domain layer between the UI and data layers. This structure follows the Android recommendation to separate UI state, business rules, and data sources \cite{androidarchitecture}. It also uses unidirectional data flow: a screen sends user actions to a ViewModel, the ViewModel invokes use cases, and observable state flows back to Compose.
+
+\begin{figure}[ht]
+\centering
+\fbox{\parbox{0.88\textwidth}{
+\centering
+\textbf{UI layer}\\
+Compose screens and reusable components\\
+$\downarrow$ user events \hspace{1.2cm} $\uparrow$ immutable UI state\\[0.3cm]
+\textbf{ViewModels}\\
+Lifecycle-aware state, loading state, and event coordination\\
+$\downarrow$\\[0.3cm]
+\textbf{Domain layer}\\
+Domain models, repository contracts, and single-purpose use cases\\
+$\downarrow$\\[0.3cm]
+\textbf{Data layer}\\
+Repository implementations and mapping\\
+$\swarrow$ \hspace{3.0cm} $\searrow$\\
+Room database and JSON assets \hspace{1.0cm} Groq API through OkHttp
+}}
+\caption{High-level dependency and data flow}
+\label{fig:architecture}
+\end{figure}
+
+\subsubsection{UI Layer}
+
+The UI layer is built with Jetpack Compose. Each main feature has a screen and, where state or business operations are required, a ViewModel. ViewModels expose \texttt{StateFlow} values or sealed UI states such as Loading, Success, Empty, and Error. Screens collect these flows with lifecycle-aware Compose APIs.
+
+Reusable components include buttons, cards, exercise rows, thumbnails, settings rows, dialogs, wheel pickers, stat tiles, badge visuals, and theme-based plan images. Colors, typography, shapes, and gradients are centralized under \texttt{ui/theme}. This reduces repeated styling and keeps screen behavior separate from presentation primitives.
+
+\subsubsection{Domain Layer}
+
+The domain layer contains pure Kotlin models and repository interfaces. It has no Room annotations or Compose types. Use cases represent one action or calculation, such as searching exercises, recommending a plan, starting a session, resolving the next workout day, updating repetitions, computing a streak, or sending a chat message.
+
+This boundary gives the project a clear vocabulary. A UI screen works with \texttt{Exercise}, \texttt{FitnessProfile}, or \texttt{WorkoutPlanDetail}, not with database rows. It also prevents SQL details from spreading into ViewModels.
+
+\subsubsection{Data Layer}
+
+Repository implementations are the boundary between domain objects and concrete sources. Most repositories read and write Room through DAOs. The catalog repository reads a bundled JSON file. The chat repository combines Room persistence with a remote Groq client. Mapping functions convert Room entities and DAO projection rows into domain models.
+
+This arrangement is consistent with Android's guidance that repositories should expose data while UI components should not access a database or network source directly \cite{androidrecommendations}.
+
+\subsection{Dependency Construction}
+
+The project uses manual dependency injection rather than Hilt or Koin. The custom \texttt{Application} class creates the Room database, repositories, services, and use cases with lazy properties. Navigation destinations build ViewModels through \texttt{viewModelFactory} and pass only the required dependencies.
+
+Manual construction is understandable for a single-module course project and avoids another framework. The trade-off is that the \texttt{Application} class grows as features are added. A larger production version would benefit from dependency modules and test replacements.
+
+\subsection{Navigation}
+
+Navigation Compose manages all destinations in a single activity. The bottom navigation contains Training, Report, and Settings. Detail flows use typed route helpers with plan, plan-day, plan-exercise, exercise, or category identifiers. The bottom bar is hidden on pushed screens so the user can focus on editing or completing a workout.
+
+The AI assistant is deliberately not a navigation destination. \texttt{HomeWorkoutApp} places the navigation host and \texttt{ChatOverlay} inside one top-level box. This allows the draggable bubble to remain available above every feature screen and lets its ViewModel survive normal destination changes.
+
+\subsection{Local Data Model}
+
+Room is used because it provides compile-time query checks, entity-based schema definition, migrations, and Flow integration \cite{room}. On the chatbot branch, the database registers 18 entities. They can be grouped as follows:
+
+\begin{table}[ht]
+\centering
+\caption{Persistent data groups}
+\label{tab:data-groups}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash\bfseries}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.32\textwidth} >{\raggedright\arraybackslash}X}
+\toprule
+Data group & Main tables & Purpose \\
+\midrule
+User and preferences & users, user settings, fitness profiles & Local identity, onboarding answers, weekly goal, timers, units, reminders, audio and voice choices \\
+Exercise catalog & equipment types, muscles, exercises, exercise muscles, instruction steps, exercise images & Searchable movement library and detailed guidance \\
+Workout plans & workout plans, plan days, plan exercises & System and custom multi-day routines with ordered targets \\
+Workout activity & workout sessions, session exercises & Session status, timestamps, duration, calories, settings snapshot, and performed-exercise snapshot \\
+Progress & weight logs, user badges & Weight history and one-time achievement unlocks \\
+Chat & chat sessions, chat messages & Conversation titles, rolling summaries, roles, timestamps, and message content \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Foreign keys connect child rows to users, plans, days, sessions, and exercises. Cascade deletion is used where child data has no meaning without its parent. Order indexes preserve exercise and instruction order. Enums are stored by name through Room type conversion.
+
+\subsection{Database Creation and Migration}
+
+On first creation, a callback starts the database seeder on an application-level IO coroutine. The seeder creates a local default user and settings, imports exercises and their related records, and materializes starter plans from the catalog.
+
+Schema changes are versioned. Version 5 added persisted badges. On the main branch, version 6 adds four nullable plan/day snapshot columns to workout sessions and backfills them where possible. The chatbot branch also declares version 6 but uses it to add chat tables. This creates two incompatible schemas with the same version number. Room detects the different identity hashes and refuses to open an existing database. The correct integration is:
+
+\begin{enumerate}
+    \item use the main branch version 5-to-6 migration for history snapshots;
+    \item merge the chat entities and DAO;
+    \item increase the database version to 7;
+    \item add a version 6-to-7 migration that creates both chat tables and indexes;
+    \item run migration tests from versions 4, 5, and 6.
+\end{enumerate}
+
+\subsection{Concurrency and Reactive State}
+
+Kotlin coroutines execute database and network work without blocking the UI thread. ViewModels launch actions in \texttt{viewModelScope}. Room queries return \texttt{Flow}; ViewModels convert them to \texttt{StateFlow} with a five-second while-subscribed policy where appropriate. The chat HTTP call explicitly runs on \texttt{Dispatchers.IO}. Cancellation exceptions are preserved instead of being converted into normal error messages.
+
+The workout timer is an in-memory Compose state machine driven by a one-second delay loop. This is simple and responsive while the screen stays active. Fine-grained progress inside the current day is not persisted, so leaving an unfinished workout restarts that day.
+
+\subsection{AI Request Flow}
+
+One chat turn follows this sequence:
+
+\begin{enumerate}
+    \item The ViewModel rejects blank input and prevents concurrent sends.
+    \item The repository writes the user message to Room.
+    \item The first message becomes a short session title.
+    \item The repository reads the current rolling summary.
+    \item The Groq client sends the summary and new message with a fitness-scoped system instruction.
+    \item The model returns strict JSON with \texttt{reply} and \texttt{updatedContext}.
+    \item Both the assistant reply and summary are persisted.
+    \item Room Flow updates the visible message thread.
+\end{enumerate}
+
+This design uses one model request per user turn and limits context growth. It does not yet ground answers in the app's exercise database, and safety handling is mainly prompt-based. A stronger version should add local risk checks, provide relevant exercise and plan context, and avoid allowing AI output to write directly to the plan database.
+
+\subsection{Security and Privacy}
+
+The core app keeps personal data locally and does not require an online account. Android backup remains enabled, so data may be included according to the configured backup rules. Chat messages are sent to a third-party AI service. Users should be informed not to enter sensitive medical or identity information.
+
+The Groq token is excluded from Git because it is stored in \texttt{local.properties}, but the build script places it in \texttt{BuildConfig}. Excluding a source file protects the repository; it does not protect the final APK. For a public release, the API call should pass through a backend that keeps the provider secret, applies rate limits, validates requests, and allows token rotation.

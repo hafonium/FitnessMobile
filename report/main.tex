@@ -1,0 +1,145 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{microtype}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink]{cleveref}
+
+% 1. Thêm package quản lý Header/Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{28pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist[itemize]{leftmargin=1.6em,itemsep=0.2em,topsep=0.3em}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=0.25em,topsep=0.3em}
+
+\definecolor{codebackground}{RGB}{247,247,247}
+\definecolor{codekeyword}{RGB}{25,72,145}
+\definecolor{codecomment}{RGB}{85,115,85}
+\definecolor{codestring}{RGB}{150,45,45}
+\definecolor{coderule}{RGB}{215,215,215}
+
+\lstdefinelanguage{Kotlin}{
+    keywords={
+        as,break,class,continue,do,else,false,for,fun,if,in,interface,
+        is,null,object,package,return,super,this,throw,true,try,typealias,
+        typeof,val,var,when,while,by,catch,constructor,delegate,dynamic,
+        field,file,finally,get,import,init,param,property,receiver,set,
+        setparam,where,actual,abstract,annotation,companion,const,crossinline,
+        data,enum,expect,external,final,infix,inline,inner,internal,lateinit,
+        noinline,open,operator,out,override,private,protected,public,reified,
+        sealed,suspend,tailrec,vararg,field,it
+    },
+    keywordstyle=\color{codekeyword}\bfseries,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{codecomment},
+    stringstyle=\color{codestring},
+    morestring=[b]"
+}
+
+\lstdefinelanguage{JavaBytecode}{
+    keywords={
+        class,extends,implements,public,private,protected,static,final,
+        return,switch,case,default,if,instanceof,new,null,this,super,
+        Object,int,void,boolean,override
+    },
+    keywordstyle=\color{codekeyword}\bfseries,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{codecomment},
+    stringstyle=\color{codestring},
+    morestring=[b]"
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{codebackground},
+    frame=single,
+    rulecolor=\color{coderule},
+    breaklines=true,
+    showstringspaces=false,
+    columns=fullflexible,
+    tabsize=4,
+    xleftmargin=0.4em,
+    xrightmargin=0.4em,
+    aboveskip=0.6em,
+    belowskip=0.6em
+}
+
+% A readable report rhythm that keeps the complete repository review within
+% the required 10--30 page range.
+\renewcommand{\baselinestretch}{1.30}
+
+% Define course name, report name and report title.
+\newcommand{\coursename}{CS426 - Mobile Device Application Development}
+\newcommand{\reportname}{Final Project Report}
+\newcommand{\reporttitle}{Fitness Mobile Application}
+\newcommand{\classname}{24A01}
+\newcommand{\reportdate}{September 2026}
+
+\newcommand{\studentname}{}
+\newcommand{\teachername}{}
+
+\hypersetup{
+    pdftitle={Fitness Mobile Application},
+    pdfauthor={Nguyen Gia Hao; Cao Quang Hung; Huynh Chi Ton; Bui Nguyen Duc Trong},
+    pdfsubject={CS426 Final Project Report}
+}
+
+% Header
+\lhead{\reporttitle}
+\rhead{
+VNUHCM - University of Science\\
+\coursename
+}
+\cfoot{\thepage}
+
+% ============ DOCUMENT ============
+\begin{document}
+\selectlanguage{english}
+
+% Trang bìa
+\hypersetup{pageanchor=false}
+\input{content/title.tex}
+\clearpage
+\hypersetup{pageanchor=true}
+
+% Đánh số trang La Mã cho mục lục
+\pagenumbering{roman}
+\tableofcontents
+\clearpage 
+
+% Đánh số trang 1, 2, 3... cho nội dung chính
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{content/0-abstract}
+\input{content/2-Introduction}
+\input{content/3-Background}
+\input{content/3.5-Mechanics-Comparison}
+\input{content/4-Technical-Approach}
+\input{content/5-Demo}
+\input{content/1-GroupInfo}
+\input{content/6-Evaluation}
+\input{content/7-Conclusion}
+\input{content/8-AI-Usage}
+
+% References
+\input{ref/ref}
+\end{document}

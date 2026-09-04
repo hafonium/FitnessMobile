@@ -1,0 +1,114 @@
+\section{Evaluation and Self-Assessment}
+
+\subsection{Assessment Method}
+
+The implementation was assessed through repository inspection, Gradle tasks, existing tests, and a runtime reproduction on a connected Android device. Claims in this report were checked against the current Kotlin source, Room entities, bundled assets, documentation, and Git history.
+
+The following commands were run on the chatbot checkout:
+
+\begin{lstlisting}
+.\gradlew.bat testDebugUnitTest lintDebug assembleDebug
+adb logcat -d -v time "AndroidRuntime:E" "*:S"
+\end{lstlisting}
+
+The compile and APK assembly tasks completed. The unit-test task had no source files on this branch. Lint found one error and 59 warnings. Runtime logging identified a Room identity-hash failure when opening a database previously created by the main branch.
+
+\subsection{What Was Completed}
+
+\begin{table}[ht]
+\centering
+\caption{Completed project outcomes}
+\label{tab:completed-outcomes}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.27\textwidth} X}
+\toprule
+Outcome & Assessment \\
+\midrule
+Functional training workflow & Users can select a plan, open a specific day, inspect exercises, follow the player, and complete or abandon a persisted session. \\
+Meaningful personalization & Profile answers affect template ranking and exercise selection; plan contents remain editable afterward. \\
+Large local content base & 771 exercises and 16 templates provide enough variation for filters, recommendations, and custom plans. \\
+Maintainable feature boundaries & UI, domain, and data responsibilities are separated. ViewModels use focused use cases instead of DAOs. \\
+Local-first behavior & Core exercise, plan, settings, progress, and achievement flows do not require a server after installation. \\
+Plan ownership and editing & System and custom plans share the main flows, while deletion is limited to user-created content. \\
+Motivation features & Weekly goals, streaks, ten badge definitions, unlock dialogs, reminders, and progress displays are implemented. \\
+Expanded reporting & The main branch contains database-backed history, session snapshots, weight trends, and BMI calculations. \\
+AI prototype & The chatbot branch contains a complete UI-to-network path with saved sessions, a rolling summary, structured output, and fallback handling. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Strengths}
+
+The strongest part of the application is the continuity between features. The exercise catalog is not an isolated list: it supports recommendation, plan detail, plan editing, custom plans, and the workout player. Completed sessions are not isolated rows: they drive weekly goals, streaks, achievements, history, and summary statistics. Settings are persisted and snapshot into sessions. This reuse gives the project more depth than a collection of unrelated screens.
+
+The second strength is the explicit architecture. Although the project is contained in one Android module, responsibilities are divided by package and type. Domain models protect the UI from Room entities. Repository interfaces separate behavior from storage. The approach aligns with Android's recommended layered architecture and unidirectional state flow \cite{androidrecommendations}.
+
+The third strength is the attempt to handle real Android platform behavior. Reminder code considers notification permission, exact-alarm access, reboot restoration, Doze, and vendor battery management. TTS code handles unavailable or duplicate voices. Image code supports both static media and GIFs. These details move the project beyond a static classroom mock-up.
+
+\subsection{Known Gaps and Risks}
+
+\subsubsection{Branch and Database Integration}
+
+The highest-priority issue is the incompatible use of Room database version 6. Main uses version 6 for workout-session history snapshots. Chatbot uses version 6 for chat tables. When a database from one build is opened by the other, Room reports:
+
+\begin{lstlisting}
+Room cannot verify the data integrity.
+Expected identity hash ... found ...
+\end{lstlisting}
+
+This prevents the app from opening in that upgrade path. It is a release blocker, not a cosmetic problem. The schema must move to version 7 after merging.
+
+\subsubsection{Automated Tests}
+
+The chatbot branch contains no active unit-test source directory and has commented test dependencies. Main contains a migration test and a history use-case test, but coverage remains narrow. Android architecture guidance recommends tests for ViewModels, data sources, and navigation when the application is more than a trivial example \cite{androidrecommendations}.
+
+Priority tests should cover recommendation scoring, exercise fallback rules, next-day resolution, custom-plan transactions, badge thresholds, streak date boundaries, settings persistence, chat JSON parsing, HTTP error handling, and database migrations.
+
+\subsubsection{Static and Partially Connected UI}
+
+The current chatbot branch still has static report totals and sample history. Main implements the real versions, but they are not integrated with chat. Timer settings are saved and included in session snapshots, while the player still uses fixed values of 6 seconds for preparation and 20 seconds for rest. Music and sound controls are stored but do not control a complete playback system. The temporary workout-settings sheet also keeps some state only in memory.
+
+\subsubsection{AI Scope and Safety}
+
+The assistant is reachable and can remember a summarized conversation, but it is not yet context-aware. It does not know which plan or exercise is open unless the user types that information. The system prompt gives basic topic boundaries but does not provide a structured risk level, deterministic warning for emergency symptoms, or approved exercise substitutions from the local catalog.
+
+The API token is recoverable from the APK because it is compiled into \texttt{BuildConfig}. The Groq free tier is appropriate for a demonstration but has quotas and no application-controlled service guarantee. The model name is also pinned in code and may require replacement if provider support changes.
+
+\subsubsection{Platform and Quality Checks}
+
+Lint currently reports one blocking compatibility error because a navigation-bar theme attribute that requires API 27 is placed in resources used by API 24 devices. The 59 warnings should be triaged rather than hidden behind a baseline. Exact-alarm and battery-optimization permissions also require careful review before Play Store distribution.
+
+\subsection{Overall Self-Assessment}
+
+\begin{table}[ht]
+\centering
+\caption{Self-assessment by criterion}
+\label{tab:self-assessment}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.25\textwidth} p{0.16\textwidth} X}
+\toprule
+Criterion & Rating & Reason \\
+\midrule
+Feature breadth & Strong & The repository covers planning, execution, personalization, progress, settings, reminders, achievements, weight, history, and AI chat. \\
+Core workflow & Strong & The plan-to-session path is implemented with persistent state and clear navigation. \\
+Architecture & Strong & Layer boundaries, repositories, use cases, state flows, and shared UI components are consistently present. \\
+UI completeness & Good & Most screens are functional and styled; a few settings and report elements remain partially connected on the current branch. \\
+Data integrity & Needs work & Migrations exist, but the independent version-6 schemas create a verified startup failure after branch switching. \\
+Testing & Needs work & Assembly succeeds, but the current branch has no unit-test sources and lint does not pass. \\
+Security & Prototype level & Local data is simple, but the AI key should not ship inside a public APK. \\
+Release readiness & Not ready & Branch integration, migration, lint, regression tests, and API-key protection remain required. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The project is therefore assessed as a broad and technically meaningful prototype with a mostly complete user experience, but not yet a production-ready release. The remaining issues are identifiable and concentrated. Resolving the database integration, reconnecting configuration values, restoring tests, and protecting the AI service would substantially improve reliability without requiring a redesign of the main architecture.
+
+\subsection{Recommended Next Steps}
+
+\begin{enumerate}
+    \item Merge \texttt{origin/main} into the chatbot development line and introduce Room version 7 with a tested migration.
+    \item Move the API credential behind a small backend proxy and add rate limiting.
+    \item Pass active exercise, plan-day, profile, and recent-session context to the assistant; require user confirmation before applying suggested plan changes.
+    \item Connect preparation and rest settings to the player and either implement or remove incomplete audio controls.
+    \item Fix the API-27 theme resource, review remaining lint warnings, and make \texttt{lintDebug} pass.
+    \item Restore test dependencies and add unit, migration, repository, ViewModel, and navigation coverage.
+    \item Run clean-install and upgrade tests on API 24, 27, 33, and the current target version.
+\end{enumerate}
