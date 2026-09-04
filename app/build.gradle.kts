@@ -1,15 +1,31 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
 }
 
+// Groq API key: read from local.properties (gitignored, never committed) and baked into
+// BuildConfig at build time. Each dev must add their own `GROQ_API_KEY=...` line locally -
+// see docs/chatbot-feature.md. The fallback default here must stay "" (never the real key) since
+// this file, unlike local.properties, is committed to git.
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+val groqApiKey: String = localProperties.getProperty("GROQ_API_KEY", "")
+
 android {
     namespace = "com.example.homeworkout"
+    // Bumped from 36.1 to 37: the Compose Markdown renderer's AAR metadata (multiplatform-
+    // markdown-renderer(-m3)-android:0.45.0) requires compileSdk 37+. This only affects which
+    // platform APIs the app can compile against - targetSdk/minSdk (actual runtime behavior,
+    // device compatibility) are intentionally left untouched, per AGP's own guidance for this.
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -20,6 +36,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GROQ_API_KEY", "\"$groqApiKey\"")
     }
 
     buildTypes {
@@ -37,6 +55,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -68,7 +87,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation("androidx.compose.material:material-icons-extended")
 
-    // Room (local persistence — this project has no remote/API layer)
+    // Room (local persistence)
     val roomVersion = "2.8.4"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion") // For Coroutines/Flow support
@@ -81,4 +100,28 @@ dependencies {
 
     // Reorderable list
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
+    // OkHttp - direct-from-app HTTP client for the Groq chat assistant (no backend; see
+    // docs/chatbot-feature.md). This is the first remote/API dependency in the project.
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Compose Markdown renderer (Material3-themed) - renders LLM chat replies (bold, lists,
+    // code, links) instead of showing raw markdown syntax. Pure Compose, no WebView/TextView
+    // interop. See docs/chatbot-feature.md.
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.45.0")
+}
+
+// The Markdown renderer above was published against a newer Kotlin release than this project
+// uses, and its POM pulls in a newer kotlin-stdlib transitively; Gradle resolves to the highest
+// version by default, and this project's Kotlin 2.2.10 compiler can't read class metadata from
+// that newer stdlib jar ("class was compiled with an incompatible version of Kotlin"), which
+// breaks compilation across the whole module, not just the new dependency. Kotlin's stdlib is
+// strongly backward-compatible at the API level, so pinning every org.jetbrains.kotlin artifact
+// back to the project's own version is safe and is the standard fix for this class of error.
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("2.2.10")
+        }
+    }
 }

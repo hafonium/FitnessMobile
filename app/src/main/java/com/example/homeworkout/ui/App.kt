@@ -8,12 +8,15 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
+import com.example.homeworkout.data.remote.groq.GroqClient
+import com.example.homeworkout.data.repositories.ChatRepositoryImpl
 import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
 import com.example.homeworkout.data.repositories.BadgeRepositoryImpl
 import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
+import com.example.homeworkout.domain.repositories.ChatRepository
 import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
@@ -23,6 +26,11 @@ import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
 import com.example.homeworkout.domain.usecases.badges.EvaluateBadgesUseCase
+import com.example.homeworkout.domain.usecases.chat.CreateChatSessionUseCase
+import com.example.homeworkout.domain.usecases.chat.DeleteChatSessionUseCase
+import com.example.homeworkout.domain.usecases.chat.GetChatMessagesUseCase
+import com.example.homeworkout.domain.usecases.chat.GetChatSessionsUseCase
+import com.example.homeworkout.domain.usecases.chat.SendChatMessageUseCase
 import com.example.homeworkout.domain.usecases.badges.GetBadgesUseCase
 import com.example.homeworkout.domain.usecases.badges.MarkBadgesSeenUseCase
 import com.example.homeworkout.domain.usecases.customworkout.DeleteCustomWorkoutPlanUseCase
@@ -74,6 +82,7 @@ class App : Application(), ImageLoaderFactory {
         SettingsRepositoryImpl(database.userDao(), database.workoutSessionDao(), database.badgeDao())
     }
     val workoutSessionRepository: WorkoutSessionRepository by lazy { WorkoutSessionRepositoryImpl(database.userDao(), database.workoutSessionDao()) }
+    val chatRepository: ChatRepository by lazy { ChatRepositoryImpl(database.chatDao(), database.userDao(), GroqClient()) }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
@@ -111,6 +120,11 @@ class App : Application(), ImageLoaderFactory {
     val updatePlanExerciseRepsUseCase by lazy { UpdatePlanExerciseRepsUseCase(workoutRepository) }
     val deletePlanExerciseUseCase by lazy { DeletePlanExerciseUseCase(workoutRepository) }
     val reorderPlanExercisesUseCase by lazy { ReorderPlanExercisesUseCase(workoutRepository) }
+    val getChatSessionsUseCase by lazy { GetChatSessionsUseCase(chatRepository) }
+    val getChatMessagesUseCase by lazy { GetChatMessagesUseCase(chatRepository) }
+    val createChatSessionUseCase by lazy { CreateChatSessionUseCase(chatRepository) }
+    val sendChatMessageUseCase by lazy { SendChatMessageUseCase(chatRepository) }
+    val deleteChatSessionUseCase by lazy { DeleteChatSessionUseCase(chatRepository) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.
