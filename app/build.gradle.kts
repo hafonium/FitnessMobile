@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -20,6 +22,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties().apply {
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use(::load)
+            }
+        }
+        val spoonacularApiKey = providers.environmentVariable("SPOONACULAR_API_KEY").orNull
+            ?: localProperties.getProperty("SPOONACULAR_API_KEY", "")
+        val escapedApiKey = spoonacularApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
+        buildConfigField("String", "SPOONACULAR_API_KEY", "\"$escapedApiKey\"")
     }
 
     buildTypes {
@@ -37,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -59,7 +73,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-//    testImplementation(libs.junit)
+    testImplementation(libs.junit)
 //    androidTestImplementation(platform(libs.androidx.compose.bom))
 //    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 //    androidTestImplementation(libs.androidx.espresso.core)

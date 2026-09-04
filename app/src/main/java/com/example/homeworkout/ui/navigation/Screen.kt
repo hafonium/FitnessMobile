@@ -4,6 +4,7 @@ package com.example.homeworkout.ui.navigation
 sealed class Screen(val route: String) {
     // Bottom navigation bar tabs
     object Home : Screen("home")
+    object Discovery : Screen("discovery")
     object Report : Screen("report")
     object SettingsHome : Screen("settings")
 
@@ -42,6 +43,9 @@ sealed class Screen(val route: String) {
     object CustomWorkoutList : Screen("custom_workout_list")
     object CreateCustomPlan : Screen("create_custom_plan")
 
+    // Discovery tab
+    object FoodScanner : Screen("food_scanner")
+
     // Report tab
     object History : Screen("history")
     object Achievements : Screen("achievements")
@@ -55,6 +59,6 @@ sealed class Screen(val route: String) {
     companion object {
         // NOTE: must not eagerly reference the `object` subclasses here — the companion
         // initializes during Screen.<clinit>, before those objects exist. Hence string literals.
-        val bottomBarRoutes = setOf("home", "report", "settings")
+        val bottomBarRoutes = setOf("home", "discovery", "report", "settings")
     }
 }

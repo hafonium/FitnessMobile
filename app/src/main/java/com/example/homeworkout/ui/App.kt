@@ -6,11 +6,14 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import com.example.homeworkout.BuildConfig
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
+import com.example.homeworkout.data.remote.SpoonacularFoodApi
 import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
 import com.example.homeworkout.data.repositories.BadgeRepositoryImpl
 import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
+import com.example.homeworkout.data.repositories.FoodAnalysisRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
@@ -18,6 +21,7 @@ import com.example.homeworkout.data.repositories.WeightRepositoryImpl
 import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
+import com.example.homeworkout.domain.repositories.FoodAnalysisRepository
 import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
@@ -32,6 +36,7 @@ import com.example.homeworkout.domain.usecases.customworkout.GetExercisesByIdsUs
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
+import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.history.GetWorkoutHistoryUseCase
@@ -83,6 +88,9 @@ class App : Application(), ImageLoaderFactory {
     val weightRepository: WeightRepository by lazy {
         WeightRepositoryImpl(database, database.userDao(), database.weightLogDao())
     }
+    val foodAnalysisRepository: FoodAnalysisRepository by lazy {
+        FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
+    }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
@@ -90,6 +98,7 @@ class App : Application(), ImageLoaderFactory {
 
     // Use Cases
     val getWorkoutsUseCase by lazy { GetWorkoutsUseCase(workoutRepository) }
+    val analyzeFoodImageUseCase by lazy { AnalyzeFoodImageUseCase(foodAnalysisRepository) }
     val getWorkoutDetailsUseCase by lazy { GetWorkoutDetailsUseCase(workoutRepository) }
     val getExerciseDetailUseCase by lazy { GetExerciseDetailUseCase(exerciseRepository) }
     val searchExercisesUseCase by lazy { SearchExercisesUseCase(exerciseRepository) }

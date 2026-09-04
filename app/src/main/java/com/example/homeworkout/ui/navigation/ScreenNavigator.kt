@@ -3,6 +3,7 @@ package com.example.homeworkout.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -39,10 +40,13 @@ import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListScreen
 import com.example.homeworkout.ui.core.customworkout.CustomWorkoutListViewModel
 import com.example.homeworkout.ui.core.details.DetailScreen
 import com.example.homeworkout.ui.core.details.DetailViewModel
+import com.example.homeworkout.ui.core.discovery.DiscoveryScreen
 import com.example.homeworkout.ui.core.editgoal.EditGoalScreen
 import com.example.homeworkout.ui.core.editgoal.EditGoalViewModel
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
+import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
+import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.history.HistoryViewModel
 import com.example.homeworkout.ui.core.home.HomeScreen
@@ -73,6 +77,7 @@ private data class BottomTab(val screen: Screen, val label: String, val icon: Im
 
 private val bottomTabs = listOf(
     BottomTab(Screen.Home, "Training", Icons.Default.Home),
+    BottomTab(Screen.Discovery, "Discovery", Icons.Default.Explore),
     BottomTab(Screen.Report, "Report", Icons.Default.BarChart),
     BottomTab(Screen.SettingsHome, "Settings", Icons.Default.Person)
 )
@@ -164,6 +169,12 @@ fun ScreenNavigator() {
                     onOpenHistory = { navController.navigate(Screen.History.route) },
                     onOpenAchievements = { navController.navigate(Screen.Achievements.route) },
                     onOpenWeight = { navController.navigate(Screen.Weight.route) }
+                )
+            }
+
+            composable(Screen.Discovery.route) {
+                DiscoveryScreen(
+                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) }
                 )
             }
 
@@ -450,6 +461,13 @@ fun ScreenNavigator() {
                     }
                 })
                 WeightScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.FoodScanner.route) {
+                val vm: FoodScanViewModel = viewModel(factory = viewModelFactory {
+                    initializer { FoodScanViewModel(appInstance.analyzeFoodImageUseCase) }
+                })
+                FoodScanScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             // --- Settings tab ---
