@@ -16,8 +16,44 @@ data class AchievementTotalsRow(
     val completedPlans: Long
 )
 
+data class WorkoutHistoryRow(
+    val sessionId: Long,
+    val endedAt: Long,
+    val durationSeconds: Int?,
+    val caloriesBurned: Double?,
+    val planTitle: String,
+    val dayNumber: Int,
+    val dayTitle: String?,
+    val coverImageUrl: String?
+)
+
 @Dao
 interface WorkoutSessionDao {
+    @Query(
+        """
+        SELECT
+            s.sessionId,
+            s.endedAt,
+            s.durationSeconds,
+            s.caloriesBurned,
+            p.title AS planTitle,
+            d.dayNumber,
+            d.title AS dayTitle,
+            p.coverImageUrl
+        FROM workout_sessions s
+        INNER JOIN workout_plans p ON p.planId = s.planId
+        INNER JOIN workout_plan_days d ON d.planDayId = s.planDayId
+        WHERE s.userId = :userId
+          AND s.status = :status
+          AND s.endedAt IS NOT NULL
+        ORDER BY s.endedAt DESC
+        """
+    )
+    fun observeCompletedSessions(
+        userId: Long,
+        status: WorkoutSessionStatus
+    ): Flow<List<WorkoutHistoryRow>>
+
     @Insert
     suspend fun insertSession(session: WorkoutSessionEntity): Long
 

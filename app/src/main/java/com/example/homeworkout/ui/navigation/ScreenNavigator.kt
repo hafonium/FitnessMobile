@@ -44,6 +44,7 @@ import com.example.homeworkout.ui.core.editgoal.EditGoalViewModel
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
+import com.example.homeworkout.ui.core.history.HistoryViewModel
 import com.example.homeworkout.ui.core.home.HomeScreen
 import com.example.homeworkout.ui.core.home.HomeViewModel
 import com.example.homeworkout.ui.core.onboarding.OnboardingScreen
@@ -418,7 +419,10 @@ fun ScreenNavigator() {
 
             // --- Report tab ---
             composable(Screen.History.route) {
-                HistoryScreen(onNavigateBack = { navController.popBackStack() })
+                val vm: HistoryViewModel = viewModel(factory = viewModelFactory {
+                    initializer { HistoryViewModel(appInstance.getWorkoutHistoryUseCase) }
+                })
+                HistoryScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(Screen.Achievements.route) {
