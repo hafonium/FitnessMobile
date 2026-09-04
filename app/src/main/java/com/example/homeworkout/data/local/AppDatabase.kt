@@ -13,6 +13,7 @@ import com.example.homeworkout.data.local.dao.UserDao
 import com.example.homeworkout.data.local.dao.WeightLogDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
+import com.example.homeworkout.data.local.dao.RunningDao
 import com.example.homeworkout.data.local.entities.ChatMessageEntity
 import com.example.homeworkout.data.local.entities.ChatSessionEntity
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
@@ -31,6 +32,8 @@ import com.example.homeworkout.data.local.entities.WorkoutPlanEntity
 import com.example.homeworkout.data.local.entities.WorkoutPlanExerciseEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
+import com.example.homeworkout.data.local.entities.RunPointEntity
+import com.example.homeworkout.data.local.entities.RunSessionEntity
 import android.util.Log
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import kotlinx.coroutines.CoroutineScope
@@ -59,12 +62,14 @@ import kotlinx.coroutines.launch
         UserFitnessProfileEntity::class,
         UserBadgeEntity::class,
         ChatSessionEntity::class,
-        ChatMessageEntity::class
+        ChatMessageEntity::class,
+        RunSessionEntity::class,
+        RunPointEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
     // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
     // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -75,6 +80,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun weightLogDao(): WeightLogDao
     abstract fun badgeDao(): BadgeDao
     abstract fun chatDao(): ChatDao
+    abstract fun runningDao(): RunningDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +32,8 @@ import com.example.homeworkout.utils.ScreenWrapper
 
 @Composable
 fun DiscoveryScreen(
-    onOpenFoodScanner: () -> Unit
+    onOpenFoodScanner: () -> Unit,
+    onOpenRunning: () -> Unit
 ) {
     ScreenWrapper {
         LazyColumn(
@@ -51,6 +53,31 @@ fun DiscoveryScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = SlateGray
                     )
+                }
+            }
+
+            item {
+                AppCard(
+                    modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenRunning)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(18.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.size(52.dp).clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.DirectionsRun, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        }
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            Text("Running", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text("Track your run with live GPS, distance and pace.", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        }
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Open running tracker", tint = SlateGray)
+                    }
                 }
             }
 

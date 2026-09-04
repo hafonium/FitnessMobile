@@ -45,6 +45,7 @@ sealed class Screen(val route: String) {
 
     // Discovery tab
     object FoodScanner : Screen("food_scanner")
+    object WalkRun : Screen("walk_run_screen")
 
     // Report tab
     object History : Screen("history")

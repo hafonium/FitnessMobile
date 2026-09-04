@@ -17,6 +17,8 @@ val localProperties = Properties().apply {
     }
 }
 val groqApiKey: String = localProperties.getProperty("GROQ_API_KEY", "")
+val stadiaMapsApiKey: String = providers.environmentVariable("STADIA_MAPS_API_KEY").orNull
+    ?: localProperties.getProperty("STADIA_MAPS_API_KEY", "")
 
 android {
     namespace = "com.example.homeworkout"
@@ -38,6 +40,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GROQ_API_KEY", "\"$groqApiKey\"")
+        val escapedStadiaMapsApiKey = stadiaMapsApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
+        buildConfigField("String", "STADIA_MAPS_API_KEY", "\"$escapedStadiaMapsApiKey\"")
         val localProperties = Properties().apply {
             val localPropertiesFile = rootProject.file("local.properties")
             if (localPropertiesFile.exists()) {
@@ -119,6 +123,9 @@ dependencies {
     // code, links) instead of showing raw markdown syntax. Pure Compose, no WebView/TextView
     // interop. See docs/chatbot-feature.md.
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.45.0")
+
+    // OpenGL is the widest-compatible stable MapLibre backend for minSdk 24 devices.
+    implementation("org.maplibre.gl:android-sdk-opengl:13.4.1")
 }
 
 // The Markdown renderer above was published against a newer Kotlin release than this project

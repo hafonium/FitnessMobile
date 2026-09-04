@@ -52,6 +52,8 @@ import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
 import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
+import com.example.homeworkout.ui.core.running.RunningViewModel
+import com.example.homeworkout.ui.core.running.WalkRunScreen
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.history.HistoryViewModel
 import com.example.homeworkout.ui.core.home.HomeScreen
@@ -188,7 +190,8 @@ fun ScreenNavigator() {
 
             composable(Screen.Discovery.route) {
                 DiscoveryScreen(
-                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) }
+                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) },
+                    onOpenRunning = { navController.navigate(Screen.WalkRun.route) }
                 )
             }
 
@@ -507,6 +510,13 @@ fun ScreenNavigator() {
                     initializer { FoodScanViewModel(appInstance.analyzeFoodImageUseCase) }
                 })
                 FoodScanScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.WalkRun.route) {
+                val vm: RunningViewModel = viewModel(factory = viewModelFactory {
+                    initializer { RunningViewModel(appInstance.observeRunningSessionUseCase) }
+                })
+                WalkRunScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             // --- Settings tab ---

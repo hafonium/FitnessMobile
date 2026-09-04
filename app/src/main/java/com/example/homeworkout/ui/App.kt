@@ -19,6 +19,7 @@ import com.example.homeworkout.data.repositories.FoodAnalysisRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
+import com.example.homeworkout.data.repositories.RunningRepositoryImpl
 import com.example.homeworkout.domain.repositories.ChatRepository
 import com.example.homeworkout.data.repositories.WeightRepositoryImpl
 import com.example.homeworkout.domain.repositories.ExerciseRepository
@@ -30,6 +31,7 @@ import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
 import com.example.homeworkout.domain.repositories.WeightRepository
+import com.example.homeworkout.domain.repositories.RunningRepository
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
 import com.example.homeworkout.domain.usecases.badges.EvaluateBadgesUseCase
 import com.example.homeworkout.domain.usecases.chat.CreateChatSessionUseCase
@@ -69,6 +71,7 @@ import com.example.homeworkout.domain.usecases.report.UpdateHeightUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
+import com.example.homeworkout.domain.usecases.running.ObserveRunningSessionUseCase
 import com.example.homeworkout.ui.core.chat.ChatPanelController
 import com.example.homeworkout.ui.services.ReminderScheduler
 import com.example.homeworkout.ui.services.TickSoundPlayer
@@ -76,8 +79,14 @@ import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.maplibre.android.MapLibre
 
 class App : Application(), ImageLoaderFactory {
+
+    override fun onCreate() {
+        super.onCreate()
+        MapLibre.getInstance(this)
+    }
 
     // Lives for the whole process — used once to seed the database on first launch.
     val applicationScope: CoroutineScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
@@ -106,6 +115,9 @@ class App : Application(), ImageLoaderFactory {
     }
     val foodAnalysisRepository: FoodAnalysisRepository by lazy {
         FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
+    }
+    val runningRepository: RunningRepository by lazy {
+        RunningRepositoryImpl(database.runningDao(), database.weightLogDao(), database.userDao())
     }
 
     // Services
@@ -155,6 +167,7 @@ class App : Application(), ImageLoaderFactory {
     val createChatSessionUseCase by lazy { CreateChatSessionUseCase(chatRepository) }
     val sendChatMessageUseCase by lazy { SendChatMessageUseCase(chatRepository) }
     val deleteChatSessionUseCase by lazy { DeleteChatSessionUseCase(chatRepository) }
+    val observeRunningSessionUseCase by lazy { ObserveRunningSessionUseCase(runningRepository) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.
