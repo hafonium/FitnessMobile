@@ -4,14 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
+import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.GetResumableWorkoutUseCase
 import com.example.homeworkout.domain.usecases.player.ResolveNextPlanDayUseCase
 import com.example.homeworkout.domain.usecases.player.ResolvedPlanDay
+import com.example.homeworkout.domain.usecases.player.ResumedWorkoutSession
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 sealed class DetailUiState {
     object Loading : DetailUiState()
@@ -23,7 +27,9 @@ sealed class DetailUiState {
 class DetailViewModel(
     private val workoutId: Long,
     getWorkoutDetailsUseCase: GetWorkoutDetailsUseCase,
-    resolveNextPlanDayUseCase: ResolveNextPlanDayUseCase
+    resolveNextPlanDayUseCase: ResolveNextPlanDayUseCase,
+    private val getResumableWorkoutUseCase: GetResumableWorkoutUseCase,
+    private val abandonWorkoutSessionUseCase: AbandonWorkoutSessionUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<DetailUiState> = getWorkoutDetailsUseCase(workoutId)
@@ -46,4 +52,17 @@ class DetailViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null
         )
+
+    /** Non-null when there's an in-progress/paused, non-stale session to offer Resume/Restart for. */
+    val resumable: StateFlow<ResumedWorkoutSession?> = flow { emit(getResumableWorkoutUseCase(workoutId)) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
+    /** "Restart": retire the old session before the caller navigates to a fresh one. */
+    fun restart(oldSessionId: Long) {
+        viewModelScope.launch { abandonWorkoutSessionUseCase(oldSessionId) }
+    }
 }

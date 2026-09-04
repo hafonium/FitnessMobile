@@ -68,6 +68,16 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE title = :title LIMIT 1")
     suspend fun getExerciseByTitle(title: String): ExerciseEntity?
 
+    @Query(
+        """
+        SELECT e.exerciseId, e.title, e.gifUrl, e.category, e.level, e.force, eq.name AS equipmentName
+        FROM exercises e
+        INNER JOIN equipment_types eq ON eq.equipmentId = e.equipmentId
+        WHERE e.title = :title LIMIT 1
+        """
+    )
+    suspend fun getExerciseRowByTitle(title: String): ExerciseListRow?
+
     @Query("SELECT * FROM exercises WHERE exerciseId = :exerciseId")
     suspend fun getExerciseById(exerciseId: Long): ExerciseEntity?
 

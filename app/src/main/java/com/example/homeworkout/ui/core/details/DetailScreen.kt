@@ -41,6 +41,7 @@ import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.WorkoutPlanDayDetail
 import com.example.homeworkout.domain.models.WorkoutPlanDetail
 import com.example.homeworkout.domain.usecases.player.ResolvedPlanDay
+import com.example.homeworkout.domain.usecases.player.ResumedWorkoutSession
 import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
@@ -49,6 +50,7 @@ import com.example.homeworkout.ui.components.planThemeDrawableRes
 import com.example.homeworkout.ui.components.ExerciseRow
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.buttons.AppButton
+import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.theme.AppGradients
 import com.example.homeworkout.ui.theme.BrandBlue
 import com.example.homeworkout.ui.theme.BrandBlueTint
@@ -65,12 +67,15 @@ fun DetailScreen(
     viewModel: DetailViewModel,
     onNavigateBack: () -> Unit,
     onStartWorkout: (planId: Long, planDayId: Long?) -> Unit,
+    onResumeWorkout: (planId: Long) -> Unit,
+    onRestartWorkout: (planId: Long, planDayId: Long, oldSessionId: Long) -> Unit,
     onEditExercises: (Long) -> Unit,
     onOpenExerciseInfo: (Long) -> Unit,
     onOpenWorkoutSettings: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val nextDay by viewModel.nextDay.collectAsStateWithLifecycle()
+    val resumable by viewModel.resumable.collectAsStateWithLifecycle()
     val topBarTitle = (uiState as? DetailUiState.Success)?.detail?.plan?.title ?: "Workout"
 
     ScreenWrapper {
@@ -102,8 +107,11 @@ fun DetailScreen(
                 is DetailUiState.Success -> PlanDetailContent(
                     detail = state.detail,
                     nextDay = nextDay,
+                    resumable = resumable,
                     contentPadding = padding,
                     onStartWorkout = { planDayId -> onStartWorkout(state.detail.plan.id, planDayId) },
+                    onResumeWorkout = { onResumeWorkout(state.detail.plan.id) },
+                    onRestartWorkout = { session -> onRestartWorkout(state.detail.plan.id, session.day.planDayId, session.sessionId) },
                     onEditExercises = { onEditExercises(state.detail.plan.id) },
                     onOpenExerciseInfo = onOpenExerciseInfo
                 )
@@ -116,8 +124,11 @@ fun DetailScreen(
 private fun PlanDetailContent(
     detail: WorkoutPlanDetail,
     nextDay: ResolvedPlanDay?,
+    resumable: ResumedWorkoutSession?,
     contentPadding: PaddingValues,
     onStartWorkout: (planDayId: Long?) -> Unit,
+    onResumeWorkout: () -> Unit,
+    onRestartWorkout: (ResumedWorkoutSession) -> Unit,
     onEditExercises: () -> Unit,
     onOpenExerciseInfo: (Long) -> Unit
 ) {
@@ -145,11 +156,30 @@ private fun PlanDetailContent(
             }
         }
         item {
-            AppButton(
-                text = if (isMultiDay && nextDayNumber != null) "Start · Day $nextDayNumber" else "Start",
-                onClick = { onStartWorkout(null) },
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Resume/Restart replace the plain Start button only when the resumable session is
+            // for the same day "Start" would actually play next.
+            val resumableForNextDay = resumable?.takeIf { it.day.planDayId == nextDay?.day?.planDayId }
+            if (resumableForNextDay != null) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    AppButton(
+                        text = "Resume Workout",
+                        onClick = onResumeWorkout,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    AppButton(
+                        text = "Restart",
+                        onClick = { onRestartWorkout(resumableForNextDay) },
+                        variant = AppButtonVariant.Tonal,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            } else {
+                AppButton(
+                    text = if (isMultiDay && nextDayNumber != null) "Start · Day $nextDayNumber" else "Start",
+                    onClick = { onStartWorkout(null) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         item {
             SectionHeader(

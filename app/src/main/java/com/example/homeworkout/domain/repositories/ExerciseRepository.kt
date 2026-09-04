@@ -22,4 +22,7 @@ interface ExerciseRepository {
 
     /** Batch lookup used by the Custom Workout builder to resolve picked exercise ids. */
     suspend fun getExercisesByIds(exerciseIds: List<Long>): List<Exercise>
+
+    /** Resolves a progression catalog entry's canonical exercise title to the local library, or null if unmatched. */
+    suspend fun findExerciseByTitle(title: String): Exercise?
 }

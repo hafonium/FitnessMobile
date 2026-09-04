@@ -150,7 +150,8 @@ fun ScreenNavigator() {
                             appInstance.getFitnessProfileUseCase,
                             appInstance.recommendPlanUseCase,
                             appInstance.getWeeklyGoalProgressUseCase,
-                            appInstance.getStreakUseCase
+                            appInstance.getStreakUseCase,
+                            appInstance.getActiveWorkoutUseCase
                         )
                     }
                 })
@@ -160,7 +161,8 @@ fun ScreenNavigator() {
                     onOpenCustomWorkout = { navController.navigate(Screen.CustomWorkoutList.route) },
                     onOpenEditGoal = { navController.navigate(Screen.EditGoal.route) },
                     onOpenWorkoutList = { category -> navController.navigate(Screen.WorkoutList.createRoute(category.name)) },
-                    onOpenOnboarding = { navController.navigate(Screen.Onboarding.route) }
+                    onOpenOnboarding = { navController.navigate(Screen.Onboarding.route) },
+                    onResumeWorkout = { planId -> navController.navigate(Screen.Player.createRoute(planId, resume = true)) }
                 )
             }
 
@@ -229,12 +231,25 @@ fun ScreenNavigator() {
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
                 val vm: DetailViewModel = viewModel(key = "detail-$planId", factory = viewModelFactory {
-                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase, appInstance.resolveNextPlanDayUseCase) }
+                    initializer {
+                        DetailViewModel(
+                            planId,
+                            appInstance.getWorkoutDetailsUseCase,
+                            appInstance.resolveNextPlanDayUseCase,
+                            appInstance.getResumableWorkoutUseCase,
+                            appInstance.abandonWorkoutSessionUseCase
+                        )
+                    }
                 })
                 DetailScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() },
                     onStartWorkout = { pId, planDayId -> navController.navigate(Screen.Player.createRoute(pId, planDayId)) },
+                    onResumeWorkout = { pId -> navController.navigate(Screen.Player.createRoute(pId, resume = true)) },
+                    onRestartWorkout = { pId, planDayId, oldSessionId ->
+                        vm.restart(oldSessionId)
+                        navController.navigate(Screen.Player.createRoute(pId, planDayId))
+                    },
                     onEditExercises = { navController.navigate(Screen.EditPlanExercises.createRoute(planId)) },
                     onOpenExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onOpenWorkoutSettings = { navController.navigate(Screen.WorkoutSettingsSheet.route) }
@@ -247,7 +262,15 @@ fun ScreenNavigator() {
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
                 val vm: DetailViewModel = viewModel(key = "edit-detail-$planId", factory = viewModelFactory {
-                    initializer { DetailViewModel(planId, appInstance.getWorkoutDetailsUseCase, appInstance.resolveNextPlanDayUseCase) }
+                    initializer {
+                        DetailViewModel(
+                            planId,
+                            appInstance.getWorkoutDetailsUseCase,
+                            appInstance.resolveNextPlanDayUseCase,
+                            appInstance.getResumableWorkoutUseCase,
+                            appInstance.abandonWorkoutSessionUseCase
+                        )
+                    }
                 })
                 val editVm: PlanExerciseEditViewModel = viewModel(factory = viewModelFactory {
                     initializer {
@@ -355,21 +378,31 @@ fun ScreenNavigator() {
                     navArgument("planDayId") {
                         type = NavType.LongType
                         defaultValue = -1L
+                    },
+                    navArgument("resume") {
+                        type = NavType.BoolType
+                        defaultValue = false
                     }
                 )
             ) { entry ->
                 val planId = entry.arguments?.getLong("planId") ?: return@composable
                 val requestedPlanDayId = entry.arguments?.getLong("planDayId", -1L)?.takeIf { it != -1L }
+                val resume = entry.arguments?.getBoolean("resume", false) ?: false
                 val vm: WorkoutPlayerViewModel = viewModel(key = "player-$planId", factory = viewModelFactory {
                     initializer {
                         WorkoutPlayerViewModel(
                             planId,
                             requestedPlanDayId,
+                            resume,
                             appInstance.startWorkoutSessionUseCase,
                             appInstance.startSpecificWorkoutDayUseCase,
                             appInstance.restartWorkoutDayUseCase,
                             appInstance.completeWorkoutSessionUseCase,
                             appInstance.abandonWorkoutSessionUseCase,
+                            appInstance.getResumableWorkoutUseCase,
+                            appInstance.saveWorkoutProgressUseCase,
+                            appInstance.saveAndExitWorkoutSessionUseCase,
+                            appInstance.getExerciseDetailUseCase,
                             appInstance.markBadgesSeenUseCase,
                             appInstance.getSettingsUseCase,
                             appInstance.ttsService,
@@ -379,8 +412,13 @@ fun ScreenNavigator() {
                 })
                 WorkoutPlayerScreen(
                     viewModel = vm,
-                    onClose = { navController.popBackStack(Screen.Details.route, inclusive = false) },
-                    onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) }
+                    // Plain pop-one-back rather than popBackStack(Screen.Details.route, ...): the
+                    // player can be entered either from Details (Start/Resume/Restart) or directly
+                    // from Home (the "Continue Workout" card's Resume) — targeting Details by route
+                    // silently no-ops when it isn't actually on the back stack, which made every
+                    // onClose-driven action (Keep exercising / Do it later / Save & Exit / Discard)
+                    // appear to do nothing when entered from Home.
+                    onClose = { navController.popBackStack() }
                 )
             }
 
