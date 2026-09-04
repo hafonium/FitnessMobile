@@ -58,6 +58,7 @@ import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
+import com.example.homeworkout.ui.core.chat.ChatPanelController
 import com.example.homeworkout.ui.services.ReminderScheduler
 import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +83,12 @@ class App : Application(), ImageLoaderFactory {
         SettingsRepositoryImpl(database.userDao(), database.workoutSessionDao(), database.badgeDao())
     }
     val workoutSessionRepository: WorkoutSessionRepository by lazy { WorkoutSessionRepositoryImpl(database.userDao(), database.workoutSessionDao()) }
-    val chatRepository: ChatRepository by lazy { ChatRepositoryImpl(database.chatDao(), database.userDao(), GroqClient()) }
+    val chatRepository: ChatRepository by lazy {
+        ChatRepositoryImpl(database.chatDao(), database.userDao(), GroqClient(), fitnessProfileRepository, workoutRepository)
+    }
+    // Bridges the floating chat overlay (no nav-graph reference) and ScreenNavigator (no chat
+    // reference) - see ChatPanelController's own KDoc and docs/chatbot-feature.md.
+    val chatPanelController: ChatPanelController by lazy { ChatPanelController() }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }

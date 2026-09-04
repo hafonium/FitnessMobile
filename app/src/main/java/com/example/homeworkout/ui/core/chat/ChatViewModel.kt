@@ -26,7 +26,8 @@ class ChatViewModel(
     private val getChatMessagesUseCase: GetChatMessagesUseCase,
     private val createChatSessionUseCase: CreateChatSessionUseCase,
     private val sendChatMessageUseCase: SendChatMessageUseCase,
-    private val deleteChatSessionUseCase: DeleteChatSessionUseCase
+    private val deleteChatSessionUseCase: DeleteChatSessionUseCase,
+    private val chatPanelController: ChatPanelController
 ) : ViewModel() {
 
     val sessions: StateFlow<List<ChatSession>> = getChatSessionsUseCase()
@@ -65,7 +66,7 @@ class ChatViewModel(
         viewModelScope.launch {
             _isSending.value = true
             try {
-                sendChatMessageUseCase(sessionId, text)
+                sendChatMessageUseCase(sessionId, text)?.let { chatPanelController.proposePlan(it) }
             } finally {
                 _isSending.value = false
             }

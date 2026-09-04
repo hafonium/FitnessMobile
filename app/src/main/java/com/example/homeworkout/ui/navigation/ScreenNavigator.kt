@@ -13,12 +13,17 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -78,6 +83,15 @@ private val bottomTabs = listOf(
 fun ScreenNavigator() {
     val navController = rememberNavController()
     val appInstance = LocalContext.current.applicationContext as App
+
+    // The floating chat overlay lives outside this NavHost and has no NavController reference; it
+    // posts a proposal here instead - see ChatPanelController's KDoc and docs/chatbot-feature.md.
+    val pendingPlanProposal by appInstance.chatPanelController.pendingPlanProposal.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingPlanProposal) {
+        if (pendingPlanProposal != null) {
+            navController.navigate(Screen.CreateCustomPlan.route)
+        }
+    }
 
     val currentRoute by navController.currentBackStackEntryAsState()
     val showBottomBar = currentRoute?.destination?.route in Screen.bottomBarRoutes
@@ -392,21 +406,43 @@ fun ScreenNavigator() {
                             appInstance.getExercisesByIdsUseCase,
                             appInstance.createCustomWorkoutPlanUseCase,
                             appInstance.getWorkoutsUseCase,
-                            appInstance.getWorkoutDetailsUseCase
+                            appInstance.getWorkoutDetailsUseCase,
+                            appInstance.recommendPlanUseCase,
+                            appInstance.saveFitnessProfileUseCase
                         )
                     }
                 })
                 val exerciseBrowserVm: ExerciseBrowserViewModel = viewModel(factory = viewModelFactory {
                     initializer { ExerciseBrowserViewModel(appInstance.searchExercisesUseCase) }
                 })
+
+                // A pending proposal means the chat overlay triggered this navigation - see
+                // ChatPanelController's KDoc. Consumed exactly once per screen instance so a manual
+                // "+ Create Workout" entry (proposal == null) is completely unaffected.
+                var cameFromChat by remember { mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    appInstance.chatPanelController.consumePendingPlanProposal()?.let { proposal ->
+                        cameFromChat = true
+                        vm.applyProposal(proposal)
+                    }
+                }
+
                 CreateCustomPlanScreen(
                     viewModel = vm,
                     exerciseBrowserViewModel = exerciseBrowserVm,
-                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateBack = {
+                        if (cameFromChat) appInstance.chatPanelController.open()
+                        navController.popBackStack()
+                    },
                     onExerciseInfo = { exerciseId -> navController.navigate(Screen.ExerciseInfo.createRoute(exerciseId)) },
                     onPlanCreated = { planId ->
-                        navController.navigate(Screen.Details.createRoute(planId)) {
-                            popUpTo(Screen.CreateCustomPlan.route) { inclusive = true }
+                        if (cameFromChat) {
+                            appInstance.chatPanelController.open()
+                            navController.popBackStack()
+                        } else {
+                            navController.navigate(Screen.Details.createRoute(planId)) {
+                                popUpTo(Screen.CreateCustomPlan.route) { inclusive = true }
+                            }
                         }
                     }
                 )

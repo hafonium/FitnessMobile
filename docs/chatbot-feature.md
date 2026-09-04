@@ -1,10 +1,12 @@
 # In-App Chatbot Feature — Implementation Notes
 
 Adds a global, draggable floating chat bubble that opens a popup chat window backed by an LLM
-API, so users can ask fitness/workout questions from anywhere in the app. Entirely on-device: no
-backend server, no MongoDB — chat sessions and messages live in Room next to everything else,
-following the layering in `docs/architecture.md`. Read this before touching `ui/core/chat/`,
-`data/remote/groq/`, `ChatRepositoryImpl`, or the `chat_sessions` / `chat_messages` tables.
+API, so users can ask fitness/workout questions from anywhere in the app — and, once it knows
+enough about the user, propose and help create a real workout plan (see "Plan creation from chat"
+below). Entirely on-device: no backend server, no MongoDB — chat sessions and messages live in
+Room next to everything else, following the layering in `docs/architecture.md`. Read this before
+touching `ui/core/chat/`, `data/remote/groq/`, `ChatRepositoryImpl`,
+`CreateCustomPlanViewModel.applyProposal`, or the `chat_sessions` / `chat_messages` tables.
 
 **Provider history:** this was originally built against Gemini, then switched to Groq (see "Groq
 integration" below) after Gemini's Google Cloud project got hit with an unresolvable `403
@@ -116,6 +118,94 @@ of a real reply.
 - `ChatViewModel.kt` — session list, active session's messages, input/sending state. Lives above
   the nav graph, constructed the same `viewModelFactory { initializer { ... } }` way
   `ScreenNavigator` builds its own screen ViewModels.
+- `ChatPanelController.kt` — bridges this overlay and `ScreenNavigator`, which otherwise share no
+  state; see "Plan creation from chat" below.
+
+## Plan creation from chat
+
+The assistant can also *create* a workout plan instead of just talking about one: give it enough
+of a `FitnessProfile` (goal, experience level, days/week, session length) — either already saved
+from onboarding, or gathered conversationally — and, once the user clearly asks for a plan, it
+proposes one. The app then opens Create Workout with a draft pre-filled from that proposal for
+the user to review and confirm; nothing is written to the database until they tap "Create Plan".
+
+**Design choice: reuse the recommender, don't teach the LLM the scoring algorithm.** The app
+already has `RecommendPlanUseCase`, a deterministic Kotlin implementation of the whole plan-
+selection strategy in `docs/workout_plan_selection_guide.md` (hard filters, weighted scoring,
+fallback ladder). Re-deriving that logic inside an LLM prompt would be slower, less reliable, and
+a second place to keep in sync with the guide. So the LLM's job is narrower: hold a conversation,
+map what the user says onto `FitnessProfile`'s fields, and signal *when* to create a plan — the
+actual template selection still goes through `RecommendPlanUseCase`, exactly like onboarding does.
+
+### Wire format (`GroqClient.kt`)
+
+The structured-output schema grew two fields beyond `reply`/`updatedContext`:
+`wantsToCreatePlan` (boolean) and `planProposal` (an object mirroring `FitnessProfile` plus a
+suggested `title`/`description`). Both are **always required** by the schema (strict JSON Schema
+mode requires every property to be present) — the model fills `planProposal` with placeholder
+values even when `wantsToCreatePlan` is false, and the app only reads it when the flag is true.
+The request prompt also grows an `APP CONTEXT` block ahead of the usual `PRIOR CONTEXT` /
+`NEW USER MESSAGE`: a small static taxonomy (goals, levels, equipment, exercise categories — see
+`ChatRepositoryImpl.APP_TAXONOMY`) plus the user's saved `FitnessProfile` (or "none saved yet")
+and a one-line-per-plan summary of their existing plans, built fresh on every send via
+`ChatRepositoryImpl.buildAppContext()`. This is deliberately *not* the raw 515-exercise dataset
+(over 1MB) — the model reasons at the category/muscle/equipment level, never by literal exercise
+name, so nothing exercise-specific needs to be serialized into the prompt.
+
+**Never trust the model's structured output at face value**, strict mode or not — the same lesson
+as the inline-bullet Markdown bug earlier in this doc's history. `ChatRepositoryImpl`'s
+`GroqPlanProposal.toDomain()` defends against it: an unrecognized `primaryGoal`/`experienceLevel`
+string falls back to a sane default via `PrimaryGoal.fromKey`/`ExperienceLevel.fromKey`,
+`daysPerWeek` is clamped to 2–6, and `sessionMinutes` is snapped to the nearest of the app's five
+allowed values (15/20/30/45/60) rather than trusted as-is.
+
+### Bridging chat and navigation (`ChatPanelController.kt`)
+
+`ChatOverlay` and `ScreenNavigator` are siblings inside `HomeWorkoutApp`'s top-level `Box`, each
+with its own state and no reference to the other — `ScreenNavigator` owns its `NavController`
+internally, and until this feature nothing needed to reach across that boundary.
+`ui/core/chat/ChatPanelController.kt` is a small app-scoped singleton (`App.chatPanelController`,
+same lifetime as the other repositories) that bridges the two:
+
+- `isOpen: StateFlow<Boolean>` — the chat panel's expanded/collapsed state, promoted here from
+  what used to be a local `remember { mutableStateOf(false) }` inside `ChatOverlay`, specifically
+  so a chat-triggered navigation can collapse the panel before navigating away and reopen it on
+  return.
+- `pendingPlanProposal: StateFlow<PlanProposal?>` — set by `ChatViewModel.sendMessage` (via
+  `proposePlan`, which also collapses the panel) whenever `SendChatMessageUseCase` returns a
+  non-null `PlanProposal`. `ScreenNavigator` observes this at the top of its composable and
+  navigates to `Screen.CreateCustomPlan` the moment it goes non-null; the destination itself
+  consumes (and clears) it exactly once via `consumePendingPlanProposal()` inside a
+  `LaunchedEffect(Unit)`, so a manual "+ Create Workout" entry (from `CustomWorkoutListScreen`)
+  sees `null` and behaves exactly as it always has.
+
+`CreateCustomPlanViewModel.applyProposal(proposal)` is what actually seeds the draft: it calls
+`RecommendPlanUseCase(proposal.profile)` and, when a system template matches, copies its real
+days/exercises in (the same code path as "Start from a template", just triggered automatically
+instead of by a manual tap) with the LLM's suggested title/description in place of the template's
+own name. When nothing matches — an unusual profile combination, or simply no plans seeded yet —
+it still prefills title/description/category/level from the conversation rather than dropping the
+user into a generic blank form; `mapGoalToCategory`/`mapExperienceLevelToWorkoutLevel` translate
+between `FitnessProfile`'s `PrimaryGoal`/`ExperienceLevel` and the plan-level `WorkoutCategory`/
+`WorkoutLevel` enums (these are separate enum families in this codebase — see `WorkoutEnums.kt` /
+`FitnessProfile.kt` — not the same values under a different name). Either way the profile is saved
+via `SaveFitnessProfileUseCase`, best-effort, matching what onboarding does.
+
+`ScreenNavigator`'s `CreateCustomPlan` composable tracks one more thing locally — `cameFromChat`,
+set when `consumePendingPlanProposal()` returns non-null — purely to decide what `onNavigateBack`
+and `onPlanCreated` do: only when the screen was reached this way do both branches reopen the
+chat panel and pop back to whatever screen was underneath, instead of the screen's normal
+behavior (pop to the caller / navigate to the new plan's Details). A manual entry is completely
+unaffected.
+
+### Safety
+
+The system instruction explicitly tells the model never to set `wantsToCreatePlan` when the user
+mentions an injury, acute pain, or a medical restriction — matching the "hard safety exclusion"
+language in `docs/workout_plan_selection_guide.md` §4 Step 1. `PlanProposal`'s
+`injuriesOrLimitations` is always built as an empty string for this reason: there is currently no
+schema field for the model to report a limitation through, specifically so a plan can never be
+auto-proposed around one.
 
 ## Known limitations / follow-ups
 
@@ -128,3 +218,10 @@ of a real reply.
 - Groq's free tier has its own rate limits (check the usage dashboard at console.groq.com) — fine
   for personal/dev use, but worth knowing about before assuming a fallback-error message always
   means a code bug rather than a quota.
+- The plan-creation flow (see "Plan creation from chat" above) was verified by compiling and by
+  exercising the panel's open/close plumbing directly; the full loop — asking the assistant for a
+  plan, the structured output actually parsing, and landing on a correctly pre-filled Create
+  Workout screen — still wants an on-device test pass, since it depends on a live Groq response.
+- `CreateCustomPlanViewModel.applyProposal`'s "matched a template" path depends on `workout_plans`
+  actually being seeded — if that table is empty, every proposal falls back to the blank-header
+  path (still usable, just without pre-filled days/exercises).

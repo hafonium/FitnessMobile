@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.CustomDaySpec
 import com.example.homeworkout.domain.models.CustomExerciseSpec
+import com.example.homeworkout.domain.models.ExperienceLevel
+import com.example.homeworkout.domain.models.PrimaryGoal
+import com.example.homeworkout.domain.models.chat.PlanProposal
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
 import com.example.homeworkout.domain.models.enums.WorkoutLevel
 import com.example.homeworkout.domain.models.enums.WorkoutPlanSource
@@ -12,6 +15,8 @@ import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkout
 import com.example.homeworkout.domain.usecases.customworkout.GetExercisesByIdsUseCase
 import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
+import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCase
+import com.example.homeworkout.domain.usecases.planselection.SaveFitnessProfileUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,7 +73,9 @@ class CreateCustomPlanViewModel(
     private val getExercisesByIdsUseCase: GetExercisesByIdsUseCase,
     private val createCustomWorkoutPlanUseCase: CreateCustomWorkoutPlanUseCase,
     getWorkoutsUseCase: GetWorkoutsUseCase,
-    private val getWorkoutDetailsUseCase: GetWorkoutDetailsUseCase
+    private val getWorkoutDetailsUseCase: GetWorkoutDetailsUseCase,
+    private val recommendPlanUseCase: RecommendPlanUseCase,
+    private val saveFitnessProfileUseCase: SaveFitnessProfileUseCase
 ) : ViewModel() {
 
     val templates: StateFlow<List<WorkoutModel>> = getWorkoutsUseCase(source = WorkoutPlanSource.SYSTEM)
@@ -175,6 +182,88 @@ class CreateCustomPlanViewModel(
                 _isImportingTemplate.value = false
             }
         }
+    }
+
+    /**
+     * Seeds the draft from a chat-originated [proposal] instead of a manual template pick - see
+     * [com.example.homeworkout.ui.core.chat.ChatPanelController] and docs/chatbot-feature.md. Reuses
+     * the app's own plan recommender ([recommendPlanUseCase]) so "the plan strategy" lives in one
+     * place, not duplicated into the LLM prompt: when it finds a matching system template, that
+     * template's real days/exercises are copied in exactly like "Start from a template" does; when
+     * it doesn't (e.g. no plans are seeded yet, or nothing scores well), the header fields are still
+     * prefilled from the conversation so the user isn't dropped into a generic blank form.
+     */
+    fun applyProposal(proposal: PlanProposal) {
+        viewModelScope.launch {
+            val recommendation = try {
+                recommendPlanUseCase(proposal.profile)
+            } catch (e: Exception) {
+                null
+            }
+
+            if (recommendation != null) {
+                val detail = getWorkoutDetailsUseCase(recommendation.recommended.plan.id).first()
+                if (detail != null) {
+                    try {
+                        saveFitnessProfileUseCase(proposal.profile, recommendation.recommended.catalogId)
+                    } catch (e: Exception) {
+                        // Best-effort - a failed profile save shouldn't block seeding the draft.
+                    }
+                    val draftDays = detail.days.mapIndexed { index, day ->
+                        DraftDay(
+                            localId = index,
+                            title = day.title.orEmpty(),
+                            exercises = day.exercises.map { exercise ->
+                                DraftExercise(
+                                    exerciseId = exercise.exerciseId,
+                                    title = exercise.title,
+                                    imageUrl = exercise.gifUrl ?: exercise.imageUrl,
+                                    targetReps = exercise.targetReps,
+                                    targetDurationSec = exercise.targetDurationSec,
+                                    restAfterSec = exercise.restAfterSec
+                                )
+                            }
+                        )
+                    }.ifEmpty { listOf(DraftDay(localId = 0)) }
+                    _form.value = CustomPlanForm(
+                        title = proposal.suggestedTitle.ifBlank { detail.plan.title },
+                        description = proposal.suggestedDescription.ifBlank { detail.plan.description.orEmpty() },
+                        category = detail.plan.category,
+                        level = detail.plan.level,
+                        days = draftDays
+                    )
+                    nextDayLocalId = draftDays.maxOf { it.localId } + 1
+                    return@launch
+                }
+            }
+
+            // No matching system template - still land on a usable draft seeded from the
+            // conversation instead of a blank generic form.
+            try {
+                saveFitnessProfileUseCase(proposal.profile, null)
+            } catch (e: Exception) {
+                // Best-effort - a failed profile save shouldn't block seeding the draft.
+            }
+            _form.value = CustomPlanForm(
+                title = proposal.suggestedTitle,
+                description = proposal.suggestedDescription,
+                category = mapGoalToCategory(proposal.profile.primaryGoal),
+                level = mapExperienceLevelToWorkoutLevel(proposal.profile.experienceLevel)
+            )
+        }
+    }
+
+    private fun mapGoalToCategory(goal: PrimaryGoal): WorkoutCategory = when (goal) {
+        PrimaryGoal.BUILD_MUSCLE -> WorkoutCategory.BUILD_MUSCLE
+        PrimaryGoal.FAT_LOSS -> WorkoutCategory.BURN_FAT
+        PrimaryGoal.MOBILITY -> WorkoutCategory.STRETCH_AND_WARM_UP
+        PrimaryGoal.GENERAL_FITNESS, PrimaryGoal.FOCUS_AREA -> WorkoutCategory.KEEP_FIT
+    }
+
+    private fun mapExperienceLevelToWorkoutLevel(level: ExperienceLevel): WorkoutLevel = when (level) {
+        ExperienceLevel.BEGINNER -> WorkoutLevel.BEGINNER
+        ExperienceLevel.INTERMEDIATE -> WorkoutLevel.INTERMEDIATE
+        ExperienceLevel.EXPERT -> WorkoutLevel.ADVANCED
     }
 
     /** Resolves picked ids from the Add Exercises browser and appends any not already on this day. */

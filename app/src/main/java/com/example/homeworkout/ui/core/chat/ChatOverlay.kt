@@ -117,13 +117,16 @@ fun ChatOverlay() {
                     getChatMessagesUseCase = appInstance.getChatMessagesUseCase,
                     createChatSessionUseCase = appInstance.createChatSessionUseCase,
                     sendChatMessageUseCase = appInstance.sendChatMessageUseCase,
-                    deleteChatSessionUseCase = appInstance.deleteChatSessionUseCase
+                    deleteChatSessionUseCase = appInstance.deleteChatSessionUseCase,
+                    chatPanelController = appInstance.chatPanelController
                 )
             }
         }
     )
 
-    var isOpen by remember { mutableStateOf(false) }
+    // Open/closed state lives on ChatPanelController (not local remember) so a chat-triggered
+    // navigation to Create Workout can reopen the panel on return - see docs/chatbot-feature.md.
+    val isOpen by appInstance.chatPanelController.isOpen.collectAsState()
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val density = LocalDensity.current
@@ -133,7 +136,7 @@ fun ChatOverlay() {
         ChatBubble(
             initialOffset = Offset(x = (maxXPx - 12f).coerceAtLeast(0f), y = maxYPx * 0.6f),
             bounds = Offset(maxXPx, maxYPx),
-            onClick = { isOpen = true }
+            onClick = { appInstance.chatPanelController.open() }
         )
 
         if (isOpen) {
@@ -144,7 +147,7 @@ fun ChatOverlay() {
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
-                    ) { isOpen = false }
+                    ) { appInstance.chatPanelController.close() }
             )
             Box(
                 modifier = Modifier
@@ -155,7 +158,7 @@ fun ChatOverlay() {
             ) {
                 ChatPanel(
                     viewModel = viewModel,
-                    onDismiss = { isOpen = false },
+                    onDismiss = { appInstance.chatPanelController.close() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.94f)
