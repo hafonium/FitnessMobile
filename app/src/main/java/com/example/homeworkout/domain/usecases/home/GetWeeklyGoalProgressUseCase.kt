@@ -28,6 +28,7 @@ class GetWeeklyGoalProgressUseCase(
                 val days = dayStarts.map { dayStart ->
                     val dayEnd = dayStart + DAY_MILLIS
                     WeeklyGoalDay(
+                        dayStartMillis = dayStart,
                         dayOfMonth = dayOfMonthOf(dayStart),
                         isToday = dayStart == todayStart,
                         isCompleted = completedTimestamps.any { it in dayStart until dayEnd }

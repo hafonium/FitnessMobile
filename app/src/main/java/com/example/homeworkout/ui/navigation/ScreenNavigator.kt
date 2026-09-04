@@ -152,6 +152,8 @@ fun ScreenNavigator() {
                             appInstance.getStreakUseCase,
                             appInstance.getWeightDashboardUseCase,
                             appInstance.getBadgesUseCase,
+                            appInstance.getWeeklyGoalProgressUseCase,
+                            appInstance.getWorkoutHistoryUseCase,
                             appInstance.evaluateBadgesUseCase,
                             appInstance.markBadgesSeenUseCase
                         )

@@ -1,6 +1,7 @@
 package com.example.homeworkout.ui.core.report
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,8 +48,7 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Report tab. Streaks, weight/BMI, and achievements are backed by Room. The top
- * Workouts/Kcal/Minute summary and weekly calendar remain storyboard sample data.
+ * Report tab backed by Room: completed-workout totals/calendar, streaks, weight/BMI, and badges.
  */
 @Composable
 fun ReportScreen(
@@ -60,6 +60,8 @@ fun ReportScreen(
     val streak by viewModel.streak.collectAsStateWithLifecycle()
     val badges by viewModel.badges.collectAsStateWithLifecycle()
     val weightDashboard by viewModel.weightDashboard.collectAsStateWithLifecycle()
+    val workoutSummary by viewModel.workoutSummary.collectAsStateWithLifecycle()
+    val weeklyProgress by viewModel.weeklyProgress.collectAsStateWithLifecycle()
     val unseenBadge = badges.firstOrNull { it.isUnlocked && !it.isSeen }
 
     ScreenWrapper {
@@ -75,9 +77,13 @@ fun ReportScreen(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        StatTile(Icons.Default.FitnessCenter, "3", "Workouts")
-                        StatTile(Icons.Default.LocalFireDepartment, "1", "Kcal")
-                        StatTile(Icons.Default.Timer, "0", "Minute")
+                        StatTile(Icons.Default.FitnessCenter, workoutSummary.completedWorkouts.toString(), "Workouts")
+                        StatTile(
+                            Icons.Default.LocalFireDepartment,
+                            workoutSummary.totalCalories?.let(::formatCompactDecimal) ?: "—",
+                            "Kcal"
+                        )
+                        StatTile(Icons.Default.Timer, formatMinutes(workoutSummary.totalDurationSeconds), "Minutes")
                     }
                 }
             }
@@ -86,21 +92,30 @@ fun ReportScreen(
 
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    listOf("S", "M", "T", "W", "T", "F", "S").forEachIndexed { index, day ->
+                    weeklyProgress.days.forEach { day ->
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text(day, style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                            Text(
+                                SimpleDateFormat("EEEEE", Locale.ENGLISH).format(Date(day.dayStartMillis)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SlateGray
+                            )
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(CircleShape)
-                                    .background(if (index == 3) MaterialTheme.colorScheme.primary else Color.Transparent),
+                                    .background(if (day.isCompleted) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                    .then(
+                                        if (day.isToday && !day.isCompleted) {
+                                            Modifier.border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                        } else Modifier
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    "${30 + index}",
+                                    "${day.dayOfMonth}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (index == 3) Color.White else InkBlack
+                                    color = if (day.isCompleted) Color.White else InkBlack
                                 )
                             }
                         }
@@ -265,3 +280,12 @@ private fun LabeledValue(label: String, value: String) {
 }
 
 private fun formatDecimal(value: Double?): String = value?.let { "%.1f".format(it) } ?: "—"
+
+private fun formatCompactDecimal(value: Double): String =
+    if (value % 1.0 == 0.0) "%.0f".format(value) else "%.1f".format(value)
+
+private fun formatMinutes(totalSeconds: Long): String = when {
+    totalSeconds <= 0 -> "0"
+    totalSeconds < 60 -> "<1"
+    else -> (totalSeconds / 60).toString()
+}
