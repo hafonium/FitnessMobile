@@ -6,9 +6,10 @@ import com.example.homeworkout.domain.models.WorkoutHistoryRecord
 import com.example.homeworkout.domain.usecases.history.GetWorkoutHistoryUseCase
 import java.util.Calendar
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 data class HistoryUiState(
@@ -16,6 +17,7 @@ data class HistoryUiState(
     val weekRecords: List<WorkoutHistoryRecord> = emptyList(),
     val weekStartMillis: Long = currentWeekBounds().first,
     val weekEndMillis: Long = currentWeekBounds().second,
+    val selectedDayStartMillis: Long = startOfDay(System.currentTimeMillis()),
     val isLoading: Boolean = true,
     val errorMessage: String? = null
 )
@@ -23,14 +25,20 @@ data class HistoryUiState(
 class HistoryViewModel(
     getWorkoutHistoryUseCase: GetWorkoutHistoryUseCase
 ) : ViewModel() {
-    val uiState: StateFlow<HistoryUiState> = getWorkoutHistoryUseCase()
-        .map { records ->
-            val (weekStart, weekEnd) = currentWeekBounds()
+    private val selectedDayStartMillis = MutableStateFlow<Long?>(null)
+
+    val uiState: StateFlow<HistoryUiState> = combine(
+        getWorkoutHistoryUseCase(),
+        selectedDayStartMillis
+    ) { records, selectedDay ->
+            val effectiveSelectedDay = selectedDay ?: defaultSelectedDay(records)
+            val (weekStart, weekEnd) = currentWeekBounds(effectiveSelectedDay)
             HistoryUiState(
                 records = records,
                 weekRecords = records.filter { it.endedAt in weekStart until weekEnd },
                 weekStartMillis = weekStart,
                 weekEndMillis = weekEnd,
+                selectedDayStartMillis = effectiveSelectedDay,
                 isLoading = false
             )
         }
@@ -42,7 +50,29 @@ class HistoryViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HistoryUiState()
         )
+
+    fun selectDay(dayStartMillis: Long) {
+        selectedDayStartMillis.value = startOfDay(dayStartMillis)
+    }
 }
+
+private fun defaultSelectedDay(records: List<WorkoutHistoryRecord>): Long {
+    val now = Calendar.getInstance()
+    val latestThisMonth = records.firstOrNull { record ->
+        val ended = Calendar.getInstance().apply { timeInMillis = record.endedAt }
+        ended.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+            ended.get(Calendar.MONTH) == now.get(Calendar.MONTH)
+    }
+    return startOfDay(latestThisMonth?.endedAt ?: System.currentTimeMillis())
+}
+
+private fun startOfDay(millis: Long): Long = Calendar.getInstance().apply {
+    timeInMillis = millis
+    set(Calendar.HOUR_OF_DAY, 0)
+    set(Calendar.MINUTE, 0)
+    set(Calendar.SECOND, 0)
+    set(Calendar.MILLISECOND, 0)
+}.timeInMillis
 
 /** Sunday 00:00 (inclusive) to the following Sunday 00:00 (exclusive). */
 private fun currentWeekBounds(now: Long = System.currentTimeMillis()): Pair<Long, Long> {

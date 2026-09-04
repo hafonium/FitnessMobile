@@ -30,6 +30,7 @@ class WorkoutSessionRepositoryImpl(
                     rows.map { row ->
                         WorkoutHistoryRecord(
                             sessionId = row.sessionId,
+                            planId = row.planId,
                             endedAt = row.endedAt,
                             durationSeconds = row.durationSeconds ?: 0,
                             caloriesBurned = row.caloriesBurned,

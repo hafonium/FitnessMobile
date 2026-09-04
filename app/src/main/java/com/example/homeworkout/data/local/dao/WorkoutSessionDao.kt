@@ -18,6 +18,7 @@ data class AchievementTotalsRow(
 
 data class WorkoutHistoryRow(
     val sessionId: Long,
+    val planId: Long,
     val endedAt: Long,
     val durationSeconds: Int?,
     val caloriesBurned: Double?,
@@ -33,6 +34,7 @@ interface WorkoutSessionDao {
         """
         SELECT
             s.sessionId,
+            s.planId,
             s.endedAt,
             s.durationSeconds,
             s.caloriesBurned,

@@ -35,7 +35,6 @@ import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BadgeMedallion
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
 import com.example.homeworkout.ui.components.BmiCard
-import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
 import com.example.homeworkout.ui.components.WeightLineChart
 import com.example.homeworkout.ui.components.buttons.AppButton
@@ -88,36 +87,49 @@ fun ReportScreen(
                 }
             }
 
-            item { SectionHeader(title = "History", actionText = "All records", onActionClick = onOpenHistory) }
-
             item {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    weeklyProgress.days.forEach { day ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text(
-                                SimpleDateFormat("EEEEE", Locale.ENGLISH).format(Date(day.dayStartMillis)),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = SlateGray
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(if (day.isCompleted) MaterialTheme.colorScheme.primary else Color.Transparent)
-                                    .then(
-                                        if (day.isToday && !day.isCompleted) {
-                                            Modifier.border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                        } else Modifier
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    "${day.dayOfMonth}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (day.isCompleted) Color.White else InkBlack
-                                )
+                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenHistory)) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("History", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text("All records", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                        }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            weeklyProgress.days.forEach { day ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Text(
+                                        SimpleDateFormat("EEEEE", Locale.ENGLISH).format(Date(day.dayStartMillis)),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = SlateGray
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .clip(CircleShape)
+                                            .background(if (day.isCompleted) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                            .then(
+                                                if (day.isToday && !day.isCompleted) {
+                                                    Modifier.border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                                } else Modifier
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            "${day.dayOfMonth}",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (day.isCompleted) Color.White else InkBlack
+                                        )
+                                    }
+                                }
                             }
+                        }
+                        if (weeklyProgress.days.isEmpty()) {
+                            Text("Loading workout history…", style = MaterialTheme.typography.bodySmall, color = SlateGray)
                         }
                     }
                 }
