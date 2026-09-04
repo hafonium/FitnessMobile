@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +42,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.homeworkout.domain.models.ActiveWorkoutSummary
 import com.example.homeworkout.domain.models.RecommendedPlan
 import com.example.homeworkout.domain.models.WeeklyGoalDay
 import com.example.homeworkout.domain.models.WeeklyGoalProgress
@@ -85,13 +88,15 @@ fun HomeScreen(
     onOpenCustomWorkout: () -> Unit,
     onOpenEditGoal: () -> Unit,
     onOpenWorkoutList: (WorkoutCategory) -> Unit,
-    onOpenOnboarding: () -> Unit
+    onOpenOnboarding: () -> Unit,
+    onResumeWorkout: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val challenge by viewModel.challenge.collectAsStateWithLifecycle()
     val weeklyGoalProgress by viewModel.weeklyGoalProgress.collectAsStateWithLifecycle()
     val streak by viewModel.streak.collectAsStateWithLifecycle()
+    val activeWorkout by viewModel.activeWorkout.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         LazyColumn(
@@ -116,6 +121,10 @@ fun HomeScreen(
                         onOpenOnboarding = onOpenOnboarding
                     )
                 }
+            }
+
+            activeWorkout?.let { active ->
+                item { ContinueWorkoutCard(active = active, onResume = { onResumeWorkout(active.planId) }) }
             }
 
             item {
@@ -344,6 +353,65 @@ private fun ChallengeCard(
             Text("START", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = BrandBlue)
             Box(modifier = Modifier.size(26.dp).clip(CircleShape).background(BrandBlue), contentAlignment = Alignment.Center) {
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color.White, modifier = Modifier.size(15.dp))
+            }
+        }
+    }
+}
+
+/**
+ * Shown above Body Focus whenever [HomeViewModel.activeWorkout] is non-null, so an in-progress or
+ * paused workout is never buried under the rest of the Home feed — one tap resumes it exactly
+ * where it was left off (see [com.example.homeworkout.domain.usecases.home.GetActiveWorkoutUseCase]).
+ */
+@Composable
+private fun ContinueWorkoutCard(active: ActiveWorkoutSummary, onResume: () -> Unit) {
+    val progress = if (active.totalExercises > 0) {
+        (active.completedExercises.toFloat() / active.totalExercises).coerceIn(0f, 1f)
+    } else 0f
+
+    AppCard(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onResume),
+        containerColor = BrandBlueTint
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            PlanThumbnail(planId = active.planId, coverImageUrl = active.coverImageUrl, size = 56.dp)
+            Column(modifier = Modifier.weight(1f).padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(
+                    "CONTINUE WORKOUT",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = BrandBlue
+                )
+                Text(
+                    active.planTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                val dayLabel = if (active.totalDays > 1) "Day ${active.dayNumber} · " else ""
+                Text(
+                    "$dayLabel${active.completedExercises}/${active.totalExercises} exercises done",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SlateGray
+                )
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(PillShape),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = Color.White
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable(onClick = onResume),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = "Resume workout", tint = Color.White)
             }
         }
     }

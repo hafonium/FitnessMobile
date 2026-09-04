@@ -45,6 +45,7 @@ import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
 import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
+import com.example.homeworkout.domain.usecases.home.GetActiveWorkoutUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.history.GetWorkoutHistoryUseCase
@@ -58,8 +59,11 @@ import com.example.homeworkout.domain.usecases.planselection.RecommendPlanUseCas
 import com.example.homeworkout.domain.usecases.planselection.SaveFitnessProfileUseCase
 import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.CompleteWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.GetResumableWorkoutUseCase
 import com.example.homeworkout.domain.usecases.player.ResolveNextPlanDayUseCase
 import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
+import com.example.homeworkout.domain.usecases.player.SaveAndExitWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.SaveWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
@@ -142,6 +146,10 @@ class App : Application(), ImageLoaderFactory {
         CompleteWorkoutSessionUseCase(workoutSessionRepository, evaluateBadgesUseCase)
     }
     val abandonWorkoutSessionUseCase by lazy { AbandonWorkoutSessionUseCase(workoutSessionRepository) }
+    val getResumableWorkoutUseCase by lazy { GetResumableWorkoutUseCase(workoutRepository, workoutSessionRepository) }
+    val getActiveWorkoutUseCase by lazy { GetActiveWorkoutUseCase(workoutSessionRepository, workoutRepository) }
+    val saveWorkoutProgressUseCase by lazy { SaveWorkoutProgressUseCase(workoutSessionRepository) }
+    val saveAndExitWorkoutSessionUseCase by lazy { SaveAndExitWorkoutSessionUseCase(workoutSessionRepository) }
     val getExercisesByIdsUseCase by lazy { GetExercisesByIdsUseCase(exerciseRepository) }
     val createCustomWorkoutPlanUseCase by lazy { CreateCustomWorkoutPlanUseCase(workoutRepository) }
     val deleteCustomWorkoutPlanUseCase by lazy { DeleteCustomWorkoutPlanUseCase(workoutRepository) }
