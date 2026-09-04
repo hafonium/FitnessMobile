@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BadgeMedallion
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
+import com.example.homeworkout.ui.components.BmiCard
 import com.example.homeworkout.ui.components.SectionHeader
 import com.example.homeworkout.ui.components.StatTile
 import com.example.homeworkout.ui.components.WeightLineChart
@@ -40,7 +41,6 @@ import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.theme.InkBlack
 import com.example.homeworkout.ui.theme.SlateGray
-import com.example.homeworkout.ui.theme.SuccessGreen
 import com.example.homeworkout.utils.ScreenWrapper
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -157,27 +157,23 @@ fun ReportScreen(
             }
 
             item {
-                AppCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenWeight)) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("BMI", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            AppButton(text = "Details", onClick = onOpenWeight, variant = AppButtonVariant.Tonal)
-                        }
-                        val bmi = weightDashboard?.bmi
-                        Text(bmi?.let { "%.1f".format(it) } ?: "—", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                        Text(
-                            weightDashboard?.bmiCategory?.label ?: "Add weight and height to calculate BMI",
-                            color = if (weightDashboard?.bmiCategory == com.example.homeworkout.domain.models.BmiCategory.HEALTHY) SuccessGreen else SlateGray,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        weightDashboard?.heightCm?.let {
-                            Text("Height ${formatDecimal(it)} cm", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                val weight = weightDashboard
+                if (weight == null) {
+                    AppCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(22.dp)) {
+                            Text("BMI", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.height(8.dp))
+                            Text("Loading BMI…", color = SlateGray)
                         }
                     }
+                } else {
+                    BmiCard(
+                        data = weight,
+                        actionLabel = "Details",
+                        onActionClick = onOpenWeight,
+                        modifier = Modifier.clickable(onClick = onOpenWeight),
+                        showBmiValue = true
+                    )
                 }
             }
 

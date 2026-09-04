@@ -27,7 +27,8 @@ fun WeightLineChart(
     showGrid: Boolean = true,
     showLatestTooltip: Boolean = false,
     lineColor: Color = BrandBlueLight,
-    gridColor: Color = Color(0xFF34363C)
+    gridColor: Color = Color(0xFF34363C),
+    pointFillColor: Color = Color.White
 ) {
     Canvas(modifier = modifier) {
         if (records.isEmpty()) return@Canvas
@@ -79,7 +80,7 @@ fun WeightLineChart(
         }
         records.indices.forEach { index ->
             val p = point(index)
-            drawCircle(color = Color(0xFF18191D), radius = 4.dp.toPx(), center = p)
+            drawCircle(color = pointFillColor, radius = 4.dp.toPx(), center = p)
             drawCircle(color = lineColor, radius = 4.dp.toPx(), center = p, style = Stroke(2.dp.toPx()))
         }
 
