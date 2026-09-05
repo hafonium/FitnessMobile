@@ -74,7 +74,8 @@ import kotlinx.coroutines.launch
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
     // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
     // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
-    version = 8,
+    // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -110,6 +111,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `encodedPolyline` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `activityType` TEXT NOT NULL DEFAULT 'RUNNING'")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `title` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `programId` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `trainingSessionId` TEXT")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_run_sessions_status_startedAt` ON `run_sessions` (`status`, `startedAt`)")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -125,7 +137,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_4_5, MIGRATION_8_9)
                 // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {

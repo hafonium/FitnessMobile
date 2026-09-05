@@ -76,6 +76,9 @@ import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
 import com.example.homeworkout.domain.usecases.running.ObserveRunningSessionUseCase
+import com.example.homeworkout.domain.usecases.running.DeleteRunUseCase
+import com.example.homeworkout.domain.usecases.running.GetRunDetailUseCase
+import com.example.homeworkout.domain.usecases.running.GetRunHistoryUseCase
 import com.example.homeworkout.domain.usecases.training.CompleteStructuredSessionUseCase
 import com.example.homeworkout.domain.usecases.training.EnrollTrainingProgramUseCase
 import com.example.homeworkout.domain.usecases.training.GetTrainingProgramUseCase
@@ -184,6 +187,9 @@ class App : Application(), ImageLoaderFactory {
     val sendChatMessageUseCase by lazy { SendChatMessageUseCase(chatRepository) }
     val deleteChatSessionUseCase by lazy { DeleteChatSessionUseCase(chatRepository) }
     val observeRunningSessionUseCase by lazy { ObserveRunningSessionUseCase(runningRepository) }
+    val getRunHistoryUseCase by lazy { GetRunHistoryUseCase(runningRepository) }
+    val getRunDetailUseCase by lazy { GetRunDetailUseCase(runningRepository) }
+    val deleteRunUseCase by lazy { DeleteRunUseCase(runningRepository) }
     val getTrainingProgramUseCase by lazy { GetTrainingProgramUseCase(structuredTrainingCatalogRepository) }
     val getTrainingProgressUseCase by lazy { GetTrainingProgressUseCase(structuredTrainingProgressRepository) }
     val enrollTrainingProgramUseCase by lazy { EnrollTrainingProgramUseCase(structuredTrainingProgressRepository) }

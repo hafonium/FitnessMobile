@@ -16,8 +16,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.homeworkout.R
 import com.example.homeworkout.domain.models.running.RunPoint
+import com.example.homeworkout.domain.models.running.RunActivityType
 import com.example.homeworkout.domain.models.running.RunSession
+import com.example.homeworkout.domain.models.running.RunSessionMetadata
 import com.example.homeworkout.domain.models.running.RunStatus
+import com.example.homeworkout.domain.running.EncodedPolylineCodec
 import com.example.homeworkout.domain.running.LocationFilter
 import com.example.homeworkout.domain.running.RunStateMachine
 import com.example.homeworkout.domain.running.RunningTelemetryCalculator
@@ -56,7 +59,8 @@ class RunningTrackingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIFICATION_ID, notification(session))
         when (intent?.action ?: ACTION_RECOVER) {
-            ACTION_START, ACTION_RECOVER -> scope.launch { startOrRecover() }
+            ACTION_START -> scope.launch { startOrRecover(intent?.toMetadata()) }
+            ACTION_RECOVER -> scope.launch { startOrRecover(null) }
             ACTION_PAUSE -> scope.launch { pause() }
             ACTION_RESUME -> scope.launch { resume() }
             ACTION_FINISH -> scope.launch { finish() }
@@ -66,9 +70,13 @@ class RunningTrackingService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private suspend fun startOrRecover() = mutex.withLock {
+    private suspend fun startOrRecover(metadata: RunSessionMetadata?) = mutex.withLock {
         val recovered = repository.getRecoverableSession()
-        val current = recovered ?: repository.createSession(System.currentTimeMillis(), SystemClock.elapsedRealtime())
+        val current = recovered ?: repository.createSession(
+            System.currentTimeMillis(),
+            SystemClock.elapsedRealtime(),
+            metadata ?: RunSessionMetadata()
+        )
         session = current
         if (current.status == RunStatus.PAUSED) {
             updateNotification()
@@ -200,8 +208,22 @@ class RunningTrackingService : Service() {
         val current = session ?: repository.getRecoverableSession() ?: return
         if (!stateMachine.transition(current.status, RunStatus.FINISHED)) return
         val duration = current.activeDurationAt(SystemClock.elapsedRealtime())
-        repository.updateState(current.id, RunStatus.FINISHED, duration, null, current.currentSegmentIndex, System.currentTimeMillis())
-        session = current.copy(status = RunStatus.FINISHED, activeDurationMillis = duration, runningStartedElapsedRealtimeMillis = null)
+        val encodedPolyline = EncodedPolylineCodec.encode(current.points)
+        repository.updateState(
+            current.id,
+            RunStatus.FINISHED,
+            duration,
+            null,
+            current.currentSegmentIndex,
+            System.currentTimeMillis(),
+            encodedPolyline = encodedPolyline
+        )
+        session = current.copy(
+            status = RunStatus.FINISHED,
+            activeDurationMillis = duration,
+            runningStartedElapsedRealtimeMillis = null,
+            encodedPolyline = encodedPolyline
+        )
         locationProvider.stop()
         ticker?.cancel()
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -245,7 +267,13 @@ class RunningTrackingService : Service() {
         val toggleLabel = if (isPaused) "Resume" else "Pause"
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_running)
-            .setContentTitle(if (isPaused) "Run paused" else "Running in progress")
+            .setContentTitle(
+                when {
+                    isPaused -> "Workout paused"
+                    current?.activityType == RunActivityType.WALKING -> "Walking in progress"
+                    else -> "Running in progress"
+                }
+            )
             .setContentText(content)
             .setContentIntent(openIntent)
             .setOngoing(true)
@@ -288,8 +316,15 @@ class RunningTrackingService : Service() {
         private const val CHANNEL_ID = "running_tracking"
         private const val NOTIFICATION_ID = 7301
 
-        fun send(context: Context, action: String) {
-            val intent = Intent(context, RunningTrackingService::class.java).setAction(action)
+        fun send(context: Context, action: String, metadata: RunSessionMetadata? = null) {
+            val intent = Intent(context, RunningTrackingService::class.java).setAction(action).apply {
+                metadata?.let {
+                    putExtra(EXTRA_ACTIVITY_TYPE, it.activityType.name)
+                    putExtra(EXTRA_TITLE, it.title)
+                    putExtra(EXTRA_PROGRAM_ID, it.programId)
+                    putExtra(EXTRA_TRAINING_SESSION_ID, it.trainingSessionId)
+                }
+            }
             if (action == ACTION_START || action == ACTION_RECOVER) ContextCompat.startForegroundService(context, intent)
             else context.startService(intent)
         }
@@ -298,5 +333,17 @@ class RunningTrackingService : Service() {
             val seconds = millis / 1_000
             return String.format(Locale.US, "%02d:%02d:%02d", seconds / 3_600, seconds / 60 % 60, seconds % 60)
         }
+
+        private const val EXTRA_ACTIVITY_TYPE = "activity_type"
+        private const val EXTRA_TITLE = "activity_title"
+        private const val EXTRA_PROGRAM_ID = "program_id"
+        private const val EXTRA_TRAINING_SESSION_ID = "training_session_id"
     }
+
+    private fun Intent.toMetadata() = RunSessionMetadata(
+        activityType = getStringExtra(EXTRA_ACTIVITY_TYPE)?.let(RunActivityType::valueOf) ?: RunActivityType.RUNNING,
+        title = getStringExtra(EXTRA_TITLE),
+        programId = getStringExtra(EXTRA_PROGRAM_ID),
+        trainingSessionId = getStringExtra(EXTRA_TRAINING_SESSION_ID)
+    )
 }

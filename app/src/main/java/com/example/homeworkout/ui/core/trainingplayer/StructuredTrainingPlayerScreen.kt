@@ -55,6 +55,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.running.service.RunningTrackingService
+import com.example.homeworkout.domain.models.running.RunActivityType
+import com.example.homeworkout.domain.models.running.RunSessionMetadata
+import com.example.homeworkout.domain.models.training.TrainingProgramKind
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.theme.BrandBlue
@@ -94,7 +97,17 @@ fun StructuredTrainingPlayerScreen(
         val serviceAction = if (state.tracking?.status == com.example.homeworkout.domain.models.running.RunStatus.PAUSED) {
             RunningTrackingService.ACTION_RESUME
         } else RunningTrackingService.ACTION_START
-        val started = runCatching { RunningTrackingService.send(context, serviceAction) }
+        val metadata = if (serviceAction == RunningTrackingService.ACTION_START) {
+            RunSessionMetadata(
+                activityType = if (state.program?.kind == TrainingProgramKind.WALKING) {
+                    RunActivityType.WALKING
+                } else RunActivityType.RUNNING,
+                title = state.session?.title,
+                programId = state.program?.id,
+                trainingSessionId = state.session?.id
+            )
+        } else null
+        val started = runCatching { RunningTrackingService.send(context, serviceAction, metadata) }
         if (started.isFailure) {
             message = "Could not start GPS tracking: ${started.exceptionOrNull()?.message}"
             return

@@ -361,3 +361,58 @@ Table chat_messages {
   Note: 'role labels who sent the message (user vs. the assistant) for local storage/UI only - independent of the current LLM providers own wire vocabulary, since requests carry a rolling context summary rather than replaying stored messages verbatim. See docs/chatbot-feature.md.'
 }
 
+Enum run_status {
+  RUNNING
+  PAUSED
+  FINISHED
+  ERROR
+}
+
+Enum run_activity_type {
+  RUNNING
+  WALKING
+}
+
+Table run_sessions {
+  id bigint [pk, increment]
+  started_at timestamp [not null]
+  finished_at timestamp
+  active_duration_millis bigint [not null]
+  running_started_elapsed_realtime_millis bigint
+  distance_meters decimal [not null]
+  calories decimal
+  weight_kg decimal
+  status run_status [not null]
+  current_segment_index int [not null]
+  error_message text
+  encoded_polyline text
+  activity_type run_activity_type [not null]
+  title varchar
+  program_id varchar
+  training_session_id varchar
+
+  indexes {
+    (status, started_at)
+  }
+
+  Note: 'GPS walking/running sessions. encoded_polyline stores newline-separated Google encoded polylines so pause/resume route segments remain distinct.'
+}
+
+Table run_points {
+  id bigint [pk, increment]
+  session_id bigint [not null, ref: > run_sessions.id]
+  latitude decimal [not null]
+  longitude decimal [not null]
+  altitude_meters decimal
+  accuracy_meters decimal [not null]
+  speed_mps decimal
+  elapsed_realtime_nanos bigint [not null]
+  sequence int [not null]
+  segment_index int [not null]
+
+  indexes {
+    session_id
+    (session_id, sequence) [unique]
+  }
+}
+

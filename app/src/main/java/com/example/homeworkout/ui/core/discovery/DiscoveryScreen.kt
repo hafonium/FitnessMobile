@@ -77,6 +77,7 @@ private val walkRunPlans = listOf(
 fun DiscoveryScreen(
     onOpenFoodScanner: () -> Unit,
     onOpenRunning: () -> Unit,
+    onOpenRunHistory: () -> Unit,
     onOpenTrainingPlan: (String) -> Unit
 ) {
     var selectedCategory by remember { mutableStateOf(DiscoveryCategory.WALK_RUN) }
@@ -94,7 +95,7 @@ fun DiscoveryScreen(
         )
 
         when (selectedCategory) {
-            DiscoveryCategory.WALK_RUN -> WalkRunContent(searchQuery, onOpenRunning, onOpenTrainingPlan)
+            DiscoveryCategory.WALK_RUN -> WalkRunContent(searchQuery, onOpenRunning, onOpenRunHistory, onOpenTrainingPlan)
             DiscoveryCategory.AT_HOME -> AtHomeContent(searchQuery, onOpenFoodScanner)
             DiscoveryCategory.GYM -> EmptyCategoryContent("Gym plans are coming soon.")
         }
@@ -162,6 +163,7 @@ private fun SearchInputBar(query: String, onQueryChange: (String) -> Unit, modif
 private fun WalkRunContent(
     searchQuery: String,
     onOpenRunning: () -> Unit,
+    onOpenRunHistory: () -> Unit,
     onOpenTrainingPlan: (String) -> Unit
 ) {
     val visiblePlans = remember(searchQuery) {
@@ -173,6 +175,14 @@ private fun WalkRunContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { FreeModeHeroCard(onStart = onOpenRunning) }
+        item {
+            AppButton(
+                text = "VIEW WALKING & RUNNING HISTORY",
+                onClick = onOpenRunHistory,
+                modifier = Modifier.fillMaxWidth(),
+                variant = AppButtonVariant.Outlined
+            )
+        }
         item {
             Text(
                 "Training plans",

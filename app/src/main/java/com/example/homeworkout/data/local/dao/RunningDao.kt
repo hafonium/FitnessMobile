@@ -17,6 +17,9 @@ interface RunningDao {
     @Query("SELECT * FROM run_sessions WHERE status IN ('RUNNING', 'PAUSED') ORDER BY id DESC LIMIT 1")
     suspend fun getRecoverableSession(): RunSessionEntity?
 
+    @Query("SELECT * FROM run_sessions WHERE status = 'FINISHED' ORDER BY startedAt DESC")
+    fun observeFinishedSessions(): Flow<List<RunSessionEntity>>
+
     @Query("SELECT * FROM run_points WHERE sessionId = :sessionId ORDER BY sequence")
     fun observePoints(sessionId: Long): Flow<List<RunPointEntity>>
 
@@ -29,6 +32,9 @@ interface RunningDao {
 
     @Query("SELECT * FROM run_sessions WHERE id = :id")
     suspend fun getSession(id: Long): RunSessionEntity?
+
+    @Query("DELETE FROM run_sessions WHERE id = :id")
+    suspend fun deleteSession(id: Long)
 
     @Transaction
     suspend fun appendPointAndProgress(

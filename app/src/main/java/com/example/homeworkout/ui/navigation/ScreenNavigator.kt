@@ -54,6 +54,10 @@ import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
 import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
 import com.example.homeworkout.ui.core.running.RunningViewModel
 import com.example.homeworkout.ui.core.running.WalkRunScreen
+import com.example.homeworkout.ui.core.running.detail.RunDetailScreen
+import com.example.homeworkout.ui.core.running.detail.RunDetailViewModel
+import com.example.homeworkout.ui.core.running.history.RunHistoryScreen
+import com.example.homeworkout.ui.core.running.history.RunHistoryViewModel
 import com.example.homeworkout.ui.core.trainingplan.StructuredTrainingPlanScreen
 import com.example.homeworkout.ui.core.trainingplan.StructuredTrainingPlanViewModel
 import com.example.homeworkout.ui.core.trainingplayer.StructuredTrainingPlayerScreen
@@ -196,6 +200,7 @@ fun ScreenNavigator() {
                 DiscoveryScreen(
                     onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) },
                     onOpenRunning = { navController.navigate(Screen.WalkRun.route) },
+                    onOpenRunHistory = { navController.navigate(Screen.RunHistory.route) },
                     onOpenTrainingPlan = { programId ->
                         val route = if (programId == "walking-weight-loss-20w") {
                             Screen.WalkingPlanDetail.createRoute(programId)
@@ -527,6 +532,30 @@ fun ScreenNavigator() {
                     initializer { RunningViewModel(appInstance.observeRunningSessionUseCase) }
                 })
                 WalkRunScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.RunHistory.route) {
+                val vm: RunHistoryViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        RunHistoryViewModel(appInstance.getRunHistoryUseCase, appInstance.deleteRunUseCase)
+                    }
+                })
+                RunHistoryScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenDetail = { runId -> navController.navigate(Screen.RunDetail.createRoute(runId)) }
+                )
+            }
+
+            composable(
+                route = Screen.RunDetail.route,
+                arguments = listOf(navArgument("runId") { type = NavType.LongType })
+            ) { entry ->
+                val runId = entry.arguments?.getLong("runId") ?: return@composable
+                val vm: RunDetailViewModel = viewModel(key = "run-detail-$runId", factory = viewModelFactory {
+                    initializer { RunDetailViewModel(runId, appInstance.getRunDetailUseCase) }
+                })
+                RunDetailScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(

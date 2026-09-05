@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.BuildConfig
 import com.example.homeworkout.domain.models.running.RunStatus
+import com.example.homeworkout.domain.models.running.RunSessionMetadata
 import com.example.homeworkout.running.service.RunningTrackingService
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.StatTile
@@ -90,7 +91,13 @@ fun WalkRunScreen(viewModel: RunningViewModel, onNavigateBack: () -> Unit) {
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-        runCatching { RunningTrackingService.send(context, RunningTrackingService.ACTION_START) }
+        runCatching {
+            RunningTrackingService.send(
+                context,
+                RunningTrackingService.ACTION_START,
+                RunSessionMetadata(title = "Free run")
+            )
+        }
             .onFailure { permissionMessage = "Could not start running tracker: ${it.message}" }
     }
 

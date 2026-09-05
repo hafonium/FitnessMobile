@@ -46,6 +46,10 @@ sealed class Screen(val route: String) {
     // Discovery tab
     object FoodScanner : Screen("food_scanner")
     object WalkRun : Screen("walk_run_screen")
+    object RunHistory : Screen("run_history")
+    object RunDetail : Screen("run_detail/{runId}") {
+        fun createRoute(runId: Long) = "run_detail/$runId"
+    }
     object RunningPlanDetail : Screen("running_plan_detail/{programId}") {
         fun createRoute(programId: String) = "running_plan_detail/$programId"
     }
