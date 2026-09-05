@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Settings
@@ -25,6 +26,7 @@ import com.example.homeworkout.ui.theme.HairlineGray
 import com.example.homeworkout.ui.theme.SettingsBlue
 import com.example.homeworkout.ui.theme.SettingsGreen
 import com.example.homeworkout.ui.theme.SettingsOrange
+import com.example.homeworkout.ui.theme.SettingsPurple
 import com.example.homeworkout.utils.ScreenWrapper
 
 /** Settings tab landing screen. */
@@ -33,7 +35,8 @@ fun SettingsScreen(
     onOpenPlanSetup: () -> Unit,
     onOpenWorkoutSettings: () -> Unit,
     onOpenGeneralSettings: () -> Unit,
-    onOpenVoiceOptions: () -> Unit
+    onOpenVoiceOptions: () -> Unit,
+    onOpenCloudBackup: () -> Unit
 ) {
     ScreenWrapper {
         LazyColumn(
@@ -53,6 +56,8 @@ fun SettingsScreen(
                         SettingsNavRow(label = "General Settings", onClick = onOpenGeneralSettings, icon = Icons.Default.Settings, iconTint = SettingsBlue)
                         HorizontalDivider(color = HairlineGray)
                         SettingsNavRow(label = "Voice Options (TTS)", onClick = onOpenVoiceOptions, icon = Icons.Default.Mic, iconTint = SettingsOrange)
+                        HorizontalDivider(color = HairlineGray)
+                        SettingsNavRow(label = "Data & Cloud Backup", onClick = onOpenCloudBackup, icon = Icons.Default.CloudUpload, iconTint = SettingsPurple)
                     }
                 }
             }

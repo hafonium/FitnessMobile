@@ -83,6 +83,8 @@ import com.example.homeworkout.ui.core.player.WorkoutPlayerScreen
 import com.example.homeworkout.ui.core.player.WorkoutPlayerViewModel
 import com.example.homeworkout.ui.core.report.ReportScreen
 import com.example.homeworkout.ui.core.report.ReportViewModel
+import com.example.homeworkout.ui.core.settings.CloudBackupScreen
+import com.example.homeworkout.ui.core.settings.CloudBackupViewModel
 import com.example.homeworkout.ui.core.settings.GeneralSettingsScreen
 import com.example.homeworkout.ui.core.settings.SettingsScreen
 import com.example.homeworkout.ui.core.settings.SettingsViewModel
@@ -224,7 +226,8 @@ fun ScreenNavigator() {
                     onOpenPlanSetup = { navController.navigate(Screen.Onboarding.route) },
                     onOpenWorkoutSettings = { navController.navigate(Screen.SettingsWorkout.route) },
                     onOpenGeneralSettings = { navController.navigate(Screen.SettingsGeneral.route) },
-                    onOpenVoiceOptions = { navController.navigate(Screen.SettingsVoice.route) }
+                    onOpenVoiceOptions = { navController.navigate(Screen.SettingsVoice.route) },
+                    onOpenCloudBackup = { navController.navigate(Screen.SettingsCloudBackup.route) }
                 )
             }
 
@@ -792,6 +795,12 @@ fun ScreenNavigator() {
                     }
                 })
                 VoiceOptionsScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+            composable(Screen.SettingsCloudBackup.route) {
+                val vm: CloudBackupViewModel = viewModel(factory = viewModelFactory {
+                    initializer { CloudBackupViewModel(appInstance.driveBackupManager) }
+                })
+                CloudBackupScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
         }
     }

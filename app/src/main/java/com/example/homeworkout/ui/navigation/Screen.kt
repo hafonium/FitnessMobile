@@ -77,6 +77,7 @@ sealed class Screen(val route: String) {
     object SettingsWorkout : Screen("settings_workout")
     object SettingsGeneral : Screen("settings_general")
     object SettingsVoice : Screen("settings_voice")
+    object SettingsCloudBackup : Screen("settings_cloud_backup")
 
     companion object {
         // NOTE: must not eagerly reference the `object` subclasses here — the companion

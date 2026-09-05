@@ -80,6 +80,17 @@ android {
         compose = true
         buildConfig = true
     }
+
+    // google-api-client-android pulls in google-auth-library-{oauth2-http,credentials}, which both
+    // ship the same META-INF metadata files - without these excludes, packaging the APK fails with
+    // "2 files found with path 'META-INF/INDEX.LIST'" (and the same for DEPENDENCIES). None of these
+    // are needed at runtime.
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -148,6 +159,17 @@ dependencies {
     val media3Version = "1.4.1"
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-ui:$media3Version")
+
+    // Google Sign-In + Drive API - manual "Back Up to Drive" / "Restore from Drive" in Settings
+    // (docs: see DriveBackupManager). Scoped to DriveScopes.DRIVE_APPDATA only, so the app can
+    // only see/write its own hidden appDataFolder file, never the user's visible Drive contents.
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.api-client:google-api-client-android:2.6.0") {
+        exclude(group = "org.apache.httpcomponents")
+    }
+    implementation("com.google.apis:google-api-services-drive:v3-rev20240509-2.0.0") {
+        exclude(group = "org.apache.httpcomponents")
+    }
 }
 
 // The Markdown renderer above was published against a newer Kotlin release than this project
