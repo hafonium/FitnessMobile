@@ -17,6 +17,8 @@ val localProperties = Properties().apply {
     }
 }
 val groqApiKey: String = localProperties.getProperty("GROQ_API_KEY", "")
+val stadiaMapsApiKey: String = providers.environmentVariable("STADIA_MAPS_API_KEY").orNull
+    ?: localProperties.getProperty("STADIA_MAPS_API_KEY", "")
 
 android {
     namespace = "com.example.homeworkout"
@@ -38,6 +40,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GROQ_API_KEY", "\"$groqApiKey\"")
+        val escapedStadiaMapsApiKey = stadiaMapsApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
+        buildConfigField("String", "STADIA_MAPS_API_KEY", "\"$escapedStadiaMapsApiKey\"")
         val localProperties = Properties().apply {
             val localPropertiesFile = rootProject.file("local.properties")
             if (localPropertiesFile.exists()) {
@@ -98,6 +102,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     testImplementation(libs.junit)
+    testImplementation("org.json:json:20240303")
 //    androidTestImplementation(platform(libs.androidx.compose.bom))
 //    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 //    androidTestImplementation(libs.androidx.espresso.core)
@@ -129,6 +134,8 @@ dependencies {
     // interop. See docs/chatbot-feature.md.
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.45.0")
 
+    // OpenGL is the widest-compatible stable MapLibre backend for minSdk 24 devices.
+    implementation("org.maplibre.gl:android-sdk-opengl:13.4.1")
     // The AI Video Form Check feature (docs/form-check-feature.md) calls Gemini's REST API
     // directly with the OkHttp client above (see data/remote/gemini/GeminiFormCheckApi) rather
     // than the com.google.ai.client.generativeai SDK: that SDK 404'd on this API surface every

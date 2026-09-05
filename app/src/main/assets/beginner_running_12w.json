@@ -1,0 +1,65 @@
+{
+  "id":"beginner-running-12w","kind":"RUNNING","title":"BEGINNER RUNNING PROGRAM","subtitle":"From walking to 30–40 minutes of continuous running","durationWeeks":12,"sessionsPerWeek":"3–4 Sessions/Wk","level":"Beginner",
+  "goal":"Progress safely from walking and short jogging intervals to running continuously for approximately 30–40 minutes.",
+  "startingAbility":"You should be able to comfortably walk for approximately 30 minutes before starting this program.",
+  "intensities":[
+    {"id":"WALK","name":"Walk","rpe":"2–3 / 10","description":"Comfortable walking.","color":"#6B7280"},
+    {"id":"EASY_RUN","name":"Easy Run","rpe":"3–4 / 10","description":"Very relaxed jogging. Able to speak in full sentences.","color":"#10B981"},
+    {"id":"STEADY_RUN","name":"Steady Run","rpe":"5–6 / 10","description":"Comfortably challenging effort.","color":"#0057FF"},
+    {"id":"MODERATE","name":"Moderate","rpe":"6 / 10","description":"Controlled faster running without racing.","color":"#F59E0B"}
+  ],
+  "weeks":[
+    {"number":1,"title":"First Running Steps","durationMin":102,"goal":"Introduce running without excessive fatigue.","coachTip":"Run slower than you think you need to.","sessions":[{"copies":3,"title":"Run / Walk Intervals","type":"INTERVAL","durationMin":34,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":8,"group":[{"label":"Easy Run","seconds":60,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}]},
+    {"number":2,"title":"Build Running Time","durationMin":114,"goal":"Become comfortable switching between running and walking.","sessions":[{"copies":3,"title":"Two-Minute Run Intervals","type":"INTERVAL","durationMin":38,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":7,"group":[{"label":"Easy Run","seconds":120,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}]},
+    {"number":3,"title":"Longer Running Intervals","durationMin":120,"coachTip":"Focus on relaxed breathing and short, comfortable strides.","sessions":[{"copies":3,"title":"Three-Minute Run Intervals","type":"INTERVAL","durationMin":40,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":6,"group":[{"label":"Easy Run","seconds":180,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}]},
+    {"number":4,"title":"Five-Minute Runs","durationMin":135,"milestone":"Run continuously for 5 minutes.","sessions":[{"copies":3,"title":"Five-Minute Run Intervals","type":"INTERVAL","durationMin":45,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":5,"group":[{"label":"Easy Run","seconds":300,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}]},
+    {"number":5,"title":"Increase Continuous Running","durationMin":115,"milestone":"Complete your first continuous 10-minute run.","sessions":[
+      {"title":"Six-Minute Intervals","type":"INTERVAL","durationMin":42,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":4,"group":[{"label":"Easy Run","seconds":360,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Eight-Minute Intervals","type":"INTERVAL","durationMin":40,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":3,"group":[{"label":"Easy Run","seconds":480,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"First Ten-Minute Runs","type":"INTERVAL","durationMin":33,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Walk","seconds":180,"intensity":"WALK"},{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}
+    ]},
+    {"number":6,"title":"Build Endurance","durationMin":112,"goal":"Begin feeling comfortable during longer uninterrupted runs.","sessions":[
+      {"title":"Endurance Intervals","type":"INTERVAL","durationMin":39,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"},{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"},{"label":"Easy Run","seconds":300,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Twelve-Minute Runs","type":"INTERVAL","durationMin":37,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":720,"intensity":"EASY_RUN"},{"label":"Walk","seconds":180,"intensity":"WALK"},{"label":"Easy Run","seconds":720,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Fifteen-Minute Run","type":"INTERVAL","durationMin":36,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":900,"intensity":"EASY_RUN"},{"label":"Walk","seconds":180,"intensity":"WALK"},{"label":"Easy Run","seconds":480,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}
+    ]},
+    {"number":7,"title":"Twenty-Minute Run","durationMin":106,"durationMax":111,"milestone":"Run continuously for 20 minutes.","sessions":[
+      {"title":"Fifteen Plus Ten","type":"INTERVAL","durationMin":37,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":900,"intensity":"EASY_RUN"},{"label":"Walk","seconds":120,"intensity":"WALK"},{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Eighteen-Minute Run","type":"INTERVAL","durationMin":39,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":1080,"intensity":"EASY_RUN"},{"label":"Walk","seconds":180,"intensity":"WALK"},{"label":"Easy Run","seconds":480,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Twenty-Minute Continuous Run","type":"EASY_RUN","durationMin":30,"durationMax":35,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":1200,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}
+    ]},
+    {"number":8,"title":"Build the Running Base","durationMin":99,"goal":"Transition from run/walk training toward continuous running.","sessions":[
+      {"title":"Twenty-Minute Easy Run","type":"EASY_RUN","durationMin":30,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":1200,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Running Base Intervals","type":"INTERVAL","durationMin":34,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"repeat":4,"group":[{"label":"Easy Run","seconds":300,"intensity":"EASY_RUN"},{"label":"Walk","seconds":60,"intensity":"WALK"}]},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]},
+      {"title":"Twenty-Five-Minute Run","type":"EASY_RUN","durationMin":35,"steps":[{"label":"Warm-up Walk","seconds":300,"intensity":"WALK"},{"label":"Easy Run","seconds":1500,"intensity":"EASY_RUN"},{"label":"Cool-down Walk","seconds":300,"intensity":"WALK"}]}
+    ]},
+    {"number":9,"title":"Thirty-Minute Goal","durationMin":83,"milestone":"Run continuously for 30 minutes.","sessions":[
+      {"title":"Easy Run","type":"EASY_RUN","durationMin":25,"steps":[{"label":"Easy Run","seconds":1500,"intensity":"EASY_RUN"}]},
+      {"title":"Faster Finish Intervals","type":"INTERVAL","durationMin":28,"steps":[{"label":"Easy Run","seconds":1200,"intensity":"EASY_RUN"},{"repeat":4,"group":[{"label":"Slightly Faster","seconds":30,"intensity":"MODERATE"},{"label":"Easy Run","seconds":90,"intensity":"EASY_RUN"}]}]},
+      {"title":"Thirty-Minute Continuous Run","type":"EASY_RUN","durationMin":30,"steps":[{"label":"Easy Run","seconds":1800,"intensity":"EASY_RUN"}]}
+    ]},
+    {"number":10,"title":"Build Strength and Endurance","durationMin":92,"goal":"Introduce controlled changes in running intensity.","sessions":[
+      {"title":"Easy Run","type":"EASY_RUN","durationMin":25,"steps":[{"label":"Easy Run","seconds":1500,"intensity":"EASY_RUN"}]},
+      {"title":"Steady Intervals","type":"INTERVAL","durationMin":35,"steps":[{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"repeat":4,"group":[{"label":"Steady Run","seconds":180,"intensity":"STEADY_RUN"},{"label":"Easy Run","seconds":120,"intensity":"EASY_RUN"}]},{"label":"Easy Run","seconds":300,"intensity":"EASY_RUN"}]},
+      {"title":"Continuous Easy Run","type":"EASY_RUN","durationMin":32,"steps":[{"label":"Easy Run","seconds":1920,"intensity":"EASY_RUN"}]}
+    ]},
+    {"number":11,"title":"Stronger Runner","durationMin":95,"durationMax":115,"note":"Long-run target: 35 minutes continuous.","sessions":[
+      {"title":"Easy Run","type":"EASY_RUN","durationMin":30,"steps":[{"label":"Easy Run","seconds":1800,"intensity":"EASY_RUN"}]},
+      {"title":"Recovery Run or Run/Walk","type":"EASY_RUN","durationMin":25,"steps":[{"label":"Recovery Run","seconds":1500,"intensity":"EASY_RUN"}]},
+      {"title":"Steady Intervals","type":"INTERVAL","durationMin":40,"steps":[{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"repeat":5,"group":[{"label":"Steady Run","seconds":180,"intensity":"STEADY_RUN"},{"label":"Easy Run","seconds":120,"intensity":"EASY_RUN"}]},{"label":"Cool-down","seconds":300,"intensity":"EASY_RUN"}]},
+      {"title":"Very Easy Run","type":"EASY_RUN","durationMin":20,"optional":true,"steps":[{"label":"Very Easy Run","seconds":1200,"intensity":"EASY_RUN"}]}
+    ]},
+    {"number":12,"title":"Graduation Week","durationMin":100,"durationMax":110,"milestone":"Complete a continuous 35–40 minute run.","sessions":[
+      {"title":"Easy Run","type":"EASY_RUN","durationMin":30,"steps":[{"label":"Easy Run","seconds":1800,"intensity":"EASY_RUN"}]},
+      {"title":"Moderate Run","type":"MODERATE","durationMin":25,"steps":[{"label":"Easy Run","seconds":600,"intensity":"EASY_RUN"},{"label":"Moderate Run","seconds":600,"intensity":"MODERATE"},{"label":"Easy Run","seconds":300,"intensity":"EASY_RUN"}]},
+      {"title":"Graduation Run","type":"EASY_RUN","durationMin":45,"durationMax":55,"steps":[{"label":"Walking Warm-up","seconds":300,"intensity":"WALK"},{"label":"Continuous Easy Run","seconds":2100,"intensity":"EASY_RUN"},{"label":"Walking Cool-down","seconds":300,"intensity":"WALK"}]}
+    ]}
+  ],
+  "maintenance":{"title":"After Week 12","guidance":"Increase weekly volume gradually rather than increasing both distance and intensity simultaneously.","days":["Day 1: Easy Run (30–40 min)","Day 2: Recovery or Rest","Day 3: Quality Run (Intervals, Tempo, or Hills)","Day 4: Rest","Day 5: Easy Run (30–40 min)","Day 6: Long Run (40–60 min)","Day 7: Rest or Walking"]},
+  "rules":[
+    {"title":"Run Easy","description":"Most beginner runs should feel comfortable."},
+    {"title":"Rest Between Runs","description":"Avoid running all sessions on consecutive days, for example use Mon/Wed/Sat."},
+    {"title":"Pain Rule","description":"Stop exercising for sharp or worsening pain, chest pain, or severe dizziness."},
+    {"title":"Repeat Week","description":"If a week feels too difficult, repeat it without deleting previous GPS history."}
+  ]
+}

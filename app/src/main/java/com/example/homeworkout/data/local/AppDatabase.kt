@@ -14,6 +14,8 @@ import com.example.homeworkout.data.local.dao.WeightLogDao
 import com.example.homeworkout.data.local.dao.FormCheckResultDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
+import com.example.homeworkout.data.local.dao.RunningDao
+import com.example.homeworkout.data.local.dao.StructuredTrainingDao
 import com.example.homeworkout.data.local.entities.ChatMessageEntity
 import com.example.homeworkout.data.local.entities.ChatSessionEntity
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
@@ -33,6 +35,10 @@ import com.example.homeworkout.data.local.entities.WorkoutPlanEntity
 import com.example.homeworkout.data.local.entities.WorkoutPlanExerciseEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
+import com.example.homeworkout.data.local.entities.RunPointEntity
+import com.example.homeworkout.data.local.entities.RunSessionEntity
+import com.example.homeworkout.data.local.entities.StructuredProgramProgressEntity
+import com.example.homeworkout.data.local.entities.StructuredSessionProgressEntity
 import android.util.Log
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import kotlinx.coroutines.CoroutineScope
@@ -62,6 +68,16 @@ import kotlinx.coroutines.launch
         UserBadgeEntity::class,
         ChatSessionEntity::class,
         ChatMessageEntity::class,
+        RunSessionEntity::class,
+        RunPointEntity::class,
+        StructuredProgramProgressEntity::class,
+        StructuredSessionProgressEntity::class
+    ],
+    // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
+    // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
+    // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
+    // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
+    version = 9,
         FormCheckResultEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
@@ -81,6 +97,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun weightLogDao(): WeightLogDao
     abstract fun badgeDao(): BadgeDao
     abstract fun chatDao(): ChatDao
+    abstract fun runningDao(): RunningDao
+    abstract fun structuredTrainingDao(): StructuredTrainingDao
     abstract fun formCheckResultDao(): FormCheckResultDao
 
     companion object {
@@ -105,6 +123,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `encodedPolyline` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `activityType` TEXT NOT NULL DEFAULT 'RUNNING'")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `title` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `programId` TEXT")
+                db.execSQL("ALTER TABLE `run_sessions` ADD COLUMN `trainingSessionId` TEXT")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_run_sessions_status_startedAt` ON `run_sessions` (`status`, `startedAt`)")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -120,7 +149,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_4_5, MIGRATION_8_9)
                 // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {

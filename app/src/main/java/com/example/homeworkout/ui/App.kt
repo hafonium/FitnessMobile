@@ -8,6 +8,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.homeworkout.BuildConfig
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
+import com.example.homeworkout.data.catalog.StructuredTrainingCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.remote.groq.GroqClient
 import com.example.homeworkout.data.remote.gemini.GeminiFormCheckApi
@@ -21,6 +22,8 @@ import com.example.homeworkout.data.repositories.FormCheckRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
+import com.example.homeworkout.data.repositories.RunningRepositoryImpl
+import com.example.homeworkout.data.repositories.StructuredTrainingProgressRepositoryImpl
 import com.example.homeworkout.domain.repositories.ChatRepository
 import com.example.homeworkout.data.repositories.WeightRepositoryImpl
 import com.example.homeworkout.domain.repositories.ExerciseRepository
@@ -33,6 +36,9 @@ import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
 import com.example.homeworkout.domain.repositories.WorkoutSessionRepository
 import com.example.homeworkout.domain.repositories.WeightRepository
+import com.example.homeworkout.domain.repositories.RunningRepository
+import com.example.homeworkout.domain.repositories.StructuredTrainingCatalogRepository
+import com.example.homeworkout.domain.repositories.StructuredTrainingProgressRepository
 import com.example.homeworkout.domain.usecases.customworkout.CreateCustomWorkoutPlanUseCase
 import com.example.homeworkout.domain.usecases.badges.EvaluateBadgesUseCase
 import com.example.homeworkout.domain.usecases.chat.CreateChatSessionUseCase
@@ -79,6 +85,16 @@ import com.example.homeworkout.domain.usecases.report.UpdateHeightUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.settings.UpdateSettingsUseCase
+import com.example.homeworkout.domain.usecases.running.ObserveRunningSessionUseCase
+import com.example.homeworkout.domain.usecases.running.DeleteRunUseCase
+import com.example.homeworkout.domain.usecases.running.GetRunDetailUseCase
+import com.example.homeworkout.domain.usecases.running.GetRunHistoryUseCase
+import com.example.homeworkout.domain.usecases.training.CompleteStructuredSessionUseCase
+import com.example.homeworkout.domain.usecases.training.EnrollTrainingProgramUseCase
+import com.example.homeworkout.domain.usecases.training.GetTrainingProgramUseCase
+import com.example.homeworkout.domain.usecases.training.GetTrainingProgressUseCase
+import com.example.homeworkout.domain.usecases.training.RepeatStructuredWeekUseCase
+import com.example.homeworkout.domain.usecases.training.StartStructuredSessionUseCase
 import com.example.homeworkout.ui.core.chat.ChatPanelController
 import com.example.homeworkout.ui.services.ReminderScheduler
 import com.example.homeworkout.ui.services.TickSoundPlayer
@@ -86,9 +102,15 @@ import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import org.maplibre.android.MapLibre
 import kotlinx.coroutines.launch
 
 class App : Application(), ImageLoaderFactory {
+
+    override fun onCreate() {
+        super.onCreate()
+        MapLibre.getInstance(this)
+    }
 
     // Lives for the whole process — used once to seed the database on first launch.
     val applicationScope: CoroutineScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
@@ -118,6 +140,14 @@ class App : Application(), ImageLoaderFactory {
     val foodAnalysisRepository: FoodAnalysisRepository by lazy {
         FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
     }
+    val runningRepository: RunningRepository by lazy {
+        RunningRepositoryImpl(database.runningDao(), database.weightLogDao(), database.userDao())
+    }
+    val structuredTrainingCatalogRepository: StructuredTrainingCatalogRepository by lazy {
+        StructuredTrainingCatalogSource(this)
+    }
+    val structuredTrainingProgressRepository: StructuredTrainingProgressRepository by lazy {
+        StructuredTrainingProgressRepositoryImpl(database.structuredTrainingDao())
     val formCheckRepository: FormCheckRepository by lazy {
         val geminiFormCheckApi = GeminiFormCheckApi(BuildConfig.GEMINI_API_KEY)
         // Debug-only, one-time diagnostic (see GeminiFormCheckApi.logAvailableModels KDoc): logs
@@ -189,6 +219,18 @@ class App : Application(), ImageLoaderFactory {
     val createChatSessionUseCase by lazy { CreateChatSessionUseCase(chatRepository) }
     val sendChatMessageUseCase by lazy { SendChatMessageUseCase(chatRepository) }
     val deleteChatSessionUseCase by lazy { DeleteChatSessionUseCase(chatRepository) }
+    val observeRunningSessionUseCase by lazy { ObserveRunningSessionUseCase(runningRepository) }
+    val getRunHistoryUseCase by lazy { GetRunHistoryUseCase(runningRepository) }
+    val getRunDetailUseCase by lazy { GetRunDetailUseCase(runningRepository) }
+    val deleteRunUseCase by lazy { DeleteRunUseCase(runningRepository) }
+    val getTrainingProgramUseCase by lazy { GetTrainingProgramUseCase(structuredTrainingCatalogRepository) }
+    val getTrainingProgressUseCase by lazy { GetTrainingProgressUseCase(structuredTrainingProgressRepository) }
+    val enrollTrainingProgramUseCase by lazy { EnrollTrainingProgramUseCase(structuredTrainingProgressRepository) }
+    val startStructuredSessionUseCase by lazy { StartStructuredSessionUseCase(structuredTrainingProgressRepository) }
+    val completeStructuredSessionUseCase by lazy {
+        CompleteStructuredSessionUseCase(structuredTrainingProgressRepository, structuredTrainingCatalogRepository)
+    }
+    val repeatStructuredWeekUseCase by lazy { RepeatStructuredWeekUseCase(structuredTrainingProgressRepository) }
 
     // Lets every AsyncImage/SubcomposeAsyncImage in the app decode animated exercise GIFs
     // (gif_url) without passing an ImageLoader explicitly at each call site.
