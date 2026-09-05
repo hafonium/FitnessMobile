@@ -31,11 +31,12 @@ class RunDetailViewModel(
             } else {
                 val decoded = runCatching {
                     session.encodedPolyline?.takeIf { it.isNotBlank() }?.let(EncodedPolylineCodec::decode)
-                }.getOrNull()
+                }.getOrNull()?.filter { it.isNotEmpty() }
                 val fallback = session.points.groupBy { it.segmentIndex }.toSortedMap().values.map { points ->
                     points.map { RunCoordinate(it.latitude, it.longitude) }
-                }
-                RunDetailUiState.Success(session, decoded ?: fallback)
+                }.filter { it.isNotEmpty() }
+                val routeSegments = if (!decoded.isNullOrEmpty()) decoded else fallback
+                RunDetailUiState.Success(session, routeSegments)
             }
         }
     }
