@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -138,6 +139,11 @@ fun StructuredTrainingPlayerScreen(
         }
     }
 
+    // Hardware/gesture back bypasses the disabled close-X/DONE button above, so it needs its own
+    // guard: block it while the FINISHED write is in flight, or it clears this ViewModel (cancelling
+    // viewModelScope) before persistCompletion's write lands.
+    BackHandler(enabled = state.status == IntervalPlayerStatus.FINISHED && state.savingCompletion) {}
+
     if (state.isLoading) {
         Box(Modifier.fillMaxSize().background(PageBackground), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = BrandBlue)
@@ -150,7 +156,13 @@ fun StructuredTrainingPlayerScreen(
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onClose, modifier = Modifier.background(CloudGray, CircleShape)) {
+            // Disabled while the FINISHED write is in flight: closing here clears this screen's
+            // ViewModel, which would cancel that write before it lands (see persistCompletion).
+            IconButton(
+                onClick = onClose,
+                enabled = !state.savingCompletion,
+                modifier = Modifier.background(CloudGray, CircleShape)
+            ) {
                 Icon(Icons.Default.Close, contentDescription = "Close workout", tint = InkBlack)
             }
             Spacer(Modifier.width(12.dp))
@@ -212,7 +224,12 @@ fun StructuredTrainingPlayerScreen(
                 }, Modifier.weight(1f))
                 AppButton("FINISH", viewModel::finish, Modifier.weight(1f), variant = AppButtonVariant.Outlined)
             }
-            IntervalPlayerStatus.FINISHED -> AppButton("DONE", onClose, Modifier.fillMaxWidth())
+            IntervalPlayerStatus.FINISHED -> AppButton(
+                if (state.savingCompletion) "SAVING..." else "DONE",
+                onClose,
+                Modifier.fillMaxWidth(),
+                enabled = !state.savingCompletion
+            )
         }
 
         if (message != null) {

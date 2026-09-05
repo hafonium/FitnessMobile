@@ -177,7 +177,7 @@ fun ChatOverlay() {
 @Composable
 private fun PilotAvatar(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(R.drawable.chat_pilot_avatar),
+        painter = painterResource(R.drawable.chatbot_avatar),
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = modifier
