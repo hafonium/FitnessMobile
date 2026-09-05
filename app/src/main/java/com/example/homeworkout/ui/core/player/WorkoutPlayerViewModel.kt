@@ -4,11 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.BadgeProgress
+import com.example.homeworkout.domain.models.ExerciseDetail
 import com.example.homeworkout.domain.models.SettingsPreferences
+import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.domain.usecases.badges.MarkBadgesSeenUseCase
+import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.player.AbandonWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.player.CompleteWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.GetResumableWorkoutUseCase
 import com.example.homeworkout.domain.usecases.player.RestartWorkoutDayUseCase
+import com.example.homeworkout.domain.usecases.player.SaveAndExitWorkoutSessionUseCase
+import com.example.homeworkout.domain.usecases.player.SaveWorkoutProgressUseCase
 import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUseCase
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
@@ -28,10 +34,26 @@ sealed class PlayerUiState {
         val planDayId: Long,
         val dayNumber: Int,
         val totalDays: Int,
-        val exercises: List<PlanExerciseSummary>
+        val exercises: List<PlanExerciseSummary>,
+        val initialPhase: WorkoutPhase = WorkoutPhase.PREP,
+        val initialOrderIndex: Int = 0,
+        val initialRemainingSec: Int? = null
     ) : PlayerUiState()
     /** The plan couldn't be found, or the resolved day has no exercises. */
     object Empty : PlayerUiState()
+}
+
+/**
+ * The exercise-info bottom sheet's state, shown inline over the player (see
+ * [com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoContent]) instead of navigating to a
+ * separate screen, so the running timer, ticking sounds and coach voice never get torn down just
+ * to check an exercise's form mid-set.
+ */
+sealed class ExerciseInfoSheetState {
+    object Hidden : ExerciseInfoSheetState()
+    object Loading : ExerciseInfoSheetState()
+    data class Loaded(val detail: ExerciseDetail) : ExerciseInfoSheetState()
+    data class Error(val message: String) : ExerciseInfoSheetState()
 }
 
 /**
@@ -44,11 +66,16 @@ sealed class PlayerUiState {
 class WorkoutPlayerViewModel(
     private val planId: Long,
     private val requestedPlanDayId: Long?,
+    private val resume: Boolean,
     private val startWorkoutSessionUseCase: StartWorkoutSessionUseCase,
     private val startSpecificWorkoutDayUseCase: StartSpecificWorkoutDayUseCase,
     private val restartWorkoutDayUseCase: RestartWorkoutDayUseCase,
     private val completeWorkoutSessionUseCase: CompleteWorkoutSessionUseCase,
     private val abandonWorkoutSessionUseCase: AbandonWorkoutSessionUseCase,
+    private val getResumableWorkoutUseCase: GetResumableWorkoutUseCase,
+    private val saveWorkoutProgressUseCase: SaveWorkoutProgressUseCase,
+    private val saveAndExitWorkoutSessionUseCase: SaveAndExitWorkoutSessionUseCase,
+    private val getExerciseDetailUseCase: GetExerciseDetailUseCase,
     private val markBadgesSeenUseCase: MarkBadgesSeenUseCase,
     private val getSettingsUseCase: GetSettingsUseCase,
     private val ttsService: TtsService,
@@ -60,6 +87,9 @@ class WorkoutPlayerViewModel(
 
     private val _newlyUnlockedBadges = MutableStateFlow<List<BadgeProgress>>(emptyList())
     val newlyUnlockedBadges: StateFlow<List<BadgeProgress>> = _newlyUnlockedBadges.asStateFlow()
+
+    private val _exerciseInfoSheet = MutableStateFlow<ExerciseInfoSheetState>(ExerciseInfoSheetState.Hidden)
+    val exerciseInfoSheet: StateFlow<ExerciseInfoSheetState> = _exerciseInfoSheet.asStateFlow()
 
     private val settings: StateFlow<SettingsPreferences> = getSettingsUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsPreferences())
@@ -96,6 +126,23 @@ class WorkoutPlayerViewModel(
     }
 
     private suspend fun beginDay() {
+        if (resume) {
+            val resumed = getResumableWorkoutUseCase(planId)
+            if (resumed != null) {
+                _uiState.value = PlayerUiState.Ready(
+                    sessionId = resumed.sessionId,
+                    planDayId = resumed.day.planDayId,
+                    dayNumber = resumed.day.dayNumber,
+                    totalDays = resumed.totalDays,
+                    exercises = resumed.day.exercises,
+                    initialPhase = resumed.phase,
+                    initialOrderIndex = resumed.orderIndex,
+                    initialRemainingSec = resumed.remainingSec
+                )
+                return
+            }
+        }
+
         val dayId = requestedPlanDayId
         val start = if (dayId != null) {
             startSpecificWorkoutDayUseCase(planId = planId, planDayId = dayId)
@@ -137,7 +184,45 @@ class WorkoutPlayerViewModel(
         viewModelScope.launch { markBadgesSeenUseCase(listOf(badgeId)) }
     }
 
-    fun abandonSession(sessionId: Long) {
-        viewModelScope.launch { abandonWorkoutSessionUseCase(sessionId) }
+    /**
+     * "Discard" from the mid-workout guard dialog. Takes [onDone] rather than being pure
+     * fire-and-forget: the caller navigates away right after this, which would otherwise clear
+     * this ViewModel (cancelling [viewModelScope]) before the write ever ran.
+     */
+    fun abandonSession(sessionId: Long, onDone: () -> Unit) {
+        viewModelScope.launch {
+            abandonWorkoutSessionUseCase(sessionId)
+            onDone()
+        }
+    }
+
+    /** Auto-save point: exercise completed, phase changed, or the user paused. */
+    fun saveProgress(sessionId: Long, phase: WorkoutPhase, orderIndex: Int, remainingSec: Int?) {
+        viewModelScope.launch { saveWorkoutProgressUseCase(sessionId, phase, orderIndex, remainingSec) }
+    }
+
+    /**
+     * "Save & Exit" from the mid-workout guard dialog. Takes [onDone] for the same reason as
+     * [abandonSession] — the caller navigates away right after, so we must finish writing first.
+     */
+    fun saveAndExit(sessionId: Long, phase: WorkoutPhase, orderIndex: Int, remainingSec: Int?, onDone: () -> Unit) {
+        viewModelScope.launch {
+            saveAndExitWorkoutSessionUseCase(sessionId, phase, orderIndex, remainingSec)
+            onDone()
+        }
+    }
+
+    /** Opens the exercise-info sheet in place — never navigates, so the workout keeps running underneath it. */
+    fun showExerciseInfo(exerciseId: Long) {
+        _exerciseInfoSheet.value = ExerciseInfoSheetState.Loading
+        viewModelScope.launch {
+            getExerciseDetailUseCase(exerciseId)
+                .onSuccess { _exerciseInfoSheet.value = ExerciseInfoSheetState.Loaded(it) }
+                .onFailure { _exerciseInfoSheet.value = ExerciseInfoSheetState.Error(it.message ?: "Exercise not found") }
+        }
+    }
+
+    fun dismissExerciseInfo() {
+        _exerciseInfoSheet.value = ExerciseInfoSheetState.Hidden
     }
 }

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
+import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.domain.models.enums.WorkoutSessionStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -80,6 +81,22 @@ interface WorkoutSessionDao {
     @Query("SELECT * FROM workout_sessions WHERE userId = :userId AND planId = :planId ORDER BY startedAt DESC LIMIT 1")
     suspend fun getLatestSessionForPlan(userId: Long, planId: Long): WorkoutSessionEntity?
 
+    /**
+     * Reactive most-recent in-progress/paused session across every plan — backs the Home screen's
+     * "Continue" card. A `Flow` (not a one-shot suspend read) so Room's invalidation tracker
+     * re-emits automatically on every [updateProgress]/abandon/complete write, keeping the card's
+     * exercise count live without depending on the screen being re-entered.
+     */
+    @Query(
+        "SELECT * FROM workout_sessions WHERE userId = :userId AND (status = :inProgress OR status = :paused) " +
+            "ORDER BY startedAt DESC LIMIT 1"
+    )
+    fun observeLatestActiveSession(
+        userId: Long,
+        inProgress: WorkoutSessionStatus,
+        paused: WorkoutSessionStatus
+    ): Flow<WorkoutSessionEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSessionExercises(exercises: List<WorkoutSessionExerciseEntity>)
 
@@ -92,6 +109,27 @@ interface WorkoutSessionDao {
     /** Backs "Restart progress" — cascades to workout_session_exercises via FK. */
     @Query("DELETE FROM workout_sessions WHERE userId = :userId")
     suspend fun deleteAllSessionsForUser(userId: Long)
+
+    /**
+     * `AND status IN (IN_PROGRESS, PAUSED)` guards against a stray/late auto-save reviving a
+     * session that already finished: [com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl.completeSession]
+     * / `abandonSession` write a terminal status, and if a still-in-flight `updateProgress` from
+     * just before that lands afterward, it must not silently flip the row back to "active".
+     */
+    @Query(
+        """
+        UPDATE workout_sessions
+        SET currentPhase = :phase, currentOrderIndex = :orderIndex, phaseRemainingSec = :remainingSec, status = :status
+        WHERE sessionId = :sessionId AND status IN ('IN_PROGRESS', 'PAUSED')
+        """
+    )
+    suspend fun updateProgress(
+        sessionId: Long,
+        phase: WorkoutPhase,
+        orderIndex: Int,
+        remainingSec: Int?,
+        status: WorkoutSessionStatus
+    )
 
     /** End timestamps of completed sessions in [fromMillis, toMillis) — backs the Home weekly-goal day tracker. */
     @Query(

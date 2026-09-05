@@ -1,13 +1,16 @@
 package com.example.homeworkout.ui.core.player
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,9 +27,11 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,10 +52,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.homeworkout.domain.models.PlanExerciseSummary
+import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.ui.components.ExerciseThumbnail
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
+import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoContent
 import com.example.homeworkout.ui.theme.BrandBlueTint
 import com.example.homeworkout.ui.theme.InkBlack
 import com.example.homeworkout.ui.theme.PillShape
@@ -61,25 +68,29 @@ import kotlinx.coroutines.delay
 private const val PREP_SECONDS = 6
 private const val REST_SECONDS = 20
 
-private enum class Phase { PREP, EXERCISE, REST, COMPLETED }
-
 /**
  * The "During Workout" player: prep countdown -> exercise -> rest -> ... -> completed, for one day
  * of a plan at a time (never every day flattened together — see [WorkoutPlayerViewModel] /
  * [StartWorkoutSessionUseCase][com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase]).
  * Reaching the end or quitting reports back to the view model so the `workout_sessions` row is
  * closed out as COMPLETED/ABANDONED, which is what drives day-by-day progression and streaks.
- * Fine-grained progress (which exercise you were on) is still in-memory only, so quitting always
- * restarts the day from the top next time.
+ * Fine-grained progress (phase/exercise/timer) is auto-saved to that same row on every phase
+ * change and pause, so "Save & Exit" from the quit dialog can be resumed exactly where it left off
+ * (see [WorkoutPlayerViewModel] / [com.example.homeworkout.domain.usecases.player.GetResumableWorkoutUseCase]).
+ * The exercise-info icon opens [ExerciseInfoContent] as an in-place bottom sheet rather than
+ * navigating to a separate screen — navigating away would tear down this composable's running
+ * timer/`LaunchedEffect`s (and the ViewModel's TTS/tick sounds), silently rewinding the workout to
+ * wherever it was last auto-saved the moment the user came back.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutPlayerScreen(
     viewModel: WorkoutPlayerViewModel,
-    onClose: () -> Unit,
-    onExerciseInfo: (Long) -> Unit
+    onClose: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val newlyUnlockedBadges by viewModel.newlyUnlockedBadges.collectAsStateWithLifecycle()
+    val exerciseInfoSheet by viewModel.exerciseInfoSheet.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         when (val state = uiState) {
@@ -87,11 +98,18 @@ fun WorkoutPlayerScreen(
                 exercises = state.exercises,
                 dayNumber = state.dayNumber,
                 totalDays = state.totalDays,
+                initialPhase = state.initialPhase,
+                initialOrderIndex = state.initialOrderIndex,
+                initialRemainingSec = state.initialRemainingSec,
                 onComplete = { viewModel.completeSession(state.sessionId) },
-                onAbandon = { viewModel.abandonSession(state.sessionId) },
+                // onDone == onClose: navigation must wait for the write to finish, or popping the
+                // back stack clears this ViewModel (cancelling viewModelScope) before it lands.
+                onAbandon = { viewModel.abandonSession(state.sessionId, onDone = onClose) },
                 onRestartSession = { viewModel.restartDay() },
+                onSaveProgress = { phase, index, remaining -> viewModel.saveProgress(state.sessionId, phase, index, remaining) },
+                onSaveAndExit = { phase, index, remaining -> viewModel.saveAndExit(state.sessionId, phase, index, remaining, onDone = onClose) },
                 onClose = onClose,
-                onExerciseInfo = onExerciseInfo,
+                onExerciseInfo = viewModel::showExerciseInfo,
                 onSpeak = viewModel::speak,
                 onTick = viewModel::tick,
                 onExerciseStart = viewModel::signalExerciseStart
@@ -111,6 +129,21 @@ fun WorkoutPlayerScreen(
             onDismiss = { viewModel.dismissUnlockedBadge(badge.definition.id) }
         )
     }
+
+    if (exerciseInfoSheet !is ExerciseInfoSheetState.Hidden) {
+        ModalBottomSheet(onDismissRequest = viewModel::dismissExerciseInfo) {
+            Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.9f)) {
+                when (val sheetState = exerciseInfoSheet) {
+                    is ExerciseInfoSheetState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                    is ExerciseInfoSheetState.Error -> CenteredMessage(sheetState.message)
+                    is ExerciseInfoSheetState.Loaded -> ExerciseInfoContent(sheetState.detail, PaddingValues(bottom = 24.dp))
+                    is ExerciseInfoSheetState.Hidden -> Unit
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -118,36 +151,50 @@ private fun PlayerContent(
     exercises: List<PlanExerciseSummary>,
     dayNumber: Int,
     totalDays: Int,
+    initialPhase: WorkoutPhase,
+    initialOrderIndex: Int,
+    initialRemainingSec: Int?,
     onComplete: () -> Unit,
     onAbandon: () -> Unit,
     onRestartSession: () -> Unit,
+    onSaveProgress: (WorkoutPhase, Int, Int?) -> Unit,
+    onSaveAndExit: (WorkoutPhase, Int, Int?) -> Unit,
     onClose: () -> Unit,
     onExerciseInfo: (Long) -> Unit,
     onSpeak: (String) -> Unit,
     onTick: () -> Unit,
     onExerciseStart: () -> Unit
 ) {
-    var phase by remember { mutableStateOf(Phase.PREP) }
-    var index by remember { mutableIntStateOf(0) }
-    var remaining by remember { mutableIntStateOf(PREP_SECONDS) }
+    val safeInitialIndex = initialOrderIndex.coerceIn(0, (exercises.size - 1).coerceAtLeast(0))
+    var phase by remember { mutableStateOf(initialPhase) }
+    var index by remember { mutableIntStateOf(safeInitialIndex) }
+    var remaining by remember { mutableIntStateOf(initialRemainingSec ?: PREP_SECONDS) }
     var paused by remember { mutableStateOf(false) }
-    var completedCount by remember { mutableIntStateOf(0) }
+    var completedCount by remember { mutableIntStateOf(safeInitialIndex) }
     var showQuitDialog by remember { mutableStateOf(false) }
 
     val current = exercises.getOrNull(index) ?: exercises.first()
     val isTimed = current.targetDurationSec != null
 
+    BackHandler(enabled = phase != WorkoutPhase.COMPLETED) { showQuitDialog = true }
+
     // Voice cue fired once per phase entry — keyed on (phase, index) rather than `remaining` so it
-    // doesn't refire every second while a timer counts down.
+    // doesn't refire every second while a timer counts down. This is also the "an exercise
+    // completed / a set finished" auto-save point: it fires exactly once per phase/exercise change.
+    // COMPLETED is excluded: `onComplete()` (called right where `phase` flips to COMPLETED) already
+    // finalizes the session with status=COMPLETED — this effect re-firing right after would race it
+    // with a plain saveProgress write (status=IN_PROGRESS), and whichever write lands last could
+    // silently flip a just-finished session back to "active" forever.
     LaunchedEffect(phase, index) {
+        if (phase != WorkoutPhase.COMPLETED) onSaveProgress(phase, index, remaining)
         when (phase) {
-            Phase.PREP -> onSpeak("Get ready! First up: ${current.title}")
-            Phase.REST -> {
+            WorkoutPhase.PREP -> onSpeak("Get ready! First up: ${current.title}")
+            WorkoutPhase.REST -> {
                 val next = exercises.getOrNull(index + 1)
                 if (next != null) onSpeak("Rest time. Next up: ${next.title}")
             }
-            Phase.COMPLETED -> onSpeak("Workout finished! Great job.")
-            Phase.EXERCISE -> onExerciseStart()
+            WorkoutPhase.COMPLETED -> onSpeak("Workout finished! Great job.")
+            WorkoutPhase.EXERCISE -> onExerciseStart()
         }
     }
 
@@ -155,63 +202,66 @@ private fun PlayerContent(
         paused = false
         completedCount = (index + 1).coerceAtMost(exercises.size)
         if (index >= exercises.lastIndex) {
-            phase = Phase.COMPLETED
+            phase = WorkoutPhase.COMPLETED
             onComplete()
         } else {
-            phase = Phase.REST
+            phase = WorkoutPhase.REST
             remaining = REST_SECONDS
         }
     }
 
     LaunchedEffect(phase, index, paused, showQuitDialog) {
-        if (paused || showQuitDialog || phase == Phase.COMPLETED) return@LaunchedEffect
-        if (phase == Phase.EXERCISE && !isTimed) return@LaunchedEffect
+        if (paused || showQuitDialog || phase == WorkoutPhase.COMPLETED) return@LaunchedEffect
+        if (phase == WorkoutPhase.EXERCISE && !isTimed) return@LaunchedEffect
         while (remaining > 0) {
             delay(1_000)
             remaining -= 1
             if (remaining in 1..5) onTick()
         }
         when (phase) {
-            Phase.PREP -> {
-                phase = Phase.EXERCISE
+            WorkoutPhase.PREP -> {
+                phase = WorkoutPhase.EXERCISE
                 remaining = current.targetDurationSec ?: 30
             }
-            Phase.EXERCISE -> finishCurrentExercise()
-            Phase.REST -> {
+            WorkoutPhase.EXERCISE -> finishCurrentExercise()
+            WorkoutPhase.REST -> {
                 index += 1
-                phase = Phase.EXERCISE
+                phase = WorkoutPhase.EXERCISE
                 remaining = exercises[index].targetDurationSec ?: 30
             }
-            Phase.COMPLETED -> Unit
+            WorkoutPhase.COMPLETED -> Unit
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
     when (phase) {
-        Phase.PREP -> PrepView(nextExerciseTitle = current.title, gifUrl = current.gifUrl, count = remaining, onSkip = {
-            phase = Phase.EXERCISE
+        WorkoutPhase.PREP -> PrepView(nextExerciseTitle = current.title, gifUrl = current.gifUrl, count = remaining, onSkip = {
+            phase = WorkoutPhase.EXERCISE
             remaining = current.targetDurationSec ?: 30
         })
 
-        Phase.EXERCISE -> ExerciseView(
+        WorkoutPhase.EXERCISE -> ExerciseView(
             exercise = current,
             index = index,
             total = exercises.size,
             remaining = remaining,
             paused = paused,
             onInfo = { onExerciseInfo(current.exerciseId) },
-            onTogglePause = { paused = !paused },
+            onTogglePause = {
+                paused = !paused
+                if (paused) onSaveProgress(phase, index, remaining)
+            },
             onPrevious = {
                 if (index > 0) {
                     index -= 1
-                    phase = Phase.EXERCISE
+                    phase = WorkoutPhase.EXERCISE
                     remaining = exercises[index].targetDurationSec ?: 30
                 }
             },
             onNext = { finishCurrentExercise() }
         )
 
-        Phase.REST -> RestView(
+        WorkoutPhase.REST -> RestView(
             remaining = remaining,
             next = exercises.getOrNull(index + 1),
             nextNumber = (index + 2).coerceAtMost(exercises.size),
@@ -219,17 +269,17 @@ private fun PlayerContent(
             onAddTime = { remaining += 20 },
             onSkip = {
                 if (index >= exercises.lastIndex) {
-                    phase = Phase.COMPLETED
+                    phase = WorkoutPhase.COMPLETED
                     onComplete()
                 } else {
                     index += 1
-                    phase = Phase.EXERCISE
+                    phase = WorkoutPhase.EXERCISE
                     remaining = exercises[index].targetDurationSec ?: 30
                 }
             }
         )
 
-        Phase.COMPLETED -> CompletedView(
+        WorkoutPhase.COMPLETED -> CompletedView(
             completedCount = completedCount,
             onKeepExercising = onClose,
             onRestart = {
@@ -237,23 +287,23 @@ private fun PlayerContent(
                 index = 0
                 completedCount = 0
                 remaining = PREP_SECONDS
-                phase = Phase.PREP
+                phase = WorkoutPhase.PREP
             },
             onDoItLater = onClose
         )
     }
 
-        if (totalDays > 1 && phase != Phase.COMPLETED) {
+        if (totalDays > 1 && phase != WorkoutPhase.COMPLETED) {
             Text(
                 "DAY $dayNumber/$totalDays",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = if (phase == Phase.REST) Color.White else SlateGray,
+                color = if (phase == WorkoutPhase.REST) Color.White else SlateGray,
                 modifier = Modifier.align(Alignment.TopCenter).padding(top = 12.dp)
             )
         }
 
-        if (phase != Phase.COMPLETED) {
+        if (phase != WorkoutPhase.COMPLETED) {
             IconButton(
                 onClick = { showQuitDialog = true },
                 modifier = Modifier.align(Alignment.TopStart).padding(8.dp)
@@ -261,7 +311,7 @@ private fun PlayerContent(
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "Quit workout",
-                    tint = if (phase == Phase.REST) Color.White else MaterialTheme.colorScheme.onSurface
+                    tint = if (phase == WorkoutPhase.REST) Color.White else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -271,12 +321,15 @@ private fun PlayerContent(
         AlertDialog(
             onDismissRequest = { showQuitDialog = false },
             title = { Text("Quit workout?") },
-            text = { Text("You'll leave this session and go back to the plan. Progress isn't saved.") },
+            text = { Text("Save your progress and finish later, or discard it and start over next time.") },
             confirmButton = {
-                TextButton(onClick = { showQuitDialog = false; onAbandon(); onClose() }) { Text("Quit") }
+                // onClose() is fired as the save's completion callback (see WorkoutPlayerScreen's
+                // wiring), not eagerly here — otherwise navigating away would clear the ViewModel
+                // before the write finishes.
+                TextButton(onClick = { showQuitDialog = false; onSaveAndExit(phase, index, remaining) }) { Text("Save & Exit") }
             },
             dismissButton = {
-                TextButton(onClick = { showQuitDialog = false }) { Text("Keep going") }
+                TextButton(onClick = { showQuitDialog = false; onAbandon() }) { Text("Discard") }
             }
         )
     }

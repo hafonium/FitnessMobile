@@ -27,10 +27,12 @@ sealed class Screen(val route: String) {
     }
 
     // During Workout
-    object Player : Screen("player/{planId}?planDayId={planDayId}") {
-        fun createRoute(planId: Long, planDayId: Long? = null): String {
-            val base = "player/$planId"
-            return if (planDayId != null) "$base?planDayId=$planDayId" else base
+    object Player : Screen("player/{planId}?planDayId={planDayId}&resume={resume}") {
+        fun createRoute(planId: Long, planDayId: Long? = null, resume: Boolean = false): String {
+            var route = "player/$planId"
+            if (planDayId != null) route += "?planDayId=$planDayId"
+            if (resume) route += if (planDayId != null) "&resume=true" else "?resume=true"
+            return route
         }
     }
 
@@ -62,6 +64,8 @@ sealed class Screen(val route: String) {
     object WalkingPlayer : Screen("walking_player/{programId}/{sessionId}") {
         fun createRoute(programId: String, sessionId: String) = "walking_player/$programId/$sessionId"
     }
+    object FormCheck : Screen("form_check")
+    object FormCheckHistory : Screen("form_check_history")
 
     // Report tab
     object History : Screen("history")

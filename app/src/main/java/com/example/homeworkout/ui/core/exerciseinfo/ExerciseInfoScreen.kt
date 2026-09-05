@@ -93,9 +93,12 @@ fun ExerciseInfoScreen(
     }
 }
 
+/** Also reused, unnavigated, as the During Workout player's exercise-info bottom sheet — see
+ * [com.example.homeworkout.ui.core.player.WorkoutPlayerScreen] — so checking an exercise's form
+ * mid-set doesn't tear down the running timer/sounds the way navigating to a full screen would. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ExerciseInfoContent(detail: ExerciseDetail, contentPadding: PaddingValues) {
+internal fun ExerciseInfoContent(detail: ExerciseDetail, contentPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(

@@ -2,10 +2,12 @@ package com.example.homeworkout.ui.core.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.homeworkout.domain.models.ActiveWorkoutSummary
 import com.example.homeworkout.domain.models.RecommendedPlan
 import com.example.homeworkout.domain.models.WeeklyGoalProgress
 import com.example.homeworkout.domain.models.WorkoutModel
 import com.example.homeworkout.domain.models.enums.WorkoutCategory
+import com.example.homeworkout.domain.usecases.home.GetActiveWorkoutUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
 import com.example.homeworkout.domain.usecases.planselection.GetFitnessProfileUseCase
@@ -43,11 +45,24 @@ class HomeViewModel(
     getFitnessProfileUseCase: GetFitnessProfileUseCase,
     private val recommendPlanUseCase: RecommendPlanUseCase,
     private val getWeeklyGoalProgressUseCase: GetWeeklyGoalProgressUseCase,
-    getStreakUseCase: GetStreakUseCase
+    getStreakUseCase: GetStreakUseCase,
+    getActiveWorkoutUseCase: GetActiveWorkoutUseCase
 ) : ViewModel() {
 
     private val _selectedCategory = MutableStateFlow<WorkoutCategory?>(null)
     val selectedCategory: StateFlow<WorkoutCategory?> = _selectedCategory.asStateFlow()
+
+    /**
+     * Non-null when there's an in-progress/paused workout to offer "Continue" for, shown above
+     * Body Focus. Reactive (see [GetActiveWorkoutUseCase]) rather than a one-shot snapshot, since
+     * Home's ViewModel survives navigating into the player and back out.
+     */
+    val activeWorkout: StateFlow<ActiveWorkoutSummary?> = getActiveWorkoutUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
 
     val weeklyGoalProgress: StateFlow<WeeklyGoalProgress> = getWeeklyGoalProgressUseCase()
         .stateIn(
