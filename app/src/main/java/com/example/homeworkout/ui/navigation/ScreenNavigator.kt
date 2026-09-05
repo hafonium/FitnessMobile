@@ -382,7 +382,18 @@ fun ScreenNavigator() {
             }
 
             composable(Screen.WorkoutSettingsSheet.route) {
-                WorkoutSettingsSheetScreen(onDone = { navController.popBackStack() })
+                val vm: SettingsViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        SettingsViewModel(
+                            appInstance.getSettingsUseCase,
+                            appInstance.updateSettingsUseCase,
+                            appInstance.resetWorkoutProgressUseCase,
+                            appInstance.ttsService,
+                            appInstance.reminderScheduler
+                        )
+                    }
+                })
+                WorkoutSettingsSheetScreen(viewModel = vm, onDone = { navController.popBackStack() })
             }
 
             composable(
@@ -444,8 +455,7 @@ fun ScreenNavigator() {
                     // silently no-ops when it isn't actually on the back stack, which made every
                     // onClose-driven action (Keep exercising / Do it later / Save & Exit / Discard)
                     // appear to do nothing when entered from Home.
-                    onClose = { navController.popBackStack() },
-                    onOpenFormCheck = { navController.navigate(Screen.FormCheck.route) }
+                    onClose = { navController.popBackStack() }
                 )
             }
 

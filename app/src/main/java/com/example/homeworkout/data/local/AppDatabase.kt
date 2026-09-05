@@ -79,7 +79,9 @@ import kotlinx.coroutines.launch
     // Version 7 adds saved AI Video Form Check results (see docs/form-check-feature.md).
     // Version 8 renames FormCheckResultEntity.correctionTip to primaryCorrectionTip and adds recordingTip.
     // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
-    version = 9,
+    // Version 10 removes the unimplemented music toggle/volume settings.
+    // Version 11 adds a dedicated coach-voice on/off toggle, independent of soundEnabled.
+    version = 11,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

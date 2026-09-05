@@ -61,7 +61,6 @@ data class WorkoutSessionEntity(
     // Snapshot of the settings used by this particular session.
     val restTimerSec: Int,
     val prepTimerSec: Int,
-    val musicEnabled: Boolean,
     val soundEnabled: Boolean,
     val coachVideoEnabled: Boolean,
     val ttsVoiceType: VoiceType

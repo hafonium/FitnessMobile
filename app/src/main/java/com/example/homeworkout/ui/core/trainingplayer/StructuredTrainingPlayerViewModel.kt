@@ -166,9 +166,8 @@ class StructuredTrainingPlayerViewModel(
     private fun signalStep(step: StructuredTrainingStep?) {
         step ?: return
         val current = settings.value
-        if (!current.soundEnabled) return
-        tickSoundPlayer.exerciseStartSignal(current.soundVolume)
-        ttsService.speak(step.label, current.ttsVoiceType, current.customVoiceName)
+        if (current.soundEnabled) tickSoundPlayer.exerciseStartSignal(current.soundVolume)
+        if (current.voiceEnabled) ttsService.speak(step.label, current.ttsVoiceType, current.customVoiceName)
     }
 
     private fun tick() {
@@ -178,7 +177,7 @@ class StructuredTrainingPlayerViewModel(
 
     private fun speak(text: String) {
         val current = settings.value
-        if (current.soundEnabled) ttsService.speak(text, current.ttsVoiceType, current.customVoiceName)
+        if (current.voiceEnabled) ttsService.speak(text, current.ttsVoiceType, current.customVoiceName)
     }
 
     private fun intensityFor(type: String): String = when (type) {

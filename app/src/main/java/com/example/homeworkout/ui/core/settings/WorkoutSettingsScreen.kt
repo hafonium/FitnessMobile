@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AvTimer
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.VolumeUp
@@ -40,17 +39,17 @@ import com.example.homeworkout.ui.components.SettingsNavRow
 import com.example.homeworkout.ui.components.SettingsSwitchRow
 import com.example.homeworkout.ui.components.SingleChoiceDialog
 import com.example.homeworkout.ui.theme.HairlineGray
-import com.example.homeworkout.ui.theme.SettingsBlue
 import com.example.homeworkout.ui.theme.SettingsGreen
 import com.example.homeworkout.ui.theme.SettingsOrange
 import com.example.homeworkout.ui.theme.SettingsPurple
 import com.example.homeworkout.ui.theme.SettingsSlate
 import com.example.homeworkout.ui.theme.SettingsTeal
 
-private const val MIN_TIMER_SEC = 0
-private const val MAX_TIMER_SEC = 59 * 60 + 59
+internal const val MIN_TIMER_SEC = 0
+internal const val MAX_TIMER_SEC = 59 * 60 + 59
 
-private fun formatTimer(seconds: Int): String = "%02d:%02d".format(seconds / 60, seconds % 60)
+/** Also reused by the Training-flow `WorkoutSettingsSheetScreen` — keep this the single formatter for `restTimerSec`/`prepTimerSec`. */
+internal fun formatTimer(seconds: Int): String = "%02d:%02d".format(seconds / 60, seconds % 60)
 
 /**
  * Settings-tab "Workout Settings" (global defaults) — distinct from the Training-flow sheet of
@@ -89,14 +88,6 @@ fun WorkoutSettingsScreen(
                         onClick = { showGenderDialog = true },
                         icon = Icons.Default.Wc,
                         iconTint = SettingsPurple
-                    )
-                    HorizontalDivider(color = HairlineGray)
-                    SettingsSwitchRow(
-                        label = "Music",
-                        checked = settings.musicEnabled,
-                        onCheckedChange = viewModel::setMusicEnabled,
-                        icon = Icons.Default.MusicNote,
-                        iconTint = SettingsBlue
                     )
                     HorizontalDivider(color = HairlineGray)
                     SettingsNavRow(
@@ -162,28 +153,12 @@ fun WorkoutSettingsScreen(
     }
 
     if (showSoundOptions) {
-        AlertDialog(
-            onDismissRequest = { showSoundOptions = false },
-            title = { Text("Sound options") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SettingsSwitchRow(label = "Music", checked = settings.musicEnabled, onCheckedChange = viewModel::setMusicEnabled)
-                    Slider(
-                        value = settings.musicVolume,
-                        onValueChange = viewModel::setMusicVolume,
-                        enabled = settings.musicEnabled,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    SettingsSwitchRow(label = "Sound effects", checked = settings.soundEnabled, onCheckedChange = viewModel::setSoundEnabled)
-                    Slider(
-                        value = settings.soundVolume,
-                        onValueChange = viewModel::setSoundVolume,
-                        enabled = settings.soundEnabled,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = { TextButton(onClick = { showSoundOptions = false }) { Text("Done") } }
+        SoundOptionsDialog(
+            soundEnabled = settings.soundEnabled,
+            soundVolume = settings.soundVolume,
+            onSoundEnabledChange = viewModel::setSoundEnabled,
+            onSoundVolumeChange = viewModel::setSoundVolume,
+            onDismiss = { showSoundOptions = false }
         )
     }
 
@@ -199,11 +174,43 @@ fun WorkoutSettingsScreen(
 }
 
 /**
- * `MM:SS` wheel picker dialog for Rest/Prep timer, `00:05`-`59:59`. Edits are held locally and only
- * committed to [onConfirm] when the user taps "Set" — dragging a wheel must not persist mid-scroll.
+ * "Sound effects" mute switch + volume slider — also reused by the Training-flow
+ * `WorkoutSettingsSheetScreen`'s "Sound options" row so both surfaces edit the same
+ * `soundEnabled`/`soundVolume` settings through one dialog implementation.
  */
 @Composable
-private fun TimerWheelDialog(
+internal fun SoundOptionsDialog(
+    soundEnabled: Boolean,
+    soundVolume: Float,
+    onSoundEnabledChange: (Boolean) -> Unit,
+    onSoundVolumeChange: (Float) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Sound options") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                SettingsSwitchRow(label = "Sound effects", checked = soundEnabled, onCheckedChange = onSoundEnabledChange)
+                Slider(
+                    value = soundVolume,
+                    onValueChange = onSoundVolumeChange,
+                    enabled = soundEnabled,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
+    )
+}
+
+/**
+ * `MM:SS` wheel picker dialog for Rest/Prep timer, `00:05`-`59:59`. Edits are held locally and only
+ * committed to [onConfirm] when the user taps "Set" — dragging a wheel must not persist mid-scroll.
+ * Also reused by the Training-flow `WorkoutSettingsSheetScreen`'s Rest/Prep timer rows.
+ */
+@Composable
+internal fun TimerWheelDialog(
     title: String,
     initialSeconds: Int,
     onConfirm: (Int) -> Unit,

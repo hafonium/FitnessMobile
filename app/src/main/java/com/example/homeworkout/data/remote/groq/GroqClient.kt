@@ -253,7 +253,7 @@ class GroqClient {
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         private val SYSTEM_INSTRUCTION = """
-            You are the in-app fitness coach assistant for HomeWorkout, an Android workout-tracking app.
+            You are the in-app fitness coach assistant for Finess Mobile, an Android workout-tracking app.
             Answer questions about exercises, workout plans, training technique, recovery, and general
             fitness/nutrition basics. Be concise, practical and encouraging - this is a small mobile chat
             widget, so prefer short paragraphs or a few bullet points over long essays.

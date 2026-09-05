@@ -58,8 +58,6 @@ private fun UserSettingsEntity.toDomain(gender: UserGender?): SettingsPreference
     gender = gender,
     weeklyGoalDays = weeklyGoalDays,
     firstDayOfWeek = firstDayOfWeek,
-    musicEnabled = musicEnabled,
-    musicVolume = musicVolume,
     soundEnabled = soundEnabled,
     soundVolume = soundVolume,
     restTimerSec = restTimerSec,
@@ -69,7 +67,8 @@ private fun UserSettingsEntity.toDomain(gender: UserGender?): SettingsPreference
     dailyReminderEnabled = dailyReminderEnabled,
     dailyReminderTime = dailyReminderTime,
     ttsVoiceType = ttsVoiceType,
-    customVoiceName = ttsVoiceName
+    customVoiceName = ttsVoiceName,
+    voiceEnabled = voiceEnabled
 )
 
 /** Applies the editable [SettingsPreferences] fields onto [this], preserving the rest (coach video, etc). */
@@ -78,13 +77,12 @@ private fun UserSettingsEntity.applyDomain(preferences: SettingsPreferences): Us
     firstDayOfWeek = preferences.firstDayOfWeek,
     restTimerSec = preferences.restTimerSec,
     prepTimerSec = preferences.prepTimerSec,
-    musicEnabled = preferences.musicEnabled,
-    musicVolume = preferences.musicVolume,
     soundEnabled = preferences.soundEnabled,
     soundVolume = preferences.soundVolume,
     unitSystem = preferences.unitSystem,
     ttsVoiceType = preferences.ttsVoiceType,
     ttsVoiceName = preferences.customVoiceName,
+    voiceEnabled = preferences.voiceEnabled,
     keepScreenOn = preferences.keepScreenOn,
     dailyReminderEnabled = preferences.dailyReminderEnabled,
     dailyReminderTime = preferences.dailyReminderTime,
