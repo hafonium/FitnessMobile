@@ -25,3 +25,12 @@ The scanner calls `POST https://api.spoonacular.com/food/images/analyze` with a 
 multipart field named `file`. Spoonacular currently charges 8 quota points for each call.
 Nutrition is an estimate based on similar recipes, so the UI shows the API's 95% calorie range
 and an estimation disclaimer.
+
+## History persistence
+
+Every successful analysis is saved to the `food_logs` table (`FoodScanViewModel` calls
+`SaveFoodLogUseCase` right after `AnalyzeFoodImageUseCase` succeeds) — category, calorie/macro
+values, and the timestamp only; the source photo itself is never persisted, matching the
+`form_check_results` convention. "View food log history" on `FoodScanScreen` opens
+`FoodLogHistoryScreen`, a plain list of past scans. This history feeds the TDEE weight forecast —
+see `docs/weight-forecast-feature.md`.

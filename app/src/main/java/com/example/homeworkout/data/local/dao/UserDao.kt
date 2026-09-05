@@ -21,9 +21,6 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email")
     suspend fun getUserByEmail(email: String): UserEntity?
 
-    @Query("SELECT userId FROM users ORDER BY userId LIMIT 1")
-    suspend fun getFirstUserId(): Long?
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertUser(user: UserEntity): Long
 

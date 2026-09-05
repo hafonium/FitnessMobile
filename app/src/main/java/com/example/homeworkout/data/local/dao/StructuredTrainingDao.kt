@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.example.homeworkout.data.local.entities.StructuredProgramProgressEntity
 import com.example.homeworkout.data.local.entities.StructuredSessionProgressEntity
 import kotlinx.coroutines.flow.Flow
@@ -31,33 +30,4 @@ interface StructuredTrainingDao {
 
     @Query("DELETE FROM structured_session_progress WHERE programId = :programId AND weekNumber = :weekNumber")
     suspend fun deleteWeekSessions(programId: String, weekNumber: Int)
-
-    @Transaction
-    suspend fun completeSession(
-        session: StructuredSessionProgressEntity,
-        requiredSessionIds: Set<String>,
-        nextWeekNumber: Int?,
-        isLastWeek: Boolean,
-        now: Long
-    ) {
-        upsertSession(session)
-        val program = getProgram(session.programId) ?: return
-        val completed = getSessions(session.programId).filter { it.status == "COMPLETED" }.mapTo(mutableSetOf()) { it.sessionId }
-        val weekComplete = completed.containsAll(requiredSessionIds)
-        upsertProgram(
-            program.copy(
-                status = if (weekComplete && isLastWeek) "COMPLETED" else "ACTIVE",
-                currentWeekNumber = if (weekComplete) nextWeekNumber ?: program.currentWeekNumber else program.currentWeekNumber,
-                activeSessionId = null,
-                completedAt = if (weekComplete && isLastWeek) now else null
-            )
-        )
-    }
-
-    @Transaction
-    suspend fun resetWeek(programId: String, weekNumber: Int) {
-        deleteWeekSessions(programId, weekNumber)
-        val program = getProgram(programId) ?: return
-        upsertProgram(program.copy(status = "ACTIVE", currentWeekNumber = weekNumber, activeSessionId = null, completedAt = null))
-    }
 }

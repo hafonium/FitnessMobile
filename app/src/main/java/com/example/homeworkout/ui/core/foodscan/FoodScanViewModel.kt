@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homeworkout.domain.models.FoodAnalysis
 import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
+import com.example.homeworkout.domain.usecases.food.SaveFoodLogUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ sealed interface FoodScanUiState {
 }
 
 class FoodScanViewModel(
-    private val analyzeFoodImageUseCase: AnalyzeFoodImageUseCase
+    private val analyzeFoodImageUseCase: AnalyzeFoodImageUseCase,
+    private val saveFoodLogUseCase: SaveFoodLogUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<FoodScanUiState>(FoodScanUiState.Idle)
     val uiState: StateFlow<FoodScanUiState> = _uiState.asStateFlow()
@@ -28,7 +30,9 @@ class FoodScanViewModel(
         viewModelScope.launch {
             _uiState.value = FoodScanUiState.Loading
             _uiState.value = try {
-                FoodScanUiState.Success(analyzeFoodImageUseCase(image))
+                val analysis = analyzeFoodImageUseCase(image)
+                saveFoodLogUseCase(analysis)
+                FoodScanUiState.Success(analysis)
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (error: Exception) {

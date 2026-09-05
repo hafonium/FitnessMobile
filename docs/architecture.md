@@ -31,7 +31,7 @@
 
 ## Database schema
 
-The full relational schema in `docs/db_diagram.dbml` (14 tables, 14 enums) is implemented under
+The full relational schema in `docs/db_diagram.dbml` (15 tables, 14 enums) is implemented under
 `data/local/`:
 
 - Enums live in `domain/models/enums/` (pure Kotlin) and are stored by Room as their `name`

@@ -106,6 +106,7 @@ Table users {
   full_name varchar
   gender user_gender
   height_cm decimal(5,2)
+  age_years int
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
 
@@ -330,6 +331,25 @@ Table user_weight_logs {
   }
 
   Note: 'BMI is calculated from weight_kg and height_cm_snapshot instead of being stored redundantly.'
+}
+
+Table food_logs {
+  log_id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.user_id]
+  category varchar [not null]
+  category_probability decimal [not null]
+  calories_kcal decimal [not null]
+  protein_g decimal [not null]
+  carbs_g decimal [not null]
+  fat_g decimal [not null]
+  recipes_used int [not null]
+  logged_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (user_id, logged_at)
+  }
+
+  Note: 'One row per Food Calorie Scanner result (docs/weight-forecast-feature.md). The source photo is never persisted, mirroring form_check_results.'
 }
 
 Table chat_sessions {

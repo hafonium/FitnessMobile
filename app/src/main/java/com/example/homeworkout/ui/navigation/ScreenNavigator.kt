@@ -50,6 +50,8 @@ import com.example.homeworkout.ui.core.editgoal.EditGoalScreen
 import com.example.homeworkout.ui.core.editgoal.EditGoalViewModel
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
+import com.example.homeworkout.ui.core.foodscan.FoodLogHistoryScreen
+import com.example.homeworkout.ui.core.foodscan.FoodLogHistoryViewModel
 import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
 import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
 import com.example.homeworkout.ui.core.running.RunningViewModel
@@ -570,18 +572,37 @@ fun ScreenNavigator() {
                         WeightViewModel(
                             appInstance.getWeightDashboardUseCase,
                             appInstance.recordWeightUseCase,
-                            appInstance.updateHeightUseCase
+                            appInstance.updateHeightUseCase,
+                            appInstance.updateAgeUseCase,
+                            appInstance.getWeightForecastUseCase
                         )
                     }
                 })
-                WeightScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+                WeightScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) }
+                )
             }
 
             composable(Screen.FoodScanner.route) {
                 val vm: FoodScanViewModel = viewModel(factory = viewModelFactory {
-                    initializer { FoodScanViewModel(appInstance.analyzeFoodImageUseCase) }
+                    initializer {
+                        FoodScanViewModel(appInstance.analyzeFoodImageUseCase, appInstance.saveFoodLogUseCase)
+                    }
                 })
-                FoodScanScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+                FoodScanScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenFoodLogHistory = { navController.navigate(Screen.FoodLogHistory.route) }
+                )
+            }
+
+            composable(Screen.FoodLogHistory.route) {
+                val vm: FoodLogHistoryViewModel = viewModel(factory = viewModelFactory {
+                    initializer { FoodLogHistoryViewModel(appInstance.getFoodLogHistoryUseCase) }
+                })
+                FoodLogHistoryScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             composable(Screen.WalkRun.route) {

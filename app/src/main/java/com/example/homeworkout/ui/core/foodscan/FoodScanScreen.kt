@@ -62,7 +62,8 @@ import kotlin.math.roundToInt
 @Composable
 fun FoodScanScreen(
     viewModel: FoodScanViewModel,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onOpenFoodLogHistory: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -136,6 +137,15 @@ fun FoodScanScreen(
                     "Take a clear photo of one dish. Spoonacular will estimate its calories and macronutrients.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = SlateGray
+                )
+            }
+
+            item {
+                AppButton(
+                    text = "View food log history",
+                    onClick = onOpenFoodLogHistory,
+                    modifier = Modifier.fillMaxWidth(),
+                    variant = AppButtonVariant.Outlined
                 )
             }
 

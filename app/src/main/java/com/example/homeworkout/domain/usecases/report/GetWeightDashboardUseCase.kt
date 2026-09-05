@@ -2,6 +2,7 @@ package com.example.homeworkout.domain.usecases.report
 
 import com.example.homeworkout.domain.models.BmiCategory
 import com.example.homeworkout.domain.models.WeightDashboard
+import com.example.homeworkout.domain.models.WeightRecord
 import com.example.homeworkout.domain.repositories.WeightRepository
 import java.util.Calendar
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,10 @@ class GetWeightDashboardUseCase(
     private val weightRepository: WeightRepository
 ) {
     operator fun invoke(): Flow<WeightDashboard> = weightRepository.observeWeightProfile().map { profile ->
-        val records = profile.records.sortedBy { it.loggedAt }
+        // A user can log more than once on the same calendar day (re-weighing, correcting a typo,
+        // just testing); only the latest entry for a given day should count everywhere below —
+        // otherwise same-day duplicates show up as extra, artificially bunched-up chart points.
+        val records = profile.records.sortedBy { it.loggedAt }.collapseToLatestPerDay()
         val current = records.lastOrNull()
         val effectiveHeightCm = profile.heightCm ?: current?.heightCmSnapshot
         val bmi = if (current != null && effectiveHeightCm != null && effectiveHeightCm > 0.0) {
@@ -40,11 +44,24 @@ class GetWeightDashboardUseCase(
                 null
             },
             heightCm = effectiveHeightCm,
+            ageYears = profile.ageYears,
             bmi = bmi,
             bmiCategory = bmi?.let(::bmiCategory),
             chartRecords = records.takeLast(7)
         )
     }
+
+    /** [this] must already be sorted ascending by [WeightRecord.loggedAt]. */
+    private fun List<WeightRecord>.collapseToLatestPerDay(): List<WeightRecord> =
+        groupBy { startOfDay(it.loggedAt) }.values.map { it.last() }
+
+    private fun startOfDay(millis: Long): Long = Calendar.getInstance().apply {
+        timeInMillis = millis
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
 
     private fun bmiCategory(bmi: Double): BmiCategory = when {
         bmi < 16.0 -> BmiCategory.SEVERELY_UNDERWEIGHT

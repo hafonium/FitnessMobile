@@ -10,4 +10,6 @@ interface WeightRepository {
     suspend fun recordWeight(weightKg: Double, heightCm: Double)
 
     suspend fun updateHeight(heightCm: Double)
+
+    suspend fun updateAge(ageYears: Int)
 }

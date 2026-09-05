@@ -20,6 +20,7 @@ data class UserEntity(
     val fullName: String? = null,
     val gender: UserGender? = null,
     val heightCm: Double? = null,
+    val ageYears: Int? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

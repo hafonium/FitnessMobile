@@ -1,5 +1,7 @@
 package com.example.homeworkout.domain.models
 
+import com.example.homeworkout.domain.models.enums.UserGender
+
 /** One persisted body-weight measurement. Weight is stored canonically in kilograms. */
 data class WeightRecord(
     val weightKg: Double,
@@ -10,6 +12,8 @@ data class WeightRecord(
 /** Raw user/measurement data exposed by the repository to the domain layer. */
 data class WeightProfile(
     val heightCm: Double?,
+    val ageYears: Int?,
+    val gender: UserGender?,
     val records: List<WeightRecord>
 )
 
@@ -31,6 +35,7 @@ data class WeightDashboard(
     val averageWeightKg: Double?,
     val lastSevenDaysChangeKg: Double?,
     val heightCm: Double?,
+    val ageYears: Int?,
     val bmi: Double?,
     val bmiCategory: BmiCategory?,
     /** At most the seven newest records, ordered oldest to newest for chart rendering. */
