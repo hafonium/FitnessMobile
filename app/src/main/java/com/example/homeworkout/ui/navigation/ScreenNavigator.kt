@@ -212,7 +212,7 @@ fun ScreenNavigator() {
                             Screen.WalkingPlanDetail.createRoute(programId)
                         } else Screen.RunningPlanDetail.createRoute(programId)
                         navController.navigate(route)
-                    }
+                    },
                     onOpenFormCheck = { navController.navigate(Screen.FormCheck.route) }
                 )
             }
@@ -441,7 +441,8 @@ fun ScreenNavigator() {
                     // silently no-ops when it isn't actually on the back stack, which made every
                     // onClose-driven action (Keep exercising / Do it later / Save & Exit / Discard)
                     // appear to do nothing when entered from Home.
-                    onClose = { navController.popBackStack() }
+                    onClose = { navController.popBackStack() },
+                    onOpenFormCheck = { navController.navigate(Screen.FormCheck.route) }
                 )
             }
 
@@ -703,6 +704,8 @@ fun ScreenNavigator() {
                     }
                 })
                 StructuredTrainingPlayerScreen(vm, onClose = { navController.popBackStack() })
+            }
+
             composable(Screen.FormCheck.route) {
                 val vm: FormCheckViewModel = viewModel(factory = viewModelFactory {
                     initializer {

@@ -55,6 +55,7 @@ import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.ui.components.ExerciseThumbnail
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
+import com.example.homeworkout.ui.components.FormCheckEntryCard
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoContent
@@ -86,7 +87,8 @@ private const val REST_SECONDS = 20
 @Composable
 fun WorkoutPlayerScreen(
     viewModel: WorkoutPlayerViewModel,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onOpenFormCheck: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val newlyUnlockedBadges by viewModel.newlyUnlockedBadges.collectAsStateWithLifecycle()
@@ -112,7 +114,8 @@ fun WorkoutPlayerScreen(
                 onExerciseInfo = viewModel::showExerciseInfo,
                 onSpeak = viewModel::speak,
                 onTick = viewModel::tick,
-                onExerciseStart = viewModel::signalExerciseStart
+                onExerciseStart = viewModel::signalExerciseStart,
+                onOpenFormCheck = onOpenFormCheck
             )
 
             is PlayerUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -163,7 +166,8 @@ private fun PlayerContent(
     onExerciseInfo: (Long) -> Unit,
     onSpeak: (String) -> Unit,
     onTick: () -> Unit,
-    onExerciseStart: () -> Unit
+    onExerciseStart: () -> Unit,
+    onOpenFormCheck: () -> Unit
 ) {
     val safeInitialIndex = initialOrderIndex.coerceIn(0, (exercises.size - 1).coerceAtLeast(0))
     var phase by remember { mutableStateOf(initialPhase) }
@@ -258,7 +262,8 @@ private fun PlayerContent(
                     remaining = exercises[index].targetDurationSec ?: 30
                 }
             },
-            onNext = { finishCurrentExercise() }
+            onNext = { finishCurrentExercise() },
+            onOpenFormCheck = onOpenFormCheck
         )
 
         WorkoutPhase.REST -> RestView(
@@ -387,7 +392,8 @@ private fun ExerciseView(
     onInfo: () -> Unit,
     onTogglePause: () -> Unit,
     onPrevious: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    onOpenFormCheck: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -438,6 +444,7 @@ private fun ExerciseView(
             onClick = onNext,
             modifier = Modifier.fillMaxWidth()
         )
+        FormCheckEntryCard(onClick = onOpenFormCheck, modifier = Modifier.fillMaxWidth())
     }
 }
 

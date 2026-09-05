@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -79,8 +80,8 @@ fun DiscoveryScreen(
     onOpenFoodScanner: () -> Unit,
     onOpenRunning: () -> Unit,
     onOpenRunHistory: () -> Unit,
-    onOpenTrainingPlan: (String) -> Unit
-    onOpenFormCheck: () -> Unit
+    onOpenTrainingPlan: (String) -> Unit,
+    onOpenFormCheck: () -> Unit = {}
 ) {
     var selectedCategory by remember { mutableStateOf(DiscoveryCategory.WALK_RUN) }
     var searchQuery by remember { mutableStateOf("") }
@@ -99,7 +100,7 @@ fun DiscoveryScreen(
         when (selectedCategory) {
             DiscoveryCategory.WALK_RUN -> WalkRunContent(searchQuery, onOpenRunning, onOpenRunHistory, onOpenTrainingPlan)
             DiscoveryCategory.AT_HOME -> AtHomeContent(searchQuery, onOpenFoodScanner)
-            DiscoveryCategory.GYM -> EmptyCategoryContent("Gym plans are coming soon.")
+            DiscoveryCategory.GYM -> GymContent(searchQuery, onOpenFormCheck)
         }
     }
 }
@@ -278,14 +279,14 @@ private fun TrainingPlanCard(plan: TrainingPlanVisual, onClick: () -> Unit) {
 
 @Composable
 private fun AtHomeContent(searchQuery: String, onOpenFoodScanner: () -> Unit) {
-    val matches = searchQuery.isBlank() || "Food calorie scanner".contains(searchQuery, ignoreCase = true)
+    val foodScannerMatches = searchQuery.isBlank() || "Food calorie scanner".contains(searchQuery, ignoreCase = true)
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { Text("At-home tools", color = PrimaryText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
-        if (matches) {
+        if (foodScannerMatches) {
             item {
                 Box(
                     modifier = Modifier
@@ -348,64 +349,94 @@ private fun AtHomeContent(searchQuery: String, onOpenFoodScanner: () -> Unit) {
                     }
                 }
             }
-        } else {
+        }
+        if (!foodScannerMatches) {
             item { EmptySearchResult(searchQuery) }
-
-            item {
-                AppCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onOpenFormCheck)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(18.dp),
-                        horizontalArrangement = Arrangement.spacedBy(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(52.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.Videocam,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(3.dp)
-                        ) {
-                            Text(
-                                "AI Video Form Check",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                "Get a biomechanical breakdown of your exercise form from a short video",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = SlateGray
-                            )
-                        }
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = "Open AI video form check",
-                            tint = SlateGray
-                        )
-                    }
-                }
-            }
         }
     }
 }
 
 @Composable
-private fun EmptyCategoryContent(message: String) {
-    Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-        Text(message, color = MutedText, fontSize = 15.sp)
+private fun GymContent(searchQuery: String, onOpenFormCheck: () -> Unit) {
+    val formCheckMatches = searchQuery.isBlank() || "AI Video Form Check".contains(searchQuery, ignoreCase = true)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item { Text("Gym tools", color = PrimaryText, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
+        if (formCheckMatches) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(192.dp)
+                        .clip(DiscoveryCardShape)
+                        .clickable(onClick = onOpenFormCheck)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ai_video_form_check),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    Box(
+                        Modifier.fillMaxSize().background(
+                            Brush.horizontalGradient(
+                                0f to Color.Black.copy(alpha = 0.78f),
+                                0.62f to Color.Black.copy(alpha = 0.28f),
+                                1f to Color.Transparent
+                            )
+                        )
+                    )
+                    Column(
+                        modifier = Modifier.align(Alignment.CenterStart).padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(7.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(7.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(Modifier.size(26.dp).background(DiscoveryBlue, CircleShape), contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Videocam,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+                            Text(
+                                "AI COACHING",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.4.sp
+                            )
+                        }
+                        Text(
+                            "AI VIDEO\nFORM CHECK",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            lineHeight = 27.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            "Get a biomechanical breakdown of your exercise form from a short video",
+                            color = SecondaryText,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            Text(
+                text = if (formCheckMatches) "Gym plans are coming soon." else "No results for \"$searchQuery\"",
+                color = MutedText,
+                fontSize = 15.sp,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            )
+        }
     }
 }
 

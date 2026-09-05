@@ -71,22 +71,15 @@ import kotlinx.coroutines.launch
         RunSessionEntity::class,
         RunPointEntity::class,
         StructuredProgramProgressEntity::class,
-        StructuredSessionProgressEntity::class
-    ],
-    // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
-    // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
-    // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
-    // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
-    version = 9,
+        StructuredSessionProgressEntity::class,
         FormCheckResultEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
-    // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
-    // docs/chatbot-feature.md). Version 7 adds saved AI Video Form Check results (see
-    // docs/form-check-feature.md). Version 8 renames FormCheckResultEntity.correctionTip to
-    // primaryCorrectionTip and adds recordingTip — no migration, pre-release DB just reseeds
-    // (see fallback below).
-    version = 8,
+    // Version 6 adds the in-app Gemini chat assistant's session/message tables (see docs/chatbot-feature.md).
+    // Version 7 adds saved AI Video Form Check results (see docs/form-check-feature.md).
+    // Version 8 renames FormCheckResultEntity.correctionTip to primaryCorrectionTip and adds recordingTip.
+    // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
