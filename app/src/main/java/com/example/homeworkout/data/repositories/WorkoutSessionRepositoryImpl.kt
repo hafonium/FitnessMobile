@@ -90,7 +90,6 @@ class WorkoutSessionRepositoryImpl(
             planDayId = planDayId,
             restTimerSec = settings.restTimerSec,
             prepTimerSec = settings.prepTimerSec,
-            musicEnabled = settings.musicEnabled,
             soundEnabled = settings.soundEnabled,
             coachVideoEnabled = settings.coachVideoEnabled,
             ttsVoiceType = settings.ttsVoiceType

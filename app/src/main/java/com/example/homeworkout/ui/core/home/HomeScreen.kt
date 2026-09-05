@@ -106,9 +106,6 @@ fun HomeScreen(
         ) {
             item { HomeHeader(streakCount = streak) }
 
-            item {
-                AppTextField(value = "", onValueChange = {}, placeholderText = "Search workouts, plans...")
-            }
 
             item { WeeklyGoalCard(progress = weeklyGoalProgress, onEditGoal = onOpenEditGoal) }
 
@@ -183,7 +180,7 @@ private fun HomeHeader(streakCount: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("HOME WORKOUT", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Text("FITNESS MOBILE", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Icon(
                 Icons.Default.LocalFireDepartment,

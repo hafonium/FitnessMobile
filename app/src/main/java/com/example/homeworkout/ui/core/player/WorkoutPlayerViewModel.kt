@@ -91,7 +91,8 @@ class WorkoutPlayerViewModel(
     private val _exerciseInfoSheet = MutableStateFlow<ExerciseInfoSheetState>(ExerciseInfoSheetState.Hidden)
     val exerciseInfoSheet: StateFlow<ExerciseInfoSheetState> = _exerciseInfoSheet.asStateFlow()
 
-    private val settings: StateFlow<SettingsPreferences> = getSettingsUseCase()
+    /** Live settings (rest/prep timer lengths, sound/voice prefs) — also read directly by [WorkoutPlayerScreen] to size the prep/rest timers. */
+    val settings: StateFlow<SettingsPreferences> = getSettingsUseCase()
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsPreferences())
 
     init {
@@ -101,7 +102,7 @@ class WorkoutPlayerViewModel(
     /** Speaks a coaching cue (get ready / rest time / next exercise / finished) in the user's chosen voice. */
     fun speak(text: String) {
         val current = settings.value
-        if (!current.soundEnabled) return
+        if (!current.voiceEnabled) return
         ttsService.speak(text, current.ttsVoiceType, current.customVoiceName)
     }
 
@@ -171,9 +172,17 @@ class WorkoutPlayerViewModel(
         }
     }
 
-    fun completeSession(sessionId: Long) {
+    /**
+     * Takes [onDone] for the same reason as [abandonSession]/[saveAndExit]: the Completed screen's
+     * "Keep exercising"/"Do it later" buttons navigate away right after this, which would otherwise
+     * clear this ViewModel (cancelling [viewModelScope]) before the COMPLETED write ever ran —
+     * leaving the session row stuck mid-workout (e.g. "5/8") for anything that reads it later,
+     * including a Drive backup taken shortly after.
+     */
+    fun completeSession(sessionId: Long, onDone: () -> Unit) {
         viewModelScope.launch {
             _newlyUnlockedBadges.value = completeWorkoutSessionUseCase(sessionId)
+            onDone()
         }
     }
 

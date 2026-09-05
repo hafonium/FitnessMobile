@@ -10,8 +10,6 @@ data class SettingsPreferences(
     val gender: UserGender? = null,
     val weeklyGoalDays: Int = 6,
     val firstDayOfWeek: WeekDay = WeekDay.SUNDAY,
-    val musicEnabled: Boolean = true,
-    val musicVolume: Float = 1f,
     val soundEnabled: Boolean = true,
     val soundVolume: Float = 1f,
     val restTimerSec: Int = 30,
@@ -22,5 +20,7 @@ data class SettingsPreferences(
     val dailyReminderTime: String? = null,
     val ttsVoiceType: VoiceType = VoiceType.MALE_COACH,
     /** The engine voice name when [ttsVoiceType] is [VoiceType.CUSTOM], e.g. "en-us-x-iom-local". */
-    val customVoiceName: String? = null
+    val customVoiceName: String? = null,
+    /** Whether the TTS coach speaks during a workout at all — independent of [soundEnabled] (tick/rep sounds). */
+    val voiceEnabled: Boolean = true
 )

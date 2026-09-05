@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -47,7 +45,6 @@ import com.example.homeworkout.ui.theme.CardWhite
 import com.example.homeworkout.ui.theme.HairlineGray
 import com.example.homeworkout.ui.theme.PageBackground
 import com.example.homeworkout.ui.theme.SlateGray
-import com.example.homeworkout.ui.theme.StreakRed
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -218,11 +215,6 @@ private fun CalendarCell(day: CalendarDay?, onDaySelected: (Long) -> Unit) {
 @Composable
 private fun WeeklySummaryCard(state: HistoryUiState, modifier: Modifier = Modifier) {
     val totalSeconds = state.weekRecords.sumOf { it.durationSeconds.toLong() }
-    val recordedCalories = state.weekRecords.mapNotNull { it.caloriesBurned }
-    val caloriesText = recordedCalories.takeIf { it.isNotEmpty() }
-        ?.sum()
-        ?.let { "%.1f Kcal".format(it) }
-        ?: "— Kcal"
 
     AppCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -245,7 +237,6 @@ private fun WeeklySummaryCard(state: HistoryUiState, modifier: Modifier = Modifi
                 }
                 Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Metric(icon = Icons.Default.Timer, value = formatDuration(totalSeconds), tint = BrandBlue)
-                    Metric(icon = Icons.Default.LocalFireDepartment, value = caloriesText, tint = StreakRed)
                 }
             }
 
@@ -299,8 +290,6 @@ private fun HistoryRecordRow(record: WorkoutHistoryRecord) {
             Spacer(Modifier.height(3.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Metric(icon = Icons.Default.Timer, value = formatDuration(record.durationSeconds.toLong()), tint = BrandBlue)
-                Spacer(Modifier.width(14.dp))
-                Metric(icon = Icons.Default.LocalFireDepartment, value = formatCalories(record.caloriesBurned), tint = StreakRed)
             }
         }
     }
@@ -334,6 +323,3 @@ private fun formatDuration(totalSeconds: Long): String {
     return if (hours > 0) "%02d:%02d:%02d".format(hours, minutes, seconds)
     else "%02d:%02d".format(minutes, seconds)
 }
-
-private fun formatCalories(calories: Double?): String =
-    calories?.let { "%.1f Kcal".format(it) } ?: "— Kcal"

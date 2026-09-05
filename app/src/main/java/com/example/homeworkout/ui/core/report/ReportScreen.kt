@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -77,11 +76,6 @@ fun ReportScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         StatTile(Icons.Default.FitnessCenter, workoutSummary.completedWorkouts.toString(), "Workouts")
-                        StatTile(
-                            Icons.Default.LocalFireDepartment,
-                            workoutSummary.totalCalories?.let(::formatCompactDecimal) ?: "—",
-                            "Kcal"
-                        )
                         StatTile(Icons.Default.Timer, formatMinutes(workoutSummary.totalDurationSeconds), "Minutes")
                     }
                 }
@@ -307,9 +301,6 @@ private fun LabeledValue(label: String, value: String) {
 }
 
 private fun formatDecimal(value: Double?): String = value?.let { "%.1f".format(it) } ?: "—"
-
-private fun formatCompactDecimal(value: Double): String =
-    if (value % 1.0 == 0.0) "%.0f".format(value) else "%.1f".format(value)
 
 private fun formatMinutes(totalSeconds: Long): String = when {
     totalSeconds <= 0 -> "0"
