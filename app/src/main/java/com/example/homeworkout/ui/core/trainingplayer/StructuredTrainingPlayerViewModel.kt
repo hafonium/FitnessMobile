@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,10 @@ data class StructuredTrainingPlayerUiState(
     val elapsedSeconds: Int = 0,
     val status: IntervalPlayerStatus = IntervalPlayerStatus.READY,
     val tracking: RunSession? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    /** True while the FINISHED write is in flight — gates the screen's exit controls so leaving
+     * doesn't clear this ViewModel (cancelling viewModelScope) before the write lands. */
+    val savingCompletion: Boolean = false
 ) {
     val currentStep: StructuredTrainingStep? get() = steps.getOrNull(stepIndex)
 }
@@ -152,6 +156,7 @@ class StructuredTrainingPlayerViewModel(
     private fun persistCompletion(current: StructuredTrainingPlayerUiState) {
         if (completionPersisted) return
         completionPersisted = true
+        _uiState.update { it.copy(savingCompletion = true) }
         viewModelScope.launch {
             completeSession(
                 programId,
@@ -160,6 +165,7 @@ class StructuredTrainingPlayerViewModel(
                 distanceMeters = current.tracking?.distanceMeters
             )
             speak("Workout complete")
+            _uiState.update { it.copy(savingCompletion = false) }
         }
     }
 

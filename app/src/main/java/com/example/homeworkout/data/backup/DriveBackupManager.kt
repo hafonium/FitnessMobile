@@ -80,7 +80,12 @@ class DriveBackupManager(
 
     /** Flushes the WAL into the main DB file, then uploads/overwrites it in `appDataFolder`. */
     suspend fun backupToDrive(account: GoogleSignInAccount) = withContext(Dispatchers.IO) {
-        database.openHelper.writableDatabase.query("PRAGMA wal_checkpoint(FULL)").close()
+        // `query(...)` alone never runs the PRAGMA — Android's Cursor is lazy and only actually
+        // executes the statement once a row is read (moveToFirst/getCount). Without that read, this
+        // checkpoint was a silent no-op: the backup was relying entirely on SQLite's own opportunistic
+        // auto-checkpoint (only every ~1000 WAL pages, skippable while a reader is active), so recent
+        // writes across random tables would or wouldn't have made it into the main .db file by chance.
+        database.openHelper.writableDatabase.query("PRAGMA wal_checkpoint(FULL)").use { it.moveToFirst() }
         val dbFile = context.getDatabasePath(AppDatabase.DATABASE_NAME)
 
         val service = driveService(account)
