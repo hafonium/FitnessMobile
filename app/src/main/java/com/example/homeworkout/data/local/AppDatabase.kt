@@ -95,7 +95,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun formCheckResultDao(): FormCheckResultDao
 
     companion object {
-        private const val DATABASE_NAME = "home_workout.db"
+        /** Also the Room DB file's on-disk name — resolved via `context.getDatabasePath(DATABASE_NAME)`. */
+        const val DATABASE_NAME = "home_workout.db"
 
         private val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -158,6 +159,21 @@ abstract class AppDatabase : RoomDatabase() {
                     }
                 })
                 .build()
+        }
+
+        /**
+         * Closes the current Room connection and drops the cached [INSTANCE] so the *next*
+         * [getInstance] call reopens the on-disk file from scratch. Used by DriveBackupManager
+         * right before it overwrites the DB file during a restore — otherwise Room would keep
+         * serving reads from the (now stale) connection it already has open. Note this alone does
+         * NOT refresh [App][com.example.homeworkout.ui.App]'s own cached `database` property, which
+         * is why a restore also needs a full process restart (see DriveBackupManager.restartApp).
+         */
+        fun closeInstance() {
+            synchronized(this) {
+                INSTANCE?.close()
+                INSTANCE = null
+            }
         }
 
         private fun seed(appContext: Context, applicationScope: CoroutineScope) {
