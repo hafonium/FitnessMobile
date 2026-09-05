@@ -54,6 +54,10 @@ import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
 import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
 import com.example.homeworkout.ui.core.running.RunningViewModel
 import com.example.homeworkout.ui.core.running.WalkRunScreen
+import com.example.homeworkout.ui.core.trainingplan.StructuredTrainingPlanScreen
+import com.example.homeworkout.ui.core.trainingplan.StructuredTrainingPlanViewModel
+import com.example.homeworkout.ui.core.trainingplayer.StructuredTrainingPlayerScreen
+import com.example.homeworkout.ui.core.trainingplayer.StructuredTrainingPlayerViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.history.HistoryViewModel
 import com.example.homeworkout.ui.core.home.HomeScreen
@@ -191,7 +195,13 @@ fun ScreenNavigator() {
             composable(Screen.Discovery.route) {
                 DiscoveryScreen(
                     onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) },
-                    onOpenRunning = { navController.navigate(Screen.WalkRun.route) }
+                    onOpenRunning = { navController.navigate(Screen.WalkRun.route) },
+                    onOpenTrainingPlan = { programId ->
+                        val route = if (programId == "walking-weight-loss-20w") {
+                            Screen.WalkingPlanDetail.createRoute(programId)
+                        } else Screen.RunningPlanDetail.createRoute(programId)
+                        navController.navigate(route)
+                    }
                 )
             }
 
@@ -517,6 +527,110 @@ fun ScreenNavigator() {
                     initializer { RunningViewModel(appInstance.observeRunningSessionUseCase) }
                 })
                 WalkRunScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(
+                route = Screen.RunningPlanDetail.route,
+                arguments = listOf(navArgument("programId") { type = NavType.StringType })
+            ) { entry ->
+                val programId = entry.arguments?.getString("programId") ?: return@composable
+                val vm: StructuredTrainingPlanViewModel = viewModel(key = "running-plan-$programId", factory = viewModelFactory {
+                    initializer {
+                        StructuredTrainingPlanViewModel(
+                            programId,
+                            appInstance.getTrainingProgramUseCase,
+                            appInstance.getTrainingProgressUseCase,
+                            appInstance.enrollTrainingProgramUseCase,
+                            appInstance.startStructuredSessionUseCase,
+                            appInstance.repeatStructuredWeekUseCase
+                        )
+                    }
+                })
+                StructuredTrainingPlanScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onStartSession = { progId, sessionId ->
+                        navController.navigate(Screen.RunningPlayer.createRoute(progId, sessionId))
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.WalkingPlanDetail.route,
+                arguments = listOf(navArgument("programId") { type = NavType.StringType })
+            ) { entry ->
+                val programId = entry.arguments?.getString("programId") ?: return@composable
+                val vm: StructuredTrainingPlanViewModel = viewModel(key = "walking-plan-$programId", factory = viewModelFactory {
+                    initializer {
+                        StructuredTrainingPlanViewModel(
+                            programId,
+                            appInstance.getTrainingProgramUseCase,
+                            appInstance.getTrainingProgressUseCase,
+                            appInstance.enrollTrainingProgramUseCase,
+                            appInstance.startStructuredSessionUseCase,
+                            appInstance.repeatStructuredWeekUseCase
+                        )
+                    }
+                })
+                StructuredTrainingPlanScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onStartSession = { progId, sessionId ->
+                        navController.navigate(Screen.WalkingPlayer.createRoute(progId, sessionId))
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.RunningPlayer.route,
+                arguments = listOf(
+                    navArgument("programId") { type = NavType.StringType },
+                    navArgument("sessionId") { type = NavType.StringType }
+                )
+            ) { entry ->
+                val programId = entry.arguments?.getString("programId") ?: return@composable
+                val sessionId = entry.arguments?.getString("sessionId") ?: return@composable
+                val vm: StructuredTrainingPlayerViewModel = viewModel(key = "running-player-$programId-$sessionId", factory = viewModelFactory {
+                    initializer {
+                        StructuredTrainingPlayerViewModel(
+                            programId, sessionId,
+                            appInstance.getTrainingProgramUseCase,
+                            appInstance.startStructuredSessionUseCase,
+                            appInstance.completeStructuredSessionUseCase,
+                            appInstance.observeRunningSessionUseCase,
+                            appInstance.getSettingsUseCase,
+                            appInstance.ttsService,
+                            appInstance.tickSoundPlayer
+                        )
+                    }
+                })
+                StructuredTrainingPlayerScreen(vm, onClose = { navController.popBackStack() })
+            }
+
+            composable(
+                route = Screen.WalkingPlayer.route,
+                arguments = listOf(
+                    navArgument("programId") { type = NavType.StringType },
+                    navArgument("sessionId") { type = NavType.StringType }
+                )
+            ) { entry ->
+                val programId = entry.arguments?.getString("programId") ?: return@composable
+                val sessionId = entry.arguments?.getString("sessionId") ?: return@composable
+                val vm: StructuredTrainingPlayerViewModel = viewModel(key = "walking-player-$programId-$sessionId", factory = viewModelFactory {
+                    initializer {
+                        StructuredTrainingPlayerViewModel(
+                            programId, sessionId,
+                            appInstance.getTrainingProgramUseCase,
+                            appInstance.startStructuredSessionUseCase,
+                            appInstance.completeStructuredSessionUseCase,
+                            appInstance.observeRunningSessionUseCase,
+                            appInstance.getSettingsUseCase,
+                            appInstance.ttsService,
+                            appInstance.tickSoundPlayer
+                        )
+                    }
+                })
+                StructuredTrainingPlayerScreen(vm, onClose = { navController.popBackStack() })
             }
 
             // --- Settings tab ---

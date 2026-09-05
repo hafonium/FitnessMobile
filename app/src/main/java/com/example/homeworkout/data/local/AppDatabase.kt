@@ -14,6 +14,7 @@ import com.example.homeworkout.data.local.dao.WeightLogDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.dao.RunningDao
+import com.example.homeworkout.data.local.dao.StructuredTrainingDao
 import com.example.homeworkout.data.local.entities.ChatMessageEntity
 import com.example.homeworkout.data.local.entities.ChatSessionEntity
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
@@ -34,6 +35,8 @@ import com.example.homeworkout.data.local.entities.WorkoutSessionEntity
 import com.example.homeworkout.data.local.entities.WorkoutSessionExerciseEntity
 import com.example.homeworkout.data.local.entities.RunPointEntity
 import com.example.homeworkout.data.local.entities.RunSessionEntity
+import com.example.homeworkout.data.local.entities.StructuredProgramProgressEntity
+import com.example.homeworkout.data.local.entities.StructuredSessionProgressEntity
 import android.util.Log
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import kotlinx.coroutines.CoroutineScope
@@ -64,12 +67,14 @@ import kotlinx.coroutines.launch
         ChatSessionEntity::class,
         ChatMessageEntity::class,
         RunSessionEntity::class,
-        RunPointEntity::class
+        RunPointEntity::class,
+        StructuredProgramProgressEntity::class,
+        StructuredSessionProgressEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
     // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
     // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -81,6 +86,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun badgeDao(): BadgeDao
     abstract fun chatDao(): ChatDao
     abstract fun runningDao(): RunningDao
+    abstract fun structuredTrainingDao(): StructuredTrainingDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"
