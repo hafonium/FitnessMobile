@@ -90,10 +90,10 @@ layers**, both outside what `AlarmManager` usage alone can fix:
 
    **Vivo (FuntouchOS/OriginOS)** — menu names vary slightly by version:
    1. **Settings → Battery → Background power consumption management** (or **"High background
-      power consumption"**) → HomeWorkout → allow/unrestricted.
+      power consumption"**) → Finess Mobile → allow/unrestricted.
    2. **Settings → Apps → Autostart management** (or **i Manager → App manager → Autostart**) →
-      enable for HomeWorkout.
-   3. **Settings → Battery → App power consumption management** → HomeWorkout →
+      enable for Finess Mobile.
+   3. **Settings → Battery → App power consumption management** → Finess Mobile →
       **"Allow background activity"**.
    4. Force-stop and reopen the app once afterward so the new policy applies to a fresh process.
 
@@ -101,10 +101,10 @@ layers**, both outside what `AlarmManager` usage alone can fix:
    app → disable "Sleep-standby optimization" / set to allow background activity, plus enable
    autostart the same way as Vivo above.
 
-   **Xiaomi (MIUI)** — **Settings → Apps → Manage apps → HomeWorkout → Battery saver → No
+   **Xiaomi (MIUI)** — **Settings → Apps → Manage apps → Finess Mobile → Battery saver → No
    restrictions**, plus **Autostart** enabled for the app.
 
-   **Samsung (One UI)** — **Settings → Apps → HomeWorkout → Battery → Unrestricted**, and make sure
+   **Samsung (One UI)** — **Settings → Apps → Finess Mobile → Battery → Unrestricted**, and make sure
    the app isn't in **Settings → Battery → Background usage limits → Sleeping/Deep sleeping apps**.
 
    None of this can be triggered or verified from application code — only

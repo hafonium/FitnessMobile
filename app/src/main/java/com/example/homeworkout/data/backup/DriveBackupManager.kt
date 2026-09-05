@@ -65,7 +65,7 @@ class DriveBackupManager(
         val credential = GoogleAccountCredential.usingOAuth2(context, setOf(DriveScopes.DRIVE_APPDATA))
         credential.selectedAccount = account.account
         return Drive.Builder(NetHttpTransport(), GsonFactory.getDefaultInstance(), credential)
-            .setApplicationName("HomeWorkout")
+            .setApplicationName("Finess Mobile")
             .build()
     }
 

@@ -55,7 +55,6 @@ import com.example.homeworkout.domain.models.PlanExerciseSummary
 import com.example.homeworkout.domain.models.enums.WorkoutPhase
 import com.example.homeworkout.ui.components.ExerciseThumbnail
 import com.example.homeworkout.ui.components.BadgeUnlockedDialog
-import com.example.homeworkout.ui.components.FormCheckEntryCard
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.components.buttons.AppButtonVariant
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoContent
@@ -65,9 +64,6 @@ import com.example.homeworkout.ui.theme.PillShape
 import com.example.homeworkout.ui.theme.SlateGray
 import com.example.homeworkout.utils.ScreenWrapper
 import kotlinx.coroutines.delay
-
-private const val PREP_SECONDS = 6
-private const val REST_SECONDS = 20
 
 /**
  * The "During Workout" player: prep countdown -> exercise -> rest -> ... -> completed, for one day
@@ -87,12 +83,12 @@ private const val REST_SECONDS = 20
 @Composable
 fun WorkoutPlayerScreen(
     viewModel: WorkoutPlayerViewModel,
-    onClose: () -> Unit,
-    onOpenFormCheck: () -> Unit = {}
+    onClose: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val newlyUnlockedBadges by viewModel.newlyUnlockedBadges.collectAsStateWithLifecycle()
     val exerciseInfoSheet by viewModel.exerciseInfoSheet.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenWrapper {
         when (val state = uiState) {
@@ -103,6 +99,8 @@ fun WorkoutPlayerScreen(
                 initialPhase = state.initialPhase,
                 initialOrderIndex = state.initialOrderIndex,
                 initialRemainingSec = state.initialRemainingSec,
+                prepTimerSec = settings.prepTimerSec,
+                restTimerSec = settings.restTimerSec,
                 onComplete = { viewModel.completeSession(state.sessionId) },
                 // onDone == onClose: navigation must wait for the write to finish, or popping the
                 // back stack clears this ViewModel (cancelling viewModelScope) before it lands.
@@ -114,8 +112,7 @@ fun WorkoutPlayerScreen(
                 onExerciseInfo = viewModel::showExerciseInfo,
                 onSpeak = viewModel::speak,
                 onTick = viewModel::tick,
-                onExerciseStart = viewModel::signalExerciseStart,
-                onOpenFormCheck = onOpenFormCheck
+                onExerciseStart = viewModel::signalExerciseStart
             )
 
             is PlayerUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -157,6 +154,8 @@ private fun PlayerContent(
     initialPhase: WorkoutPhase,
     initialOrderIndex: Int,
     initialRemainingSec: Int?,
+    prepTimerSec: Int,
+    restTimerSec: Int,
     onComplete: () -> Unit,
     onAbandon: () -> Unit,
     onRestartSession: () -> Unit,
@@ -166,13 +165,12 @@ private fun PlayerContent(
     onExerciseInfo: (Long) -> Unit,
     onSpeak: (String) -> Unit,
     onTick: () -> Unit,
-    onExerciseStart: () -> Unit,
-    onOpenFormCheck: () -> Unit
+    onExerciseStart: () -> Unit
 ) {
     val safeInitialIndex = initialOrderIndex.coerceIn(0, (exercises.size - 1).coerceAtLeast(0))
     var phase by remember { mutableStateOf(initialPhase) }
     var index by remember { mutableIntStateOf(safeInitialIndex) }
-    var remaining by remember { mutableIntStateOf(initialRemainingSec ?: PREP_SECONDS) }
+    var remaining by remember { mutableIntStateOf(initialRemainingSec ?: prepTimerSec) }
     var paused by remember { mutableStateOf(false) }
     var completedCount by remember { mutableIntStateOf(safeInitialIndex) }
     var showQuitDialog by remember { mutableStateOf(false) }
@@ -210,7 +208,7 @@ private fun PlayerContent(
             onComplete()
         } else {
             phase = WorkoutPhase.REST
-            remaining = REST_SECONDS
+            remaining = restTimerSec
         }
     }
 
@@ -262,8 +260,7 @@ private fun PlayerContent(
                     remaining = exercises[index].targetDurationSec ?: 30
                 }
             },
-            onNext = { finishCurrentExercise() },
-            onOpenFormCheck = onOpenFormCheck
+            onNext = { finishCurrentExercise() }
         )
 
         WorkoutPhase.REST -> RestView(
@@ -291,7 +288,7 @@ private fun PlayerContent(
                 onRestartSession()
                 index = 0
                 completedCount = 0
-                remaining = PREP_SECONDS
+                remaining = prepTimerSec
                 phase = WorkoutPhase.PREP
             },
             onDoItLater = onClose
@@ -392,8 +389,7 @@ private fun ExerciseView(
     onInfo: () -> Unit,
     onTogglePause: () -> Unit,
     onPrevious: () -> Unit,
-    onNext: () -> Unit,
-    onOpenFormCheck: () -> Unit
+    onNext: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -444,7 +440,6 @@ private fun ExerciseView(
             onClick = onNext,
             modifier = Modifier.fillMaxWidth()
         )
-        FormCheckEntryCard(onClick = onOpenFormCheck, modifier = Modifier.fillMaxWidth())
     }
 }
 

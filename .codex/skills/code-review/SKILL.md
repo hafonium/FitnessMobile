@@ -1,9 +1,9 @@
 ---
 name: code-review
-description: Review diffs, branches, commits, or pull requests in the HomeWorkout Android project for introduced correctness bugs, regressions, data-integrity and security risks, Clean Architecture violations, Android lifecycle issues, and missing verification. Use for code-review requests in this repository; do not use for implementation unless the user also asks for fixes.
+description: Review diffs, branches, commits, or pull requests in the Finess Mobile Android project for introduced correctness bugs, regressions, data-integrity and security risks, Clean Architecture violations, Android lifecycle issues, and missing verification. Use for code-review requests in this repository; do not use for implementation unless the user also asks for fixes.
 ---
 
-# HomeWorkout Code Review
+# Finess Mobile Code Review
 
 Review the requested change, not the repository in the abstract. Prioritize defects that the author can act on and that are introduced or exposed by the reviewed diff.
 

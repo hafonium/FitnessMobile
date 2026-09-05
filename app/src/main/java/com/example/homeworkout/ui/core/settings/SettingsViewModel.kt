@@ -47,8 +47,6 @@ class SettingsViewModel(
     }
 
     fun setGender(gender: UserGender) = update { it.copy(gender = gender) }
-    fun setMusicEnabled(enabled: Boolean) = update { it.copy(musicEnabled = enabled) }
-    fun setMusicVolume(volume: Float) = update { it.copy(musicVolume = volume) }
     fun setSoundEnabled(enabled: Boolean) = update { it.copy(soundEnabled = enabled) }
     fun setSoundVolume(volume: Float) = update { it.copy(soundVolume = volume) }
     fun setRestTimerSec(seconds: Int) = update { it.copy(restTimerSec = seconds) }
@@ -67,6 +65,9 @@ class SettingsViewModel(
     }
 
     fun setVoiceType(voiceType: VoiceType) = update { it.copy(ttsVoiceType = voiceType) }
+
+    /** Turns the TTS coach on/off entirely, independent of [SettingsPreferences.soundEnabled] (tick/rep sounds). */
+    fun setVoiceEnabled(enabled: Boolean) = update { it.copy(voiceEnabled = enabled) }
 
     /** Persists a specific engine voice (picked from [listVoices]) as the active coach voice. */
     fun setCustomVoice(voiceName: String) = update { it.copy(ttsVoiceType = VoiceType.CUSTOM, customVoiceName = voiceName) }

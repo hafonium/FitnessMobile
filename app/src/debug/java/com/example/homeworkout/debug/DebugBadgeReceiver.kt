@@ -72,7 +72,6 @@ class DebugBadgeReceiver : BroadcastReceiver() {
                             durationSeconds = PREVIEW_DURATION_SECONDS,
                             restTimerSec = settings.restTimerSec,
                             prepTimerSec = settings.prepTimerSec,
-                            musicEnabled = settings.musicEnabled,
                             soundEnabled = settings.soundEnabled,
                             coachVideoEnabled = settings.coachVideoEnabled,
                             ttsVoiceType = settings.ttsVoiceType

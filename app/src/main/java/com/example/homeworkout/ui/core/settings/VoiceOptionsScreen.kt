@@ -38,6 +38,7 @@ import com.example.homeworkout.domain.models.enums.VoiceType
 import com.example.homeworkout.ui.components.AppCard
 import com.example.homeworkout.ui.components.BackTopBar
 import com.example.homeworkout.ui.components.SettingsRadioRow
+import com.example.homeworkout.ui.components.SettingsSwitchRow
 import com.example.homeworkout.ui.components.buttons.AppButton
 import com.example.homeworkout.ui.services.TtsVoiceOption
 import com.example.homeworkout.ui.theme.HairlineGray
@@ -66,6 +67,12 @@ fun VoiceOptionsScreen(
         ) {
             AppCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SettingsSwitchRow(
+                        label = "Coach voice",
+                        checked = settings.voiceEnabled,
+                        onCheckedChange = viewModel::setVoiceEnabled
+                    )
+                    HorizontalDivider(color = HairlineGray)
                     SettingsRadioRow(
                         label = "Male Coach Voice",
                         subtitle = "Deeper pitch, energetic coaching tone",
