@@ -156,7 +156,7 @@ class App : Application(), ImageLoaderFactory {
         StructuredTrainingCatalogSource(this)
     }
     val structuredTrainingProgressRepository: StructuredTrainingProgressRepository by lazy {
-        StructuredTrainingProgressRepositoryImpl(database.structuredTrainingDao()) }
+        StructuredTrainingProgressRepositoryImpl(database, database.structuredTrainingDao()) }
     val formCheckRepository: FormCheckRepository by lazy {
         val geminiFormCheckApi = GeminiFormCheckApi(BuildConfig.GEMINI_API_KEY)
         // Debug-only, one-time diagnostic (see GeminiFormCheckApi.logAvailableModels KDoc): logs

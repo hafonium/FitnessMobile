@@ -1,38 +1,43 @@
 package com.example.homeworkout.data.repositories
 
 import com.example.homeworkout.data.local.dao.UserDao
+import com.example.homeworkout.data.local.entities.UserEntity
 import com.example.homeworkout.data.local.entities.UserFitnessProfileEntity
+import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import com.example.homeworkout.domain.models.ExperienceLevel
 import com.example.homeworkout.domain.models.FitnessProfile
 import com.example.homeworkout.domain.models.PrimaryGoal
 import com.example.homeworkout.domain.models.enums.ExerciseCategory
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class FitnessProfileRepositoryImpl(
     private val userDao: UserDao
 ) : FitnessProfileRepository {
 
-    override fun observeProfile(): Flow<FitnessProfile?> = flow {
-        val userId = userDao.getFirstUserId()
-        if (userId == null) {
-            emitAll(flowOf(null))
-        } else {
-            emitAll(userDao.observeFitnessProfile(userId).map { it?.toDomain() })
-        }
+    private suspend fun currentUserId(): Long {
+        userDao.getUserByEmail(AppDatabaseSeeder.DEFAULT_USER_EMAIL)?.let { return it.userId }
+        return userDao.insertUser(
+            UserEntity(email = AppDatabaseSeeder.DEFAULT_USER_EMAIL, passwordHash = "local-only")
+        )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeProfile(): Flow<FitnessProfile?> = flow { emit(currentUserId()) }
+        .flatMapLatest { userId -> userDao.observeFitnessProfile(userId) }
+        .map { it?.toDomain() }
+
     override suspend fun getProfile(): FitnessProfile? {
-        val userId = userDao.getFirstUserId() ?: return null
+        val userId = currentUserId()
         return userDao.getFitnessProfile(userId)?.toDomain()
     }
 
     override suspend fun saveProfile(profile: FitnessProfile, recommendedCatalogId: String?, catalogVersion: Int) {
-        val userId = userDao.getFirstUserId() ?: return
+        val userId = currentUserId()
         val existing = userDao.getFitnessProfile(userId)
         userDao.upsertFitnessProfile(
             UserFitnessProfileEntity(

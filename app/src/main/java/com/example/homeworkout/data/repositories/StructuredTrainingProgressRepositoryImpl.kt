@@ -1,15 +1,19 @@
 package com.example.homeworkout.data.repositories
 
+import androidx.room.withTransaction
+import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.local.dao.StructuredTrainingDao
 import com.example.homeworkout.data.local.entities.StructuredProgramProgressEntity
 import com.example.homeworkout.data.local.entities.StructuredSessionProgressEntity
 import com.example.homeworkout.domain.models.training.StructuredProgramProgress
 import com.example.homeworkout.domain.models.training.TrainingEnrollmentStatus
+import com.example.homeworkout.domain.models.training.TrainingSessionStatus
 import com.example.homeworkout.domain.repositories.StructuredTrainingProgressRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 class StructuredTrainingProgressRepositoryImpl(
+    private val database: AppDatabase,
     private val dao: StructuredTrainingDao
 ) : StructuredTrainingProgressRepository {
     override fun observeProgress(programId: String): Flow<StructuredProgramProgress> = combine(
@@ -18,9 +22,9 @@ class StructuredTrainingProgressRepositoryImpl(
     ) { program, sessions ->
         StructuredProgramProgress(
             programId = programId,
-            status = program?.status?.let(TrainingEnrollmentStatus::valueOf) ?: TrainingEnrollmentStatus.NOT_ENROLLED,
+            status = program?.status ?: TrainingEnrollmentStatus.NOT_ENROLLED,
             currentWeekNumber = program?.currentWeekNumber ?: 1,
-            completedSessions = sessions.filter { it.status == "COMPLETED" }.mapTo(mutableSetOf()) { it.sessionId },
+            completedSessions = sessions.filter { it.status == TrainingSessionStatus.COMPLETED }.mapTo(mutableSetOf()) { it.sessionId },
             activeSessionId = program?.activeSessionId
         )
     }
@@ -28,7 +32,7 @@ class StructuredTrainingProgressRepositoryImpl(
     override suspend fun enroll(programId: String) {
         if (dao.getProgram(programId) != null) return
         dao.upsertProgram(
-            StructuredProgramProgressEntity(programId, "ACTIVE", 1, null, System.currentTimeMillis(), null)
+            StructuredProgramProgressEntity(programId, TrainingEnrollmentStatus.ACTIVE, 1, null, System.currentTimeMillis(), null)
         )
     }
 
@@ -37,9 +41,9 @@ class StructuredTrainingProgressRepositoryImpl(
         val now = System.currentTimeMillis()
         val program = dao.getProgram(programId) ?: return
         dao.upsertSession(
-            StructuredSessionProgressEntity(programId, sessionId, weekNumber, "IN_PROGRESS", now, null, null, null)
+            StructuredSessionProgressEntity(programId, sessionId, weekNumber, TrainingSessionStatus.IN_PROGRESS, now, null, null, null)
         )
-        dao.upsertProgram(program.copy(status = "ACTIVE", activeSessionId = sessionId))
+        dao.upsertProgram(program.copy(status = TrainingEnrollmentStatus.ACTIVE, activeSessionId = sessionId))
     }
 
     override suspend fun completeSession(
@@ -53,18 +57,37 @@ class StructuredTrainingProgressRepositoryImpl(
         distanceMeters: Double?
     ) {
         val now = System.currentTimeMillis()
-        val existing = dao.getSessions(programId).firstOrNull { it.sessionId == sessionId }
-        dao.completeSession(
-            session = StructuredSessionProgressEntity(
-                programId, sessionId, weekNumber, "COMPLETED", existing?.startedAt ?: now,
-                now, durationSeconds, distanceMeters
-            ),
-            requiredSessionIds = requiredSessionIds,
-            nextWeekNumber = nextWeekNumber,
-            isLastWeek = isLastWeek,
-            now = now
-        )
+        database.withTransaction {
+            val existing = dao.getSessions(programId).firstOrNull { it.sessionId == sessionId }
+            dao.upsertSession(
+                StructuredSessionProgressEntity(
+                    programId, sessionId, weekNumber, TrainingSessionStatus.COMPLETED, existing?.startedAt ?: now,
+                    now, durationSeconds, distanceMeters
+                )
+            )
+            val program = dao.getProgram(programId) ?: return@withTransaction
+            val completed = dao.getSessions(programId)
+                .filter { it.status == TrainingSessionStatus.COMPLETED }
+                .mapTo(mutableSetOf()) { it.sessionId }
+            val weekComplete = completed.containsAll(requiredSessionIds)
+            dao.upsertProgram(
+                program.copy(
+                    status = if (weekComplete && isLastWeek) TrainingEnrollmentStatus.COMPLETED else TrainingEnrollmentStatus.ACTIVE,
+                    currentWeekNumber = if (weekComplete) nextWeekNumber ?: program.currentWeekNumber else program.currentWeekNumber,
+                    activeSessionId = null,
+                    completedAt = if (weekComplete && isLastWeek) now else null
+                )
+            )
+        }
     }
 
-    override suspend fun resetWeek(programId: String, weekNumber: Int) = dao.resetWeek(programId, weekNumber)
+    override suspend fun resetWeek(programId: String, weekNumber: Int) {
+        database.withTransaction {
+            dao.deleteWeekSessions(programId, weekNumber)
+            val program = dao.getProgram(programId) ?: return@withTransaction
+            dao.upsertProgram(
+                program.copy(status = TrainingEnrollmentStatus.ACTIVE, currentWeekNumber = weekNumber, activeSessionId = null, completedAt = null)
+            )
+        }
+    }
 }
