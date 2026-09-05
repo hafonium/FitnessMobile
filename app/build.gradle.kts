@@ -48,6 +48,15 @@ android {
             ?: localProperties.getProperty("SPOONACULAR_API_KEY", "")
         val escapedApiKey = spoonacularApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
         buildConfigField("String", "SPOONACULAR_API_KEY", "\"$escapedApiKey\"")
+
+        // Gemini API key for the AI Video Form Check feature (docs/form-check-feature.md) - read
+        // from local.properties (gitignored, never committed) the same way as the other provider
+        // keys above. The fallback default here must stay "" (never the real key) since this file,
+        // unlike local.properties, is committed to git.
+        val geminiApiKey = providers.environmentVariable("GEMINI_API_KEY").orNull
+            ?: localProperties.getProperty("GEMINI_API_KEY", "")
+        val escapedGeminiApiKey = geminiApiKey.replace("\\", "\\\\").replace("\"", "\\\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$escapedGeminiApiKey\"")
     }
 
     buildTypes {
@@ -119,6 +128,19 @@ dependencies {
     // code, links) instead of showing raw markdown syntax. Pure Compose, no WebView/TextView
     // interop. See docs/chatbot-feature.md.
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.45.0")
+
+    // The AI Video Form Check feature (docs/form-check-feature.md) calls Gemini's REST API
+    // directly with the OkHttp client above (see data/remote/gemini/GeminiFormCheckApi) rather
+    // than the com.google.ai.client.generativeai SDK: that SDK 404'd on this API surface every
+    // time Google retired a model alias faster than an SDK update landed, and a raw REST call
+    // only depends on a model-name string, not an SDK version.
+
+    // Media3 ExoPlayer - the Form Check capture sheet's video preview. The legacy
+    // VideoView/MediaPlayer stack surfaced "Cannot display video" for some camera/gallery
+    // container-codec combinations; ExoPlayer handles content:// Uris and codecs more reliably.
+    val media3Version = "1.4.1"
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation("androidx.media3:media3-ui:$media3Version")
 }
 
 // The Markdown renderer above was published against a newer Kotlin release than this project

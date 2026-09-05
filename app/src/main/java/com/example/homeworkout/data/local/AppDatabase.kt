@@ -11,11 +11,13 @@ import com.example.homeworkout.data.local.dao.BadgeDao
 import com.example.homeworkout.data.local.dao.ChatDao
 import com.example.homeworkout.data.local.dao.UserDao
 import com.example.homeworkout.data.local.dao.WeightLogDao
+import com.example.homeworkout.data.local.dao.FormCheckResultDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.entities.ChatMessageEntity
 import com.example.homeworkout.data.local.entities.ChatSessionEntity
 import com.example.homeworkout.data.local.entities.EquipmentTypeEntity
+import com.example.homeworkout.data.local.entities.FormCheckResultEntity
 import com.example.homeworkout.data.local.entities.ExerciseEntity
 import com.example.homeworkout.data.local.entities.ExerciseImageEntity
 import com.example.homeworkout.data.local.entities.ExerciseInstructionStepEntity
@@ -59,12 +61,16 @@ import kotlinx.coroutines.launch
         UserFitnessProfileEntity::class,
         UserBadgeEntity::class,
         ChatSessionEntity::class,
-        ChatMessageEntity::class
+        ChatMessageEntity::class,
+        FormCheckResultEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
     // Version 6 adds the in-app Gemini chat assistant's session/message tables (see
-    // docs/chatbot-feature.md) — no migration, pre-release DB just reseeds (see fallback below).
-    version = 6,
+    // docs/chatbot-feature.md). Version 7 adds saved AI Video Form Check results (see
+    // docs/form-check-feature.md). Version 8 renames FormCheckResultEntity.correctionTip to
+    // primaryCorrectionTip and adds recordingTip — no migration, pre-release DB just reseeds
+    // (see fallback below).
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -75,6 +81,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun weightLogDao(): WeightLogDao
     abstract fun badgeDao(): BadgeDao
     abstract fun chatDao(): ChatDao
+    abstract fun formCheckResultDao(): FormCheckResultDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"

@@ -10,12 +10,14 @@ import com.example.homeworkout.BuildConfig
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
 import com.example.homeworkout.data.remote.groq.GroqClient
+import com.example.homeworkout.data.remote.gemini.GeminiFormCheckApi
 import com.example.homeworkout.data.repositories.ChatRepositoryImpl
 import com.example.homeworkout.data.remote.SpoonacularFoodApi
 import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
 import com.example.homeworkout.data.repositories.BadgeRepositoryImpl
 import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
 import com.example.homeworkout.data.repositories.FoodAnalysisRepositoryImpl
+import com.example.homeworkout.data.repositories.FormCheckRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutSessionRepositoryImpl
@@ -25,6 +27,7 @@ import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
 import com.example.homeworkout.domain.repositories.FoodAnalysisRepository
+import com.example.homeworkout.domain.repositories.FormCheckRepository
 import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
 import com.example.homeworkout.domain.repositories.WorkoutRepository
@@ -45,6 +48,9 @@ import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
 import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
+import com.example.homeworkout.domain.usecases.formcheck.AnalyzeFormVideoUseCase
+import com.example.homeworkout.domain.usecases.formcheck.GetFormCheckHistoryUseCase
+import com.example.homeworkout.domain.usecases.formcheck.SaveFormCheckResultUseCase
 import com.example.homeworkout.domain.usecases.home.GetActiveWorkoutUseCase
 import com.example.homeworkout.domain.usecases.home.GetWeeklyGoalProgressUseCase
 import com.example.homeworkout.domain.usecases.home.GetWorkoutsUseCase
@@ -80,6 +86,7 @@ import com.example.homeworkout.ui.services.TtsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 class App : Application(), ImageLoaderFactory {
 
@@ -111,6 +118,22 @@ class App : Application(), ImageLoaderFactory {
     val foodAnalysisRepository: FoodAnalysisRepository by lazy {
         FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
     }
+    val formCheckRepository: FormCheckRepository by lazy {
+        val geminiFormCheckApi = GeminiFormCheckApi(BuildConfig.GEMINI_API_KEY)
+        // Debug-only, one-time diagnostic (see GeminiFormCheckApi.logAvailableModels KDoc): logs
+        // every model this API key can actually call, so a 404 from a retired model alias can be
+        // root-caused from Logcat instead of guessed at from Google's deprecation messages. Fires
+        // once, the first time this screen's dependencies are touched - never in release builds,
+        // never on the request path itself.
+        if (BuildConfig.DEBUG) {
+            applicationScope.launch { geminiFormCheckApi.logAvailableModels() }
+        }
+        FormCheckRepositoryImpl(
+            geminiFormCheckApi,
+            database.formCheckResultDao(),
+            database.userDao()
+        )
+    }
 
     // Services
     val ttsService: TtsService by lazy { TtsService(this) }
@@ -120,6 +143,9 @@ class App : Application(), ImageLoaderFactory {
     // Use Cases
     val getWorkoutsUseCase by lazy { GetWorkoutsUseCase(workoutRepository) }
     val analyzeFoodImageUseCase by lazy { AnalyzeFoodImageUseCase(foodAnalysisRepository) }
+    val analyzeFormVideoUseCase by lazy { AnalyzeFormVideoUseCase(formCheckRepository) }
+    val saveFormCheckResultUseCase by lazy { SaveFormCheckResultUseCase(formCheckRepository) }
+    val getFormCheckHistoryUseCase by lazy { GetFormCheckHistoryUseCase(formCheckRepository) }
     val getWorkoutDetailsUseCase by lazy { GetWorkoutDetailsUseCase(workoutRepository) }
     val getExerciseDetailUseCase by lazy { GetExerciseDetailUseCase(exerciseRepository) }
     val searchExercisesUseCase by lazy { SearchExercisesUseCase(exerciseRepository) }

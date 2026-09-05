@@ -52,6 +52,10 @@ import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoScreen
 import com.example.homeworkout.ui.core.exerciseinfo.ExerciseInfoViewModel
 import com.example.homeworkout.ui.core.foodscan.FoodScanScreen
 import com.example.homeworkout.ui.core.foodscan.FoodScanViewModel
+import com.example.homeworkout.ui.core.formcheck.FormCheckHistoryScreen
+import com.example.homeworkout.ui.core.formcheck.FormCheckHistoryViewModel
+import com.example.homeworkout.ui.core.formcheck.FormCheckScreen
+import com.example.homeworkout.ui.core.formcheck.FormCheckViewModel
 import com.example.homeworkout.ui.core.history.HistoryScreen
 import com.example.homeworkout.ui.core.history.HistoryViewModel
 import com.example.homeworkout.ui.core.home.HomeScreen
@@ -190,7 +194,8 @@ fun ScreenNavigator() {
 
             composable(Screen.Discovery.route) {
                 DiscoveryScreen(
-                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) }
+                    onOpenFoodScanner = { navController.navigate(Screen.FoodScanner.route) },
+                    onOpenFormCheck = { navController.navigate(Screen.FormCheck.route) }
                 )
             }
 
@@ -545,6 +550,29 @@ fun ScreenNavigator() {
                     initializer { FoodScanViewModel(appInstance.analyzeFoodImageUseCase) }
                 })
                 FoodScanScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.FormCheck.route) {
+                val vm: FormCheckViewModel = viewModel(factory = viewModelFactory {
+                    initializer {
+                        FormCheckViewModel(
+                            appInstance.analyzeFormVideoUseCase,
+                            appInstance.saveFormCheckResultUseCase
+                        )
+                    }
+                })
+                FormCheckScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
+                    onOpenHistory = { navController.navigate(Screen.FormCheckHistory.route) }
+                )
+            }
+
+            composable(Screen.FormCheckHistory.route) {
+                val vm: FormCheckHistoryViewModel = viewModel(factory = viewModelFactory {
+                    initializer { FormCheckHistoryViewModel(appInstance.getFormCheckHistoryUseCase) }
+                })
+                FormCheckHistoryScreen(viewModel = vm, onNavigateBack = { navController.popBackStack() })
             }
 
             // --- Settings tab ---
