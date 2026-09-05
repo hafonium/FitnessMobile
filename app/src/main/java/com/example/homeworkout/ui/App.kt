@@ -7,6 +7,7 @@ import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.homeworkout.BuildConfig
+import com.example.homeworkout.data.backup.DriveBackupManager
 import com.example.homeworkout.data.catalog.WorkoutPlanCatalogSource
 import com.example.homeworkout.data.catalog.StructuredTrainingCatalogSource
 import com.example.homeworkout.data.local.AppDatabase
@@ -178,6 +179,7 @@ class App : Application(), ImageLoaderFactory {
     val ttsService: TtsService by lazy { TtsService(this) }
     val tickSoundPlayer: TickSoundPlayer by lazy { TickSoundPlayer(this) }
     val reminderScheduler: ReminderScheduler by lazy { ReminderScheduler(this) }
+    val driveBackupManager: DriveBackupManager by lazy { DriveBackupManager(this, database) }
 
     // Use Cases
     val getWorkoutsUseCase by lazy { GetWorkoutsUseCase(workoutRepository) }
