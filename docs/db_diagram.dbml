@@ -436,3 +436,85 @@ Table run_points {
   }
 }
 
+Table user_fitness_profiles {
+  user_id bigint [pk, ref: - users.user_id]
+  primary_goal varchar [not null]
+  experience_level varchar [not null]
+  days_per_week int [not null]
+  session_minutes int [not null]
+  available_equipment_csv varchar [not null]
+  focus_categories_csv varchar [not null]
+  focus_muscles_csv varchar [not null]
+  injuries_or_limitations varchar [not null]
+  recommended_catalog_id varchar
+  catalog_version int [not null, default: 1]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  Note: 'Saved onboarding answers plus the plan recommended from them (docs/workout_plan_selection_guide.md). Multi-value answers (equipment, focus categories and muscles) are stored as comma-separated strings instead of the normalized tables the guide suggests - a deliberate simplification for this single-user local app. recommended_catalog_id points at a docs/workout_plan_catalog.json template id, not a workout_plans row.'
+}
+
+Enum form_check_status {
+  EXCELLENT
+  ACCEPTABLE
+  NEEDS_IMPROVEMENT
+}
+
+Table form_check_results {
+  result_id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.user_id]
+  exercise_name varchar [not null]
+  score int [not null]
+  status form_check_status [not null]
+  observations_json text [not null]
+  primary_correction_tip varchar [not null]
+  recording_tip varchar [not null]
+  analyzed_at timestamp [not null]
+
+  indexes {
+    (user_id, analyzed_at)
+  }
+
+  Note: 'One saved AI Video Form Check result ("Save to History"). observations_json holds the joint-checkpoint breakdown as a JSON array rather than a child table - a small fixed-shape blob always read back with its parent row. The source video is never persisted (docs/form-check-feature.md).'
+}
+
+Enum training_enrollment_status {
+  NOT_ENROLLED
+  ACTIVE
+  COMPLETED
+}
+
+Enum training_session_status {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+Table structured_program_progress {
+  program_id varchar [pk]
+  status training_enrollment_status [not null]
+  current_week_number int [not null]
+  active_session_id varchar
+  enrolled_at timestamp [not null]
+  completed_at timestamp
+
+  Note: 'Per-program enrollment state for the structured running / walking training plans. program_id is a plan id from the bundled training catalog, not a workout_plans row.'
+}
+
+Table structured_session_progress {
+  program_id varchar [not null, ref: > structured_program_progress.program_id]
+  session_id varchar [not null]
+  week_number int [not null]
+  status training_session_status [not null]
+  started_at timestamp
+  completed_at timestamp
+  duration_seconds int
+  distance_meters decimal
+
+  indexes {
+    (program_id, session_id) [pk]
+  }
+
+  Note: 'Per-session progress inside a structured training program. program_id and session_id are catalog ids; the link to structured_program_progress is logical only - the Room entity declares no database-level foreign key.'
+}
+
