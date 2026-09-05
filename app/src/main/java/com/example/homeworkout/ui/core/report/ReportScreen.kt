@@ -196,11 +196,26 @@ fun ReportScreen(
                 } else {
                     BmiCard(
                         data = weight,
-                        actionLabel = "Details",
-                        onActionClick = onOpenWeight,
-                        modifier = Modifier.clickable(onClick = onOpenWeight),
+                        modifier = Modifier.fillMaxWidth(),
                         showBmiValue = true
                     )
+                }
+            }
+
+            item {
+                AppCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Age", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        val weight = weightDashboard
+                        if (weight == null) {
+                            Text("Loading age…", color = SlateGray)
+                        } else if (weight.ageYears == null) {
+                            Text("No age recorded yet", color = SlateGray)
+                            Text("Add it from the Weight screen.", style = MaterialTheme.typography.bodySmall, color = SlateGray)
+                        } else {
+                            Text("${weight.ageYears} yrs", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
 

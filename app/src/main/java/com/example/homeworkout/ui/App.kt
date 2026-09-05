@@ -18,6 +18,7 @@ import com.example.homeworkout.data.repositories.ExerciseRepositoryImpl
 import com.example.homeworkout.data.repositories.BadgeRepositoryImpl
 import com.example.homeworkout.data.repositories.FitnessProfileRepositoryImpl
 import com.example.homeworkout.data.repositories.FoodAnalysisRepositoryImpl
+import com.example.homeworkout.data.repositories.FoodLogRepositoryImpl
 import com.example.homeworkout.data.repositories.FormCheckRepositoryImpl
 import com.example.homeworkout.data.repositories.SettingsRepositoryImpl
 import com.example.homeworkout.data.repositories.WorkoutRepositoryImpl
@@ -30,6 +31,7 @@ import com.example.homeworkout.domain.repositories.ExerciseRepository
 import com.example.homeworkout.domain.repositories.BadgeRepository
 import com.example.homeworkout.domain.repositories.FitnessProfileRepository
 import com.example.homeworkout.domain.repositories.FoodAnalysisRepository
+import com.example.homeworkout.domain.repositories.FoodLogRepository
 import com.example.homeworkout.domain.repositories.FormCheckRepository
 import com.example.homeworkout.domain.repositories.PlanCatalogRepository
 import com.example.homeworkout.domain.repositories.SettingsRepository
@@ -54,6 +56,8 @@ import com.example.homeworkout.domain.usecases.details.GetWorkoutDetailsUseCase
 import com.example.homeworkout.domain.usecases.exerciseinfo.GetExerciseDetailUseCase
 import com.example.homeworkout.domain.usecases.exercises.SearchExercisesUseCase
 import com.example.homeworkout.domain.usecases.food.AnalyzeFoodImageUseCase
+import com.example.homeworkout.domain.usecases.food.GetFoodLogHistoryUseCase
+import com.example.homeworkout.domain.usecases.food.SaveFoodLogUseCase
 import com.example.homeworkout.domain.usecases.formcheck.AnalyzeFormVideoUseCase
 import com.example.homeworkout.domain.usecases.formcheck.GetFormCheckHistoryUseCase
 import com.example.homeworkout.domain.usecases.formcheck.SaveFormCheckResultUseCase
@@ -80,7 +84,9 @@ import com.example.homeworkout.domain.usecases.player.StartSpecificWorkoutDayUse
 import com.example.homeworkout.domain.usecases.player.StartWorkoutSessionUseCase
 import com.example.homeworkout.domain.usecases.report.GetStreakUseCase
 import com.example.homeworkout.domain.usecases.report.GetWeightDashboardUseCase
+import com.example.homeworkout.domain.usecases.report.GetWeightForecastUseCase
 import com.example.homeworkout.domain.usecases.report.RecordWeightUseCase
+import com.example.homeworkout.domain.usecases.report.UpdateAgeUseCase
 import com.example.homeworkout.domain.usecases.report.UpdateHeightUseCase
 import com.example.homeworkout.domain.usecases.settings.GetSettingsUseCase
 import com.example.homeworkout.domain.usecases.settings.ResetWorkoutProgressUseCase
@@ -140,6 +146,9 @@ class App : Application(), ImageLoaderFactory {
     val foodAnalysisRepository: FoodAnalysisRepository by lazy {
         FoodAnalysisRepositoryImpl(SpoonacularFoodApi(BuildConfig.SPOONACULAR_API_KEY))
     }
+    val foodLogRepository: FoodLogRepository by lazy {
+        FoodLogRepositoryImpl(database.userDao(), database.foodLogDao())
+    }
     val runningRepository: RunningRepository by lazy {
         RunningRepositoryImpl(database.runningDao(), database.weightLogDao(), database.userDao())
     }
@@ -191,6 +200,12 @@ class App : Application(), ImageLoaderFactory {
     val getWeightDashboardUseCase by lazy { GetWeightDashboardUseCase(weightRepository) }
     val recordWeightUseCase by lazy { RecordWeightUseCase(weightRepository) }
     val updateHeightUseCase by lazy { UpdateHeightUseCase(weightRepository) }
+    val updateAgeUseCase by lazy { UpdateAgeUseCase(weightRepository) }
+    val saveFoodLogUseCase by lazy { SaveFoodLogUseCase(foodLogRepository) }
+    val getFoodLogHistoryUseCase by lazy { GetFoodLogHistoryUseCase(foodLogRepository) }
+    val getWeightForecastUseCase by lazy {
+        GetWeightForecastUseCase(weightRepository, workoutSessionRepository, runningRepository, foodLogRepository)
+    }
     val getBadgesUseCase by lazy { GetBadgesUseCase(badgeRepository, workoutSessionRepository, getStreakUseCase) }
     val evaluateBadgesUseCase by lazy { EvaluateBadgesUseCase(getBadgesUseCase, badgeRepository) }
     val markBadgesSeenUseCase by lazy { MarkBadgesSeenUseCase(badgeRepository) }

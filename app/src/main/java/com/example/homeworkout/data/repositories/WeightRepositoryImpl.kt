@@ -38,6 +38,8 @@ class WeightRepositoryImpl(
             ) { user, logs ->
                 WeightProfile(
                     heightCm = user?.heightCm,
+                    ageYears = user?.ageYears,
+                    gender = user?.gender,
                     records = logs.map { log ->
                         WeightRecord(
                             weightKg = log.weightKg,
@@ -70,5 +72,11 @@ class WeightRepositoryImpl(
         val userId = currentUserId()
         val user = userDao.getUserById(userId) ?: return
         userDao.updateUser(user.copy(heightCm = heightCm, updatedAt = System.currentTimeMillis()))
+    }
+
+    override suspend fun updateAge(ageYears: Int) {
+        val userId = currentUserId()
+        val user = userDao.getUserById(userId) ?: return
+        userDao.updateUser(user.copy(ageYears = ageYears, updatedAt = System.currentTimeMillis()))
     }
 }

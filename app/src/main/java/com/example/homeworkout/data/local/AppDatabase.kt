@@ -15,6 +15,7 @@ import com.example.homeworkout.data.local.dao.FormCheckResultDao
 import com.example.homeworkout.data.local.dao.WorkoutPlanDao
 import com.example.homeworkout.data.local.dao.WorkoutSessionDao
 import com.example.homeworkout.data.local.dao.RunningDao
+import com.example.homeworkout.data.local.dao.FoodLogDao
 import com.example.homeworkout.data.local.dao.StructuredTrainingDao
 import com.example.homeworkout.data.local.entities.ChatMessageEntity
 import com.example.homeworkout.data.local.entities.ChatSessionEntity
@@ -39,6 +40,7 @@ import com.example.homeworkout.data.local.entities.RunPointEntity
 import com.example.homeworkout.data.local.entities.RunSessionEntity
 import com.example.homeworkout.data.local.entities.StructuredProgramProgressEntity
 import com.example.homeworkout.data.local.entities.StructuredSessionProgressEntity
+import com.example.homeworkout.data.local.entities.FoodLogEntity
 import android.util.Log
 import com.example.homeworkout.data.local.seed.AppDatabaseSeeder
 import kotlinx.coroutines.CoroutineScope
@@ -72,14 +74,17 @@ import kotlinx.coroutines.launch
         RunPointEntity::class,
         StructuredProgramProgressEntity::class,
         StructuredSessionProgressEntity::class,
-        FormCheckResultEntity::class
+        FormCheckResultEntity::class,
+        FoodLogEntity::class
     ],
     // Version 5 adds persisted achievement badges. Migration 4 -> 5 preserves workout history.
     // Version 6 adds the in-app Gemini chat assistant's session/message tables (see docs/chatbot-feature.md).
     // Version 7 adds saved AI Video Form Check results (see docs/form-check-feature.md).
     // Version 8 renames FormCheckResultEntity.correctionTip to primaryCorrectionTip and adds recordingTip.
     // Version 9 adds compressed route and activity metadata while preserving existing GPS runs.
-    version = 9,
+    // Version 10 adds users.ageYears and the food_logs table for the TDEE weight forecast
+    // (see docs/weight-forecast-feature.md).
+    version = 10,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -93,6 +98,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun runningDao(): RunningDao
     abstract fun structuredTrainingDao(): StructuredTrainingDao
     abstract fun formCheckResultDao(): FormCheckResultDao
+    abstract fun foodLogDao(): FoodLogDao
 
     companion object {
         private const val DATABASE_NAME = "home_workout.db"
@@ -127,6 +133,31 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `users` ADD COLUMN `ageYears` INTEGER")
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `food_logs` (
+                        `logId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `userId` INTEGER NOT NULL,
+                        `category` TEXT NOT NULL,
+                        `categoryProbability` REAL NOT NULL,
+                        `caloriesKcal` REAL NOT NULL,
+                        `proteinG` REAL NOT NULL,
+                        `carbsG` REAL NOT NULL,
+                        `fatG` REAL NOT NULL,
+                        `recipesUsed` INTEGER NOT NULL,
+                        `loggedAt` INTEGER NOT NULL,
+                        FOREIGN KEY(`userId`) REFERENCES `users`(`userId`)
+                            ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_food_logs_userId_loggedAt` ON `food_logs` (`userId`, `loggedAt`)")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -142,7 +173,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun build(appContext: Context, applicationScope: CoroutineScope): AppDatabase {
             return Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_4_5, MIGRATION_8_9)
+                .addMigrations(MIGRATION_4_5, MIGRATION_8_9, MIGRATION_9_10)
                 // Pre-release app: on any schema change, wipe and re-seed rather than ship migrations.
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .addCallback(object : RoomDatabase.Callback() {

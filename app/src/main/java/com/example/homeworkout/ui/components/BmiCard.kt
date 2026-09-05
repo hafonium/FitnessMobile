@@ -44,9 +44,9 @@ private val BmiColors = listOf(
 @Composable
 fun BmiCard(
     data: WeightDashboard,
-    actionLabel: String,
-    onActionClick: () -> Unit,
     modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    onActionClick: (() -> Unit)? = null,
     showEditIcon: Boolean = false,
     showBmiValue: Boolean = false
 ) {
@@ -67,26 +67,28 @@ fun BmiCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .clickable(onClick = onActionClick)
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        actionLabel,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    if (showEditIcon) {
-                        Spacer(Modifier.width(4.dp))
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = actionLabel,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp)
+                if (actionLabel != null && onActionClick != null) {
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable(onClick = onActionClick)
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            actionLabel,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
                         )
+                        if (showEditIcon) {
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = actionLabel,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }
